@@ -1,0 +1,1 @@
+<p>This is default page view in <strong>/views/page/default.v.php</strong>.</p>

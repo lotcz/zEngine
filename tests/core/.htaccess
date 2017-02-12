@@ -1,0 +1,11 @@
+ErrorDocument 404 /error.html
+ErrorDocument 500 /error.html
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Handle Front Page...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^(.*) /index.php?path=$1 [L,QSA]
+</IfModule>

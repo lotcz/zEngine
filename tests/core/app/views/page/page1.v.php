@@ -1,0 +1,1 @@
+<p>This is a page view in <strong>/views/page/page1.v.php</strong>.</p>
