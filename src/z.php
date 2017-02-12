@@ -34,26 +34,32 @@ class zEngine {
 	}
 		
 	public function run() {
-		$this->core->parseURL();
-		
-		//TO DO: if alias module is active, rewrite path here
-		
-		//now decide what will happen (choose controllers)
-		$this->core->chooseControllers();
-		
-		// run controllers
-		$this->core->runPageController();
-		$this->core->runMainController();
-		$this->core->runMasterController();
-		
-		//TO DO: close db if active
-		
-		//start rendering with master
-		$this->core->renderMasterView();		
+		try {
+			$this->core->parseURL();
+			
+			//TO DO: if alias module is active then rewrite path here
+			
+			//now decide what will happen (choose controllers)
+			$this->core->chooseControllers();
+			
+			// run controllers
+			$this->core->runPageController();
+			$this->core->runMainController();
+			$this->core->runMasterController();
+			
+			//TO DO: close db if active
+			
+			//start rendering with master
+			$this->core->renderMasterView();		
+		} catch (Exception $e) {
+			if ($this->core->debug_mode) {
+				http_response_code(500);
+				die($e->getMessage());
+			} else {
+				$this->errorlog->write(sprintf('Unrecoverable error on page\'%s\': %s', $this->core->raw_path, $e->getMessage()));
+				$this->core->redirect($this->core->error_page);
+			}
+		}
 	}
-	
-	public function fatalError($message) {
-		$this->errorlog->write($message);
-	}
-	
+		
 }

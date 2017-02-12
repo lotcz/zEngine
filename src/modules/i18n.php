@@ -13,39 +13,50 @@ class i18nModule extends zModule {
 	public $selected_currency = null;
 	
 	public function onEnabled() {
+		
+		// LANGUAGE
+		
 		$this->available_languages = LanguageModel::all($this->z->core->db);
-			
-		// select Language
-		// TO DO: make this configurable, add selection based on custauth
 		
-		if (isset($_COOKIE[$this->cookie_name])) {
-			$lang_code = $_COOKIE[$this->cookie_name];
-		} elseif (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {				
-			$lang_code = strtolower(substr($_SERVER['HTTP_ACCEPT_LANGUAGE'],0,2));
-		} elseif (isset($this->config) && isset($this->config['default_language'])) {
-			$lang_code = $this->config['default_language'];
-		}
+		// TO DO: if custauth Module is enabled then use customers default language
+		//
 		
-		if (isset($lang_code)) {
-			$this->selected_language = zModel::find($this->available_languages, 'language_code', $lang_code);
-		}
-		
+		// try to use browser's language if available
 		if (!isset($this->selected_language)) {
-			$this->selected_language = $this->available_languages[0];
+			if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+				$this->selected_language = zModel::find($this->available_languages, 'language_code', strtolower(substr($_SERVER['HTTP_ACCEPT_LANGUAGE'],0,2)));
+			}
 		}
 		
-		$this->loadLanguage($this->config['localization_dir'], $this->selected_language->val('language_code'));
+		// fallback to default language
+		if (!isset($this->selected_language)) {
+			$this->selected_language = zModel::find($this->available_languages, 'language_code', $this->config['default_language']);
+		}
 		
+		$this->loadLanguage($this->selected_language->val('language_code'));
 		
-		// CURRENCY		
+		// CURRENCY
+		
 		$this->available_currencies = CurrencyModel::all($this->z->core->db);
-		$this->selected_currency = zModel::find($this->available_currencies, 'currency_id', $this->selected_language->val('language_default_currency_id'));
+		$this->selectCurrency($this->selected_language->ival('language_default_currency_id'));
 	}
 	
-	function loadLanguage($dir, $lang_code) {		
-		$file = $dir . $lang_code . '.php';		
+	public function selectLanguage($language_id) {
+		$this->selected_language = zModel::find($this->available_languages, 'language_id', $language_id);
+		$this->loadLanguage($this->selected_language->val('language_code'));		
+		$this->selectCurrency($this->selected_language->ival('language_default_currency_id'));
+	}
+	
+	public function selectCurrency($currency_id) {
+		$this->selected_currency = zModel::find($this->available_currencies, 'currency_id', $currency_id);
+	}
+	
+	function loadLanguage($lang_code) {		
+		$file = $this->config['localization_dir'] . $lang_code . '.php';		
 		if (file_exists($file)) {			
 			$this->language_data = include $file;
+		} else {
+			$this->language_data = null;
 		}
 	}
 		
@@ -60,6 +71,10 @@ class i18nModule extends zModule {
 	
 	public function formatMoney($price) {
 		return sprintf($this->selected_currency->val('currency_format'), number_format($price, $this->selected_currency->ival('currency_decimals'), $this->selected_language->val('language_decimal_separator'), $this->selected_language->val('langauge_thousands_separator')));
+	}
+	
+	public function convertMoney($price) {
+		return $this->selected_currency->convert($price);
 	}
 	
 	// return javascript equivalent of formatMoney and convertMoney

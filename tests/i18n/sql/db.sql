@@ -30,6 +30,6 @@ CREATE TABLE IF NOT EXISTS `languages` (
     REFERENCES `currencies` (`currency_id`)
 )ENGINE = InnoDB;
 
-INSERT INTO languages VALUES (NULL, 'English','en','','', '.', ',',2);
-INSERT INTO languages VALUES (NULL, 'Čeština','cs','j.n. Y','j.n. Y h:i:s', ',', '&nbsp',1);
-INSERT INTO languages VALUES (NULL, 'Francaise','fr','','', ',', '&nbsp',2);
+INSERT INTO languages VALUES (NULL, 'English','en','j/n/Y','j/n/Y h:i:s', '.', ',',2);
+INSERT INTO languages VALUES (NULL, 'Čeština','cs','j.n.Y','j.n.Y h:i:s', ',', '&nbsp',1);
+INSERT INTO languages VALUES (NULL, 'Francaise','fr','j.n.Y','j.n.Y h:i:s', ',', '&nbsp',2);

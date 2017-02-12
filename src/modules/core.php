@@ -2,8 +2,10 @@
 
 class coreModule extends zModule {
 	
-	public $base_url = '';
 	public $app_dir = '';
+	public $base_url = '';	
+	public $debug_mode = false;
+	public $error_page = 'error.html';
 	
 	public $data = [
 		'page_title' => 'zEngine',
@@ -21,8 +23,10 @@ class coreModule extends zModule {
 	public $raw_path = '';
 	
 	public function onEnabled() {
-		$this->base_url = $this->config['base_url'];
 		$this->app_dir = $this->z->app_dir;
+		$this->base_url = $this->config['base_url'];
+		$this->debug_mode = $this->config['debug_mode'];
+		$this->error_page = $this->config['error_page'];		
 	}
 	
 	/*
@@ -57,7 +61,7 @@ class coreModule extends zModule {
 		if (file_exists($template_path)) {
 			include $template_path;
 		} else {
-			$this->z->fatalError("Template for $type view not found: $template_path!");
+			throw new Exception("Template for $type view not found: $template_path!");
 		}
 	}
 	
@@ -95,6 +99,19 @@ class coreModule extends zModule {
 		$this->runController();
 	}
 	
+	public function renderMessages() {
+		$this->z->messages->render();
+	}
+	
+	/*
+		HELPERS
+	*/
+	
+	public function redirect($url, $statusCode = 303) {
+		header('Location: ' . trimSlashes($this->base_url) . '/' . trimSlashes($url), true, $statusCode);
+		die();
+	}	
+	
 	public function url($link = '', $r = null) {
 		$url = $this->base_url . '/' . $link;
 		if (isset($ret)) {
@@ -119,6 +136,18 @@ class coreModule extends zModule {
 		}
 	}
 	
+	public function isAuth() {
+		return $this->z->auth->isAuth();
+	}
+	
+	public function getUser() {
+		return $this->z->auth->user;
+	}
+	
+	public function message($text, $type = 'info') {
+		$this->z->messages->add($text, $type);
+	}
+	
 	public function formatMoney($price) {
 		if ($this->z->moduleEnabled('i18n')) {
 			return $this->z->i18n->formatMoney($price);
@@ -126,6 +155,15 @@ class coreModule extends zModule {
 			return $price;
 		}
 	}
+	
+	public function convertMoney($price) {
+		if ($this->z->moduleEnabled('i18n')) {
+			return $this->z->i18n->convertMoney($price);
+		} else {
+			return $price;
+		}
+	}
+	
 	public function formatDecimal($number, $decimals = 2) {
 		if ($this->z->moduleEnabled('i18n')) {
 			return $this->z->i18n->selected_language->formatDecimal($number, $decimals);

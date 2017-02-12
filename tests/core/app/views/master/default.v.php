@@ -37,6 +37,9 @@
 				<li>
 					<a href="<?=$this->url('master2/default/page1') ?>">Page 1 with different master</a>
 				</li>
+				<li>
+					<a href="<?=$this->url('error') ?>">Error handling</a>
+				</li>
 			</ul>
 		</p>
 	</body>

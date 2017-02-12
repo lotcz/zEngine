@@ -2,9 +2,10 @@
 	
 	return [
 		
-		// will be used to create link urls, no trailing slash
-		'base_url' => 'http://zengine.loc/i18n',
-
+		// will be used to create all link urls, no trailing slash
+		'base_url' => 'http://zengineauth.loc',
+		
+		// if turned on, display message of unrecoverable error
 		// turn this off in production!
 		'debug_mode' => true, 
 		

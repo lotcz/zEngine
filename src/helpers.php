@@ -66,38 +66,35 @@ function trimSlashes($s) {
 	return customTrim($s, '/');
 }
 
-/* THIS IS CHEATING! STOP THIS! */
-
 /*
-	log a debug message
+	TOKEN GENERATOR
+	
+	example: $token = generateToken(10);
+	-- now $token is something like '9HuE48ErZ1'
 */
-function dbg($data) {		
-	global $messages;
-	$messages->add($data);
+function getRandomNumber() {
+	return rand(0,9);
 }
 
-/*
-	handle fatal db error
-*/
-function dbErr($model, $operation, $sql, $message) {
-
-	global $z;
-	
-	$z->fatalError($message);
+function getRandomLowercase() {
+	return chr(rand(97,122));
 }
 
-/*
-	handle error
-*/
-function handleErr($message, $type) {
-	global $config;
-	global $messages;
-	
-	if ($config['debug_mode']) {
-		$messages->add($message, $type);
-	} else {
-		// log error
-		redirect('error');
+function getRandomUppercase() {
+	return strtoupper(getRandomLowercase());
+}	
+
+function generateToken($len) {
+	$s = '';
+	for ($i = 0; $i < $len; $i++) {
+		$case = rand(0,2);
+		if ($case == 0) {
+			$s .= getRandomNumber();
+		} elseif ($case == 1) {
+			$s .= getRandomUppercase();
+		} else {
+			$s .= getRandomLowercase();
+		}
 	}
+	return $s;
 }
-	

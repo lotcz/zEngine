@@ -44,6 +44,10 @@ class zSqlQuery {
 		}		
 	}
 	
+	static function getExceptionMessage($operation, $query, $message) {
+		return sprintf("zSqlQuery module issued an error during $operation query ($query): $message.");
+	}
+	
 	static function executeSQL($db, $sql, $bindings = null, $types = null) {
 		if ($statement = $db->prepare($sql)) {
 			if (isset($bindings)) {
@@ -65,10 +69,10 @@ class zSqlQuery {
 			if ($statement->execute()) {
 				return $statement;
 			} else {
-				dbErr('query', 'execute', $sql, $db->error);					
+				throw new Exception(Self::getExceptionMessage('execute', $sql, $db->error));
 			}			
 		} else {
-			dbErr('query', 'prepare', $sql, $db->error);				
+			throw new Exception(Self::getExceptionMessage('prepare', $sql, $db->error));
 		}
 	}
 	
@@ -129,6 +133,7 @@ class zSqlQuery {
 		
 		}
 		
+		//REMOVE THIS AND PUT TO PAGING MODULE
 		if (isset($this->paging) && !isset($this->paging->total_records)) {
 			$this->paging->total_records = zSqlQuery::getRecordCount($this->db, $this->table_name, $this->whereSQL, $this->bindings, $this->types);
 		}
