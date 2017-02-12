@@ -6,16 +6,14 @@ require_once __DIR__ . '/../models/session.m.php';
 class authModule extends zModule {
 	
 	private $db = null;
-	
-	private $cookie_name = 'user_session_token';
-
+		
 	public $user = null;
 	public $session = null;
-	
-	static $max_attempts = 100;
-	static $session_expire = 60*60*24*30; //30 days
-	
+		
 	function onEnabled() {
+		$this->requireConfig();
+		$this->requireModule('mysql');
+		$this->requireModule('messages');
 		$this->db = $this->z->core->db;
 		$this->checkAuthentication();
 	}
@@ -38,7 +36,7 @@ class authModule extends zModule {
 		$user->loadByLoginOrEmail($loginoremail);
 		
 		if (isset($user) && $user->is_loaded) {
-			if ($user->val('user_failed_attempts') > $this::$max_attempts) {
+			if ($user->val('user_failed_attempts') > $this->config['max_attempts']) {
 				$this->z->messages->add(t('Max. number of login attempts exceeded. Please ask for new password.'), 'error');
 				return false;
 			}
@@ -48,13 +46,13 @@ class authModule extends zModule {
 				$this->updateLastAccess();
 				$token = $this->generateToken();
 				$token_hash = Self::hashPassword($token);
-				$expires = time()+Self::$session_expire;
+				$expires = time()+$this->config['session_expire'];
 				$session = new UserSessionModel($this->db);
 				$session->data['user_session_token_hash'] = $token_hash;
 				$session->data['user_session_user_id'] = $this->user->val('user_id');
 				$session->data['user_session_expires'] = zSqlQuery::mysqlTimestamp($expires);
 				$session->save();
-				setcookie($this->cookie_name, $session->val('user_session_id') . "-" . $token, $expires, '/', false, false); 				
+				setcookie($this->config['cookie_name'], $session->val('user_session_id') . "-" . $token, $expires, '/', false, false); 				
 				$this->session = $session;
 				return true;
 			} else {
@@ -70,8 +68,8 @@ class authModule extends zModule {
 	public function checkAuthentication() {
 		$this->user = null;
 						
-		if (isset($_COOKIE[$this->cookie_name])) {
-			$arr = explode('-', $_COOKIE[$this->cookie_name]);
+		if (isset($_COOKIE[$this->config['cookie_name']])) {
+			$arr = explode('-', $_COOKIE[$this->config['cookie_name']]);
 			$session_id = intval($arr[0]);
 			$session_token = $arr[1];
 		}
@@ -79,7 +77,7 @@ class authModule extends zModule {
 		if (isset($session_id)) {
 			$this->session = new UserSessionModel($this->db, $session_id);			
 			if (isset($this->session) && $this->session->is_loaded && Self::verifyPassword($session_token, $this->session->val('user_session_token_hash'))) {
-				$expires = time()+Self::$session_expire;
+				$expires = time()+$this->config['session_expire'];
 				$session = new UserSessionModel($this->db);
 				$session->data['user_session_id'] = $session_id;
 				$session->data['user_session_expires'] = zSqlQuery::mysqlTimestamp($expires);

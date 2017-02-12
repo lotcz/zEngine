@@ -5,6 +5,7 @@ require_once __DIR__ . '/../models/currency.m.php';
 
 class i18nModule extends zModule {
 	
+	private $db = null;
 	public $cookie_name = 'language';
 	public $language_data = null;
 	public $available_languages = null;
@@ -13,10 +14,12 @@ class i18nModule extends zModule {
 	public $selected_currency = null;
 	
 	public function onEnabled() {
+		$this->requireModule('mysql');
+		$this->db = $this->z->core->db;
 		
 		// LANGUAGE
 		
-		$this->available_languages = LanguageModel::all($this->z->core->db);
+		$this->available_languages = LanguageModel::all($this->db);
 		
 		// TO DO: if custauth Module is enabled then use customers default language
 		//
@@ -37,7 +40,7 @@ class i18nModule extends zModule {
 		
 		// CURRENCY
 		
-		$this->available_currencies = CurrencyModel::all($this->z->core->db);
+		$this->available_currencies = CurrencyModel::all($this->db);
 		$this->selectCurrency($this->selected_language->ival('language_default_currency_id'));
 	}
 	
@@ -78,12 +81,12 @@ class i18nModule extends zModule {
 	}
 	
 	// return javascript equivalent of formatMoney and convertMoney
-	public function jsFormatPrice($db, $selected_currency = null) {
+	public function jsFormatPrice($selected_currency = null) {
 		if (!isset($selected_currency)) {			
-			$selected_currency = Currency::getSelectedCurrency($db);
+			$selected_currency = $this->selected_currency;
 		}
 		$s = sprintf('function convertPrice(price) { return price / %d; }', $selected_currency->fval('currency_value'));
-		$s.= sprintf('function formatPrice(price) { return (\'%s\').replace(\'%s\', price.formatMoney(%d, \'%s\', \'%s\')); }', $selected_currency->val('currency_format'), '%s', $selected_currency->ival('currency_decimals'), t('decimal_separator'), t('thousands_separator') );
+		$s.= sprintf('function formatPrice(price) { return (\'%s\').replace(\'%s\', price.formatMoney(%d, \'%s\', \'%s\')); }', $selected_currency->val('currency_format'), '%s', $selected_currency->ival('currency_decimals'), $this->selected_language->val('language_decimal_separator'), $this->selected_language->val('language_thousands_separator') );
 		return $s;
 	}
 	

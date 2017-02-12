@@ -29,10 +29,6 @@ class coreModule extends zModule {
 		$this->error_page = $this->config['error_page'];		
 	}
 	
-	/*
-		RENDERING
-	*/
-			
 	public function parseURL() {		
 		if (isset($_GET['path'])) {
 			$this->path = explode('/', trimSlashes(strtolower($_GET['path'])));
@@ -53,56 +49,6 @@ class coreModule extends zModule {
 		}
 	}
 	
-	public function renderView($type = 'page') {
-		if (!isset($this->templates[$type])) {
-			 $this->templates[$type] = $this->$type;
-		}
-		$template_path = $this->app_dir . "views/$type/" .  $this->templates[$type] . '.v.php';
-		if (file_exists($template_path)) {
-			include $template_path;
-		} else {
-			throw new Exception("Template for $type view not found: $template_path!");
-		}
-	}
-	
-	public function renderMasterView() {
-		$this->renderView('master');
-	}
-	
-	public function renderMainView() {
-		$this->renderView('main');
-	}
-	
-	public function renderPageView() {
-		$this->renderView();
-	}
-	
-	public function runController($type = 'page') {
-		if (!isset($this->controllers[$type])) {
-			 $this->controllers[$type] = $this->$type;
-		}
-		$controller_path = $this->app_dir . "controllers/$type/" . $this->controllers[$type] . '.c.php';
-		if (file_exists($controller_path)) {
-			include $controller_path;
-		}
-	}
-	
-	public function runMasterController() {
-		$this->runController('master');
-	}
-	
-	public function runMainController() {
-		$this->runController('main');
-	}
-	
-	public function runPageController() {
-		$this->runController();
-	}
-	
-	public function renderMessages() {
-		$this->z->messages->render();
-	}
-	
 	/*
 		HELPERS
 	*/
@@ -118,6 +64,10 @@ class coreModule extends zModule {
 			$url .= '?r=' . $r;
 		}		
 		return $url;
+	}
+	
+	public function getLink($path, $title, $css = '', $ret = null) {
+		return sprintf('<a href="%s" class="%s">%s</a>', $this->url($path, $ret), $css, $this->t($title));
 	}
 	
 	public function t($s) {
@@ -142,6 +92,14 @@ class coreModule extends zModule {
 	
 	public function getUser() {
 		return $this->z->auth->user;
+	}
+	
+	public function isCustAuth() {
+		return $this->z->custauth->isAuth();
+	}
+	
+	public function getCustomer() {
+		return $this->z->custauth->customer;
 	}
 	
 	public function message($text, $type = 'info') {
@@ -194,6 +152,82 @@ class coreModule extends zModule {
 		} else {
 			return $number;
 		}
+	}
+	
+		
+	/*
+		RENDERING
+	*/	
+			
+	public function renderView($type = 'page') {
+		if (!isset($this->templates[$type])) {
+			 $this->templates[$type] = $this->$type;
+		}
+		$template_path = $this->app_dir . "views/$type/" .  $this->templates[$type] . '.v.php';
+		if (file_exists($template_path)) {
+			include $template_path;
+		} else {
+			throw new Exception("Template for $type view not found: $template_path!");
+		}
+	}
+	
+	public function renderMasterView() {
+		$this->renderView('master');
+	}
+	
+	public function renderMainView() {
+		$this->renderView('main');
+	}
+	
+	public function renderPageView() {
+		$this->renderView();
+	}
+	
+	public function renderPartialView($partial_name) {
+		$template_path = $this->app_dir . 'views/partial/' .  $partial_name . '.v.php';
+		if (file_exists($template_path)) {
+			include $template_path;
+		} else {
+			throw new Exception("Template for partial view $partial_name not found: $template_path!");
+		}
+	}
+	
+	public function renderMessages() {
+		$this->z->messages->render();
+	}
+		
+	public function renderLink($href, $title, $css = '', $ret = null) {
+		echo $this->getLink($href, $title, $css, $ret);
+	}
+	
+	public function renderImage($src, $alt, $css = '') {;		
+		echo sprintf('<img src="%s" class="%s" alt="%s" />', $this->url('images/' . $src), $css, $this->t($alt));
+	}
+	
+	/*
+		CONTROLLERS
+	*/
+	
+	public function runController($type = 'page') {
+		if (!isset($this->controllers[$type])) {
+			 $this->controllers[$type] = $this->$type;
+		}
+		$controller_path = $this->app_dir . "controllers/$type/" . $this->controllers[$type] . '.c.php';
+		if (file_exists($controller_path)) {
+			include $controller_path;
+		}
+	}
+	
+	public function runMasterController() {
+		$this->runController('master');
+	}
+	
+	public function runMainController() {
+		$this->runController('main');
+	}
+	
+	public function runPageController() {
+		$this->runController();
 	}
 	
 }

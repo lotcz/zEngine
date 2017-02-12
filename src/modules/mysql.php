@@ -15,4 +15,8 @@ class mysqlModule extends zModule {
 		$this->connection->set_charset('utf8');
 		$this->z->core->db = $this->connection;
 	}
+	
+	public function onBeforeRender() {
+		$this->connection->close();
+	}
 }

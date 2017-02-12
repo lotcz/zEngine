@@ -45,7 +45,7 @@ class zSqlQuery {
 	}
 	
 	static function getExceptionMessage($operation, $query, $message) {
-		return sprintf("zSqlQuery module issued an error during $operation query ($query): $message.");
+		return sprintf("zSqlQuery class issued an error during $operation query ($query): $message.");
 	}
 	
 	static function executeSQL($db, $sql, $bindings = null, $types = null) {

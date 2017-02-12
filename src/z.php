@@ -16,17 +16,24 @@ class zEngine {
 	}
 
 	public function enableModule($module_name) {
-		require_once __DIR__ . "/modules/$module_name.php";
-		$module_class = $module_name . 'Module';
-		$module = new $module_class($this);
-		$module_config_path = $this->app_dir . "config/$module_name.php";
-		if (file_exists($module_config_path)) {
-			$module->config = include $module_config_path;
-		}		
-		$module->onEnabled();		
-		$this->modules[$module_name] = $module;
-		$this->$module_name = $module;
-		
+		if (!$this->moduleEnabled($module_name)) {
+			require_once __DIR__ . "/modules/$module_name.php";
+			$module_class = $module_name . 'Module';
+			$module = new $module_class($this);
+			$module->name = $module_name;
+			
+			$module_config_path = $this->app_dir . "config/$module_name.php";
+			if (file_exists($module_config_path)) {
+				$module->config = include $module_config_path;
+			}		
+			
+			$this->modules[$module_name] = $module;
+			$this->$module_name = $module;
+			
+			if (method_exists($module, 'onEnabled')) {
+				$module->onEnabled();
+			}
+		}
 	}
 
 	public function moduleEnabled($module_name) {
@@ -37,20 +44,37 @@ class zEngine {
 		try {
 			$this->core->parseURL();
 			
-			//TO DO: if alias module is active then rewrite path here
-			
-			//now decide what will happen (choose controllers)
+			foreach ($this->modules as $module) {
+				if (method_exists($module, 'onInit')) {
+					$module->onInit();
+				}
+			}
+
 			$this->core->chooseControllers();
+
+			foreach ($this->modules as $module) {
+				if (method_exists($module, 'onAfterInit')) {
+					$module->onAfterInit();
+				}
+			}
 			
-			// run controllers
 			$this->core->runPageController();
 			$this->core->runMainController();
 			$this->core->runMasterController();
 			
-			//TO DO: close db if active
+			foreach ($this->modules as $module) {
+				if (method_exists($module, 'onBeforeRender')) {
+					$module->onBeforeRender();
+				}
+			}
 			
-			//start rendering with master
-			$this->core->renderMasterView();		
+			$this->core->renderMasterView();
+			
+			foreach ($this->modules as $module) {
+				if (method_exists($module, 'onAfterRender')) {
+					$module->onAfterRender();
+				}
+			}
 		} catch (Exception $e) {
 			if ($this->core->debug_mode) {
 				http_response_code(500);
