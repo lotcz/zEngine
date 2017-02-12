@@ -65,3 +65,39 @@ function customTrim($s, $chrs = '.,-*/1234567890') {
 function trimSlashes($s) {		
 	return customTrim($s, '/');
 }
+
+/* THIS IS CHEATING! STOP THIS! */
+
+/*
+	log a debug message
+*/
+function dbg($data) {		
+	global $messages;
+	$messages->add($data);
+}
+
+/*
+	handle fatal db error
+*/
+function dbErr($model, $operation, $sql, $message) {
+
+	global $z;
+	
+	$z->fatalError($message);
+}
+
+/*
+	handle error
+*/
+function handleErr($message, $type) {
+	global $config;
+	global $messages;
+	
+	if ($config['debug_mode']) {
+		$messages->add($message, $type);
+	} else {
+		// log error
+		redirect('error');
+	}
+}
+	
