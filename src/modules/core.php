@@ -204,6 +204,15 @@ class coreModule extends zModule {
 		echo sprintf('<img src="%s" class="%s" alt="%s" />', $this->url('images/' . $src), $css, $this->t($alt));
 	}
 	
+	function renderMenuLink($href, $title) {
+		if ($this->raw_path == $href) {
+			$css = 'active';
+		} else {
+			$css = '';
+		}
+		echo sprintf('<li class="%s"><a href="%s" >%s</a></li>', $css, $this->url($href), $this->t($title));
+	}
+	
 	/*
 		CONTROLLERS
 	*/
