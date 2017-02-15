@@ -18,22 +18,24 @@ class coreModule extends zModule {
 	
 	public $controllers = ['master' => null, 'main' => null, 'page' => null];	
 	public $templates = ['master' => null, 'main' => null, 'page' => null];
+
+	// set this temporarily to render pages from other location, i.e. the admin area
+	public $content_dir = '';
 	
 	public $path = [];
 	public $raw_path = '';
 	
 	public function onEnabled() {
+		$this->requireConfig('base_url');
 		$this->app_dir = $this->z->app_dir;
 		$this->base_url = $this->config['base_url'];
 		$this->debug_mode = $this->config['debug_mode'];
 		$this->error_page = $this->config['error_page'];		
 	}
 	
-	public function parseURL() {		
-		if (isset($_GET['path'])) {
-			$this->path = explode('/', trimSlashes(strtolower($_GET['path'])));
-			$this->raw_path = implode('/', $this->path);
-		}
+	public function parseURL($url_path) {
+		$this->path = explode('/', trimSlashes(strtolower($url_path)));
+		$this->raw_path = implode('/', $this->path);
 	}
 	
 	public function chooseControllers() {
@@ -41,10 +43,13 @@ class coreModule extends zModule {
 		if ($path_items > 0) {
 			if ($path_items == 1) {
 				$this->page = $this->path[0];
-			} else {				
+			} elseif ($path_items == 2) {			
+				$this->main = $this->path[0];				
+				$this->page = $this->path[1];
+			} else {
 				$this->master = $this->path[0];				
-				$this->main = $this->path[1];				
-				$this->page = $this->path[2];
+				$this->main = $this->path[1];
+				$this->page = $this->path[2];				
 			}
 		}
 	}
@@ -153,8 +158,7 @@ class coreModule extends zModule {
 			return $number;
 		}
 	}
-	
-		
+			
 	/*
 		RENDERING
 	*/	
@@ -163,7 +167,7 @@ class coreModule extends zModule {
 		if (!isset($this->templates[$type])) {
 			 $this->templates[$type] = $this->$type;
 		}
-		$template_path = $this->app_dir . "views/$type/" .  $this->templates[$type] . '.v.php';
+		$template_path = $this->app_dir .  $this->content_dir . "views/$type/" .  $this->templates[$type] . '.v.php';
 		if (file_exists($template_path)) {
 			include $template_path;
 		} else {
@@ -184,7 +188,7 @@ class coreModule extends zModule {
 	}
 	
 	public function renderPartialView($partial_name) {
-		$template_path = $this->app_dir . 'views/partial/' .  $partial_name . '.v.php';
+		$template_path = $this->app_dir . $this->content_dir . 'views/partial/' .  $partial_name . '.v.php';
 		if (file_exists($template_path)) {
 			include $template_path;
 		} else {
@@ -221,7 +225,7 @@ class coreModule extends zModule {
 		if (!isset($this->controllers[$type])) {
 			 $this->controllers[$type] = $this->$type;
 		}
-		$controller_path = $this->app_dir . "controllers/$type/" . $this->controllers[$type] . '.c.php';
+		$controller_path = $this->app_dir .  $this->content_dir  . "controllers/$type/" . $this->controllers[$type] . '.c.php';
 		if (file_exists($controller_path)) {
 			include $controller_path;
 		}

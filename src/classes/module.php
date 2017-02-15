@@ -26,4 +26,15 @@ class zModule {
 		}
 	}
 	
+	public function getConfigValue($attr_name, $default = null) {
+		$ret_val = null;
+		if (isset($this->config) && isset($this->config[$attr_name])) {
+			$ret_val = $this->config[$attr_name];
+		}
+		if ($ret_val == null) {
+			$ret_val = $default;
+		}
+		return $ret_val;
+	}
+	
 }

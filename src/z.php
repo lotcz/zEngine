@@ -8,7 +8,7 @@ class zEngine {
 	public $app_dir = '';	
 	public $modules = [];
 		
-	function __construct($app_dir = '') {
+	function __construct($app_dir = 'app/') {
 		$this->app_dir = $app_dir;
 		
 		$this->enableModule('core');
@@ -21,7 +21,7 @@ class zEngine {
 			$module_class = $module_name . 'Module';
 			$module = new $module_class($this);
 			$module->name = $module_name;
-			
+
 			$module_config_path = $this->app_dir . "config/$module_name.php";
 			if (file_exists($module_config_path)) {
 				$module->config = include $module_config_path;
@@ -42,7 +42,10 @@ class zEngine {
 		
 	public function run() {
 		try {
-			$this->core->parseURL();
+			
+			if (isset($_GET['path'])) {
+				$this->core->parseURL($_GET['path']);
+			}
 			
 			foreach ($this->modules as $module) {
 				if (method_exists($module, 'onInit')) {
@@ -58,9 +61,9 @@ class zEngine {
 				}
 			}
 			
-			$this->core->runPageController();
+			$this->core->runMasterController();			
 			$this->core->runMainController();
-			$this->core->runMasterController();
+			$this->core->runPageController();			
 			
 			foreach ($this->modules as $module) {
 				if (method_exists($module, 'onBeforeRender')) {

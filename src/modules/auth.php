@@ -9,9 +9,12 @@ class authModule extends zModule {
 		
 	public $user = null;
 	public $session = null;
-		
+	
+	public $cookie_name = 'session_token';
+	
 	function onEnabled() {
 		$this->requireConfig();
+		$this->cookie_name = $this->getConfigValue('cookie_name', $this->cookie_name);
 		$this->requireModule('mysql');
 		$this->requireModule('messages');
 		$this->db = $this->z->core->db;
@@ -52,7 +55,7 @@ class authModule extends zModule {
 				$session->data['user_session_user_id'] = $this->user->val('user_id');
 				$session->data['user_session_expires'] = zSqlQuery::mysqlTimestamp($expires);
 				$session->save();
-				setcookie($this->config['cookie_name'], $session->val('user_session_id') . "-" . $token, $expires, '/', false, false); 				
+				setcookie($this->cookie_name, $session->val('user_session_id') . "-" . $token, $expires, '/', false, false); 				
 				$this->session = $session;
 				return true;
 			} else {
