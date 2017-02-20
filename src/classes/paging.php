@@ -1,6 +1,6 @@
 <?php
 
-class Paging {
+class zPaging {
 	
 	static $default_size = 12;
 	static $max_pages_links = 13;
@@ -22,7 +22,7 @@ class Paging {
 		if (isset($limit)) {
 			$this->limit = intval($limit);
 		} else {
-			$this->limit = Paging::$default_size;
+			$this->limit = zPaging::$default_size;
 		}		
 		if (isset($offset)) {
 			$this->offset = $offset;
@@ -31,11 +31,11 @@ class Paging {
 
 	static function getFromUrl($sorting_items = null) {		
 		
-		if (isset($_GET[Paging::$default_url_name])) {
-			$arr = explode(',', $_GET[Paging::$default_url_name]);
-			$paging = new Paging(intval($arr[0]), intval($arr[1]));
+		if (isset($_GET[zPaging::$default_url_name])) {
+			$arr = explode(',', $_GET[zPaging::$default_url_name]);
+			$paging = new zPaging(intval($arr[0]), intval($arr[1]));
 		} else {		
-			$paging = new Paging();
+			$paging = new zPaging();
 		}
 		
 		if (isset($sorting_items) && count($sorting_items) > 0) {
@@ -59,12 +59,12 @@ class Paging {
 		$filter = isset($filter) ? $filter : $this->filter;
 		
 		$url = '?';		
-		$url .= sprintf('%s=%d,%d', Paging::$default_url_name, $offset, $limit);
+		$url .= sprintf('%s=%d,%d', zPaging::$default_url_name, $offset, $limit);
 		if (isset($sorting) && strlen($sorting)>0) {
-			$url .= sprintf('&%s=%s',Paging::$sorting_url_name, $sorting);
+			$url .= sprintf('&%s=%s',zPaging::$sorting_url_name, $sorting);
 		}
 		if (isset($filter) && strlen($filter)>0) {
-			$url .= sprintf('&%s=%s',Paging::$filter_url_name, $filter);
+			$url .= sprintf('&%s=%s',zPaging::$filter_url_name, $filter);
 		}
 		return $url;
 	}

@@ -18,14 +18,16 @@ class coreModule extends zModule {
 	
 	public $controllers = ['master' => null, 'main' => null, 'page' => null];	
 	public $templates = ['master' => null, 'main' => null, 'page' => null];
+	public $custom_views = ['master' => null, 'main' => null, 'page' => null];
 
-	// set this temporarily to render pages from other location, i.e. the admin area
+	// set this temporarily to render pages from other location, e.g. the admin area
 	public $content_dir = '';
 	
 	public $path = [];
 	public $raw_path = '';
 	
 	public function onEnabled() {
+		$this->requireModule('errorlog');
 		$this->requireConfig('base_url');
 		$this->app_dir = $this->z->app_dir;
 		$this->base_url = $this->config['base_url'];
@@ -170,6 +172,8 @@ class coreModule extends zModule {
 		$template_path = $this->app_dir .  $this->content_dir . "views/$type/" .  $this->templates[$type] . '.v.php';
 		if (file_exists($template_path)) {
 			include $template_path;
+		} elseif (isset($this->custom_views[$type])) {
+			$this->custom_views[$type]();
 		} else {
 			throw new Exception("Template for $type view not found: $template_path!");
 		}

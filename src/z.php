@@ -12,7 +12,6 @@ class zEngine {
 		$this->app_dir = $app_dir;
 		
 		$this->enableModule('core');
-		$this->enableModule('errorlog');
 	}
 
 	public function enableModule($module_name) {

@@ -1,6 +1,6 @@
 <?php
 
-class Table {
+class zTable {
 	
 	public $name;
 	public $edit_link;	
@@ -43,14 +43,14 @@ class Table {
 	}
 	
 	public function prepare($db) {
-		$this->paging = Paging::getFromUrl();
+		$this->paging = zPaging::getFromUrl();
 		$this->paging->limit = $this->page_size;
-		Paging::$max_pages_links = $this->max_pages_links;
+		zPaging::$max_pages_links = $this->max_pages_links;
 		$this->search = isset($_GET['s']) ? $_GET['s'] : '';
 		
 		// add filtering logic here
 	
-		$this->data = ModelBase::select(
+		$this->data = zModel::select(
 			$db, 
 			$this->name, 
 			$this->where, 
@@ -61,94 +61,10 @@ class Table {
 		);
 	
 	}
-	
-	public function render() {	
-		global $raw_path;
-		
-		?>
-			<form action="" method="GET" class="form form-inline">
-				<?php
-					if ($this->show_search) {
-						?>
-							<input type="text" name="s" value="<?=$this->search ?>" class="form-control" />
-							<input type="submit" value="<?=t('Search') ?>" class="btn btn-primary form-control" />
-						<?php
-					}
-				
-					if (isset($this->new_link)) {
-						if (isset($this->new_link_label)) {
-							$label = $this->new_link_label;
-						} else {
-							$label = t('New');
-						}
-						?>
-							<a class="btn btn-success form-control" href="<?=_url($this->new_link, $raw_path) ?>">+ <?=$label ?></a>		
-						<?php
-					}
-					
-					foreach ($this->links as $link) {						
-						?>
-							<a class="btn btn-success form-control" href="<?=_url($link['url'], $raw_path) ?>"><?=$link['title'] ?></a>		
-						<?php
-					}
-					
-				?>								
-				<div class="text-right">
-					<?=$this->paging->getInfo() ?>
-				</div>
-			</form>
 
-			<?php
-				$this->paging->renderLinks();
-			?>
-
-			<div class="table-responsive">
-				<table class="table <?=$this->css ?>">
-					<thead>
-						<tr>
-							<?php
-								foreach ($this->fields as $field) {
-									?>
-										<th><?=t($field->label) ?></th>
-									<?php
-								}
-							?>
-							<th></th>
-						</tr>
-					</thead>
-					<tbody>
-					<?php
-						
-						foreach ($this->data as $row) {
-							$item_url = _url(sprintf($this->edit_link, $row->val($this->id_field)), $raw_path);
-							?>
-								<tr onclick="javascript:openDetail('<?=$item_url ?>');">
-									<?php
-										foreach ($this->fields as $field) {
-											?>
-												<td><?=$row->val($field->name) ?></td>
-											<?php
-										}
-									?>
-									<td><a href="<?=$item_url ?>"><?=t('Edit') ?></a></td>
-								</tr>
-							<?php
-						}
-					?>
-					</tbody>
-				</table>
-			</div>
-			
-			<script>
-				function openDetail(url) {
-					document.location = url;
-				}
-			</script>
-		<?php
-	}	
 }
 
-class AdminTable extends Table {
+class zAdminTable extends zTable {
 	
 	public $links = [];
 	
@@ -156,8 +72,8 @@ class AdminTable extends Table {
 		parent::__construct(
 			$view_name,
 			$entity_name . '_id',
-			sprintf('admin/%s/edit/', $entity_name) . '%d',
-			sprintf('admin/%s', $entity_name),		
+			sprintf('admin/default/default/%s/edit/', $entity_name) . '%d',
+			sprintf('admin/default/default/%s', $entity_name),		
 			'table-striped table-hover'
 		);
 	}
