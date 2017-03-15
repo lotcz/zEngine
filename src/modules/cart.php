@@ -1,8 +1,8 @@
 <?php
 
-require_once __DIR__ . '/../models/category.m.php';
-require_once __DIR__ . '/../models/product.m.php';
-require_once __DIR__ . '/../models/cart.m.php';
+require_once __DIR__ . '/../app/models/category.m.php';
+require_once __DIR__ . '/../app/models/product.m.php';
+require_once __DIR__ . '/../app/models/cart.m.php';
 
 class cartModule extends zModule {
 

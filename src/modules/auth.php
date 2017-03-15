@@ -1,7 +1,7 @@
 <?php
 
-require_once __DIR__ . '/../models/user.m.php';
-require_once __DIR__ . '/../models/session.m.php';
+require_once __DIR__ . '/../app/models/user.m.php';
+require_once __DIR__ . '/../app/models/session.m.php';
 
 class authModule extends zModule {
 	
@@ -39,8 +39,8 @@ class authModule extends zModule {
 		$user->loadByLoginOrEmail($loginoremail);
 		
 		if (isset($user) && $user->is_loaded) {
-			if ($user->val('user_failed_attempts') > $this->config['max_attempts']) {
-				$this->z->messages->add(t('Max. number of login attempts exceeded. Please ask for new password.'), 'error');
+			if ($user->val('user_failed_attempts') > $this->getConfigValue('max_attempts')) {
+				$this->z->messages->add($this->z->core->t('Max. number of login attempts exceeded. Please ask for new password.'), 'error');
 				return false;
 			}
 			if (Self::verifyPassword($password, $user->val('user_password_hash'))) {

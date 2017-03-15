@@ -1,6 +1,6 @@
 <?php
 
-class Message {
+class zMessage {
 	
 	public $type = 'info';	
 	public $text = '';

@@ -37,7 +37,7 @@ class tablesModule extends zModule {
 						foreach ($table->data as $row) {
 							$item_url = $this->z->core->url(sprintf($table->edit_link, $row->val($table->id_field)), $this->z->core->raw_path);
 							?>
-								<tr onclick="javascript:openDetail('<?=$item_url ?>');">
+								<tr onclick="javascript:document.location = '<?=$item_url ?>';">
 									<?php
 										foreach ($table->fields as $field) {
 											?>
@@ -53,12 +53,7 @@ class tablesModule extends zModule {
 					</tbody>
 				</table>
 			</div>
-			
-			<script>
-				function openDetail(url) {
-					document.location = url;
-				}
-			</script>
+
 		<?php
 	}	
 	

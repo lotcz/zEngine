@@ -62,7 +62,9 @@ class i18nModule extends zModule {
 			$this->language_data = null;
 		}
 	}
-		
+	
+	// directly translates string if translation exists
+	// if you want to process tokens inside, use t function of core module instead
 	public function translate($s) {		
 		if (isset($this->language_data) and isset($this->language_data[$s])) {
 			$t = $this->language_data[$s];		

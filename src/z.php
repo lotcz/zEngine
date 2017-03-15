@@ -9,8 +9,7 @@ class zEngine {
 	public $modules = [];
 		
 	function __construct($app_dir = 'app/') {
-		$this->app_dir = $app_dir;
-		
+		$this->app_dir = $app_dir;		
 		$this->enableModule('core');
 	}
 

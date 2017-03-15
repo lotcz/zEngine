@@ -2,26 +2,28 @@
 
 class coreModule extends zModule {
 	
-	public $app_dir = '';
-	public $base_url = '';	
+	//path to application directory
+	public $app_dir = null;
+	
+	//path to default zEngine application directory
+	public $default_app_dir = __DIR__ . '/../app/';
+	
+	public $base_url = '';
 	public $debug_mode = false;
 	public $error_page = 'error.html';
 	
+	public $return_path = false;
+	
 	public $data = [
-		'page_title' => 'zEngine',
-		'site_title' => 'zEngine'
+		'page_title' => 'Page Title',
+		'site_title' => null
 	];
 	
-	public $master = 'default';
-	public $main = 'default';
-	public $page = 'default'; 
+	public $include_js = [];
+	public $include_css = [];
 	
-	public $controllers = ['master' => null, 'main' => null, 'page' => null];	
+	public $controllers = ['master' => 'default', 'main' => 'default', 'page' => 'default'];	
 	public $templates = ['master' => null, 'main' => null, 'page' => null];
-	public $custom_views = ['master' => null, 'main' => null, 'page' => null];
-
-	// set this temporarily to render pages from other location, e.g. the admin area
-	public $content_dir = '';
 	
 	public $path = [];
 	public $raw_path = '';
@@ -32,7 +34,32 @@ class coreModule extends zModule {
 		$this->app_dir = $this->z->app_dir;
 		$this->base_url = $this->config['base_url'];
 		$this->debug_mode = $this->config['debug_mode'];
-		$this->error_page = $this->config['error_page'];		
+		$this->error_page = $this->config['error_page'];
+		$this->setData('site_title', $this->getConfigValue('site_title', 'Site Name'));
+		$this->return_path = get('r', false);
+	}
+	
+	public function pathExists($index) {
+		return isset($this->path[$index]);
+	}
+	
+	public function getPath($index = null) {
+		if ($index === null) {
+			return $this->path;
+		} elseif ($index >= 0) {
+			if ($this->pathExists($index)) {
+				return $this->path[$index];
+			} else {
+				return null;
+			}
+		} else {
+			$ind = count($this->path) + $index;
+			if ($this->pathExists($ind)) {
+				return $this->path[$ind];
+			} else {
+				return null;
+			}
+		}
 	}
 	
 	public function parseURL($url_path) {
@@ -44,15 +71,47 @@ class coreModule extends zModule {
 		$path_items = count($this->path);
 		if ($path_items > 0) {
 			if ($path_items == 1) {
-				$this->page = $this->path[0];
-			} elseif ($path_items == 2) {			
-				$this->main = $this->path[0];				
-				$this->page = $this->path[1];
+				$this->setPageController($this->path[0]);
+			} elseif ($path_items == 2) {
+				$this->setMainController($this->path[0]);
+				$this->setPageController($this->path[1]);
 			} else {
-				$this->master = $this->path[0];				
-				$this->main = $this->path[1];
-				$this->page = $this->path[2];				
+				$this->setMasterController($this->path[0]);
+				$this->setMainController($this->path[1]);
+				$this->setPageController($this->path[2]);
 			}
+		}
+	}
+	
+	public function setData($name, $value) {
+		$this->data[$name] = $value;
+	}
+	
+	public function getData($name) {
+		return $this->data[$name];
+	}
+	
+	public function dataExists($name) {
+		return isset($this->data[$name]);
+	}
+	
+	public function setPageTitle($page_title) {
+		$this->setData('page_title', $this->t($page_title));
+	}
+	
+	public function includeJS($js_path, $abs = false) {
+		if ($abs) {
+			$this->include_js[] = $js_path;			
+		} else {
+			$this->include_js[] = $this->url($js_path);
+		}
+	}
+	
+	public function includeCSS($css_path, $abs = false) {
+		if ($abs) {
+			$this->include_css[] = $css_path;			
+		} else {
+			$this->include_css[] = $this->url($css_path);
 		}
 	}
 	
@@ -60,15 +119,19 @@ class coreModule extends zModule {
 		HELPERS
 	*/
 	
+	public function requireClass($class_name) {
+		require_once __DIR__ . "/../classes/$class_name.php";
+	}	
+	
 	public function redirect($url, $statusCode = 303) {
 		header('Location: ' . trimSlashes($this->base_url) . '/' . trimSlashes($url), true, $statusCode);
 		die();
 	}	
 	
-	public function url($link = '', $r = null) {
+	public function url($link = '', $ret = null) {
 		$url = $this->base_url . '/' . $link;
 		if (isset($ret)) {
-			$url .= '?r=' . $r;
+			$url .= '?r=' . $ret;
 		}		
 		return $url;
 	}
@@ -79,17 +142,17 @@ class coreModule extends zModule {
 	
 	public function t($s) {
 		if ($this->z->moduleEnabled('i18n')) {
-			$t = $this->z->i18n->translate($s);
-			if (func_num_args() > 1) {
-				$args = func_get_args();
-				array_shift($args);
-				array_unshift($args, $t);
-				return call_user_func_array('sprintf', $args);
-			} else {
-				return $t;
-			}
+			$t = $this->z->i18n->translate($s);			
 		} else {
-			return $s;
+			$t = $s;
+		}
+		if (func_num_args() > 1) {
+			$args = func_get_args();
+			array_shift($args);
+			array_unshift($args, $t);
+			return call_user_func_array('sprintf', $args);
+		} else {
+			return $t;
 		}
 	}
 	
@@ -160,22 +223,57 @@ class coreModule extends zModule {
 			return $number;
 		}
 	}
+	
+	/* 
+		ADMIN HELPERS 
+	*/
+	
+	public function renderAdminMenu() {
+		$this->z->admin->renderAdminMenu();
+	}
+	
+	public function renderAdminTable($table_name, $entity_name, $fields) {
+		$this->z->admin->renderAdminTable($table_name, $entity_name, $fields);
+	}
+	
+	public function renderAdminForm($entity_name, $model_class_name, $fields) {
+		$this->z->admin->renderAdminForm($entity_name, $model_class_name, $fields);
+	}
 			
 	/*
 		RENDERING
 	*/	
-			
+	
+	public function setTemplate($type, $template_name) {
+		$this->templates[$type] = $template_name;
+	}
+	
+	public function setPageTemplate($template_name) {
+		$this->setTemplate('page', $template_name);
+	}
+	
+	public function setMainTemplate($template_name) {
+		$this->setTemplate('main', $template_name);
+	}
+	
+	public function setMasterTemplate($template_name) {
+		$this->setTemplate('master', $template_name);
+	}
+	
 	public function renderView($type = 'page') {
 		if (!isset($this->templates[$type])) {
-			 $this->templates[$type] = $this->$type;
+			 $this->templates[$type] = $this->controllers[$type];
 		}
-		$template_path = $this->app_dir .  $this->content_dir . "views/$type/" .  $this->templates[$type] . '.v.php';
+		$template_path = $this->app_dir . "views/$type/" .  $this->templates[$type] . '.v.php';
 		if (file_exists($template_path)) {
 			include $template_path;
-		} elseif (isset($this->custom_views[$type])) {
-			$this->custom_views[$type]();
 		} else {
-			throw new Exception("Template for $type view not found: $template_path!");
+			$default_template_path = $this->default_app_dir . "views/$type/" .  $this->templates[$type] . '.v.php';
+			if (file_exists($default_template_path)) {
+				include $default_template_path;
+			} else {
+				throw new Exception("Template for $type view not found: $template_path!");
+			}
 		}
 	}
 	
@@ -192,7 +290,7 @@ class coreModule extends zModule {
 	}
 	
 	public function renderPartialView($partial_name) {
-		$template_path = $this->app_dir . $this->content_dir . 'views/partial/' .  $partial_name . '.v.php';
+		$template_path = $this->app_dir . 'views/partial/' .  $partial_name . '.v.php';
 		if (file_exists($template_path)) {
 			include $template_path;
 		} else {
@@ -211,27 +309,51 @@ class coreModule extends zModule {
 	public function renderImage($src, $alt, $css = '') {;		
 		echo sprintf('<img src="%s" class="%s" alt="%s" />', $this->url('images/' . $src), $css, $this->t($alt));
 	}
-	
-	function renderMenuLink($href, $title) {
-		if ($this->raw_path == $href) {
-			$css = 'active';
-		} else {
-			$css = '';
+		
+	public function renderJSIncludes() {
+		foreach ($this->include_js as $js) {
+			echo sprintf('<script src="%s"></script>',$js);
 		}
-		echo sprintf('<li class="%s"><a href="%s" >%s</a></li>', $css, $this->url($href), $this->t($title));
+	}
+	
+	public function renderCSSIncludes() {
+		foreach ($this->include_css as $css) {
+			echo sprintf('<link rel="stylesheet" href="%s">',$css);
+		}
 	}
 	
 	/*
 		CONTROLLERS
 	*/
 	
+	public function setController($type, $controller_name) {
+		$this->controllers[$type] = $controller_name;
+	}
+	
+	public function setPageController($controller_name) {
+		$this->setController('page', $controller_name);
+	}
+	
+	public function setMainController($controller_name) {
+		$this->setController('main', $controller_name);
+	}
+	
+	public function setMasterController($controller_name) {
+		$this->setController('master', $controller_name);
+	}
+	
 	public function runController($type = 'page') {
 		if (!isset($this->controllers[$type])) {
 			 $this->controllers[$type] = $this->$type;
 		}
-		$controller_path = $this->app_dir .  $this->content_dir  . "controllers/$type/" . $this->controllers[$type] . '.c.php';
+		$controller_path = $this->app_dir . "controllers/$type/" . $this->controllers[$type] . '.c.php';
 		if (file_exists($controller_path)) {
 			include $controller_path;
+		} else {
+			$default_controller_path = $this->default_app_dir . "controllers/$type/" . $this->controllers[$type] . '.c.php';
+			if (file_exists($default_controller_path)) {
+				include $default_controller_path;
+			}
 		}
 	}
 	

@@ -20,6 +20,10 @@ class zModel {
 		}
 	}
 
+	static function getExceptionMessage($table, $operation, $query, $message) {
+		return sprintf("zModel class for table $table issued an error during $operation query ($query): $message.");
+	}
+	
 	public function setData($data, $only_update = false) {
 		foreach ($data as $key => $value) {			
 			if (isset($this->data[$key]) or !$only_update) {
@@ -122,11 +126,11 @@ class zModel {
 				if ($st->execute()) {
 					$result = true;
 				} else {
-					dbErr($this->table_name, 'execute', $sql, $this->db->error);
+					throw new Exception(Self::getExceptionMessage($this->table_name, 'execute', $sql, $this->db->error));
 				}
 				$st->close();
 			} else {
-				dbErr($this->table_name, 'prepare', $sql, $this->db->error);
+				throw new Exception(Self::getExceptionMessage($this->table_name, 'prepare', $sql, $this->db->error));
 			}	
 		} else {
 			$columns = [];
@@ -153,11 +157,11 @@ class zModel {
 					$result = true;
 					$this->data[$this->id_name] = $this->db->insert_id;
 				} else {
-					dbErr($this->table_name, 'execute', $sql, $this->db->error);					
+					throw new Exception(Self::getExceptionMessage($this->table_name, 'execute', $sql, $this->db->error));
 				}
 				$st->close();
 			} else {
-				dbErr($this->table_name, 'prepare', $sql, $this->db->error);
+				throw new Exception(Self::getExceptionMessage($this->table_name, 'prepare', $sql, $this->db->error));				
 			}
 		}
 		return $result;
@@ -176,10 +180,10 @@ class zModel {
 				$this->data = [];
 				return true;
 			} else {
-				dbErr($this->table_name, 'execute', $sql, $this->db->error);
+				throw new Exception(Self::getExceptionMessage($this->table_name, 'execute', $sql, $this->db->error));
 			}			
 		} else {
-			dbErr($this->table_name, 'prepare', $sql, $this->db->error);
+			throw new Exception(Self::getExceptionMessage($this->table_name, 'prepare', $sql, $this->db->error));
 		}		
 	}
 	
@@ -203,49 +207,6 @@ class zModel {
 		$class = get_called_class();
 		$m = new $class($db);
 		return $m->getAll($class);
-	}
-	
-	public function processForm($form) {
-		global $path, $page_title, $messages;
-				
-		if (isset($_POST[$this->id_name])) {		
-			if ($form->processInput($_POST)) {
-				if (parseInt($_POST[$this->id_name]) > 0) {
-					$this->loadById($_POST[$this->id_name]);			
-				}
-				$this->setData($form->processed_input);
-				if ($this->save()) {
-					if ($form->ret) {
-						redirect($form->ret);
-					} else {
-						redirect('admin/' . $this->table_name);
-					}
-				}
-			} else {
-				$messages->error('Input does not validate.');
-				$this->setData($form->processed_input);
-			}
-		} elseif (isset($path[2]) && $path[2] == 'edit') {		
-			$this->loadById($path[3]);
-			$page_title	= t($form->entity_title) . ': ' . t('Editing');
-		} elseif (isset($path[2]) && $path[2] == 'delete') {
-			if ($this->deleteById($path[3])) {
-				if ($form->ret) {
-					redirect($form->ret);
-				} else {
-					redirect('admin/' . $this->table_name);
-				}
-			}
-		} else {			
-			$page_title	= t($form->entity_title) . ': ' . t('New');
-		}
-	}
-	
-	static function process($db, $form) {
-		$class = get_called_class();
-		$m = new $class($db);
-		$m->processForm($form);
-		$form->prepare($db, $m);
 	}
 	
 	/* static methods for working with arrays of models */

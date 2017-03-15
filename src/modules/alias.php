@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../models/alias.m.php';
+require_once __DIR__ . '/../app/models/alias.m.php';
 
 class aliasModule extends zModule {
 	

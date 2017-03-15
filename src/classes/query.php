@@ -154,6 +154,19 @@ class zSqlQuery {
 		return $query->execute();
 	}
 	
+	static function selectToArray($db, $table_name, $where = null, $bindings = null, $types = null, $paging = null, $orderby = null) {		
+		$list = [];
+		$stmt = zSqlQuery::select($db, $table_name, $where, $bindings, $types, $paging, $orderby);
+		if ($stmt) {
+			$result = $stmt->get_result();
+			while ($row = $result->fetch_assoc()) {				
+				$list[] = $row;
+			}
+			$stmt->close();
+		}
+		return $list;
+	}
+	
 	static function update($db, $table_name, $data, $where, $bindings = null) {
 		$query = new zSqlQuery($db, $table_name, 'update');
 		$query->where = $where;
