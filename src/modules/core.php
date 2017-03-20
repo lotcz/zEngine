@@ -6,7 +6,7 @@ class coreModule extends zModule {
 	public $app_dir = null;
 	
 	//path to default zEngine application directory
-	public $default_app_dir = __DIR__ . '/../app/';
+	public $default_app_dir = '';
 	
 	public $base_url = '';
 	public $debug_mode = false;
@@ -29,6 +29,7 @@ class coreModule extends zModule {
 	public $raw_path = '';
 	
 	public function onEnabled() {
+		$this->default_app_dir = __DIR__ . '/../app/';
 		$this->requireModule('errorlog');
 		$this->requireConfig('base_url');
 		$this->app_dir = $this->z->app_dir;

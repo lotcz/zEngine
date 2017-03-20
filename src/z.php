@@ -10,27 +10,31 @@ class zEngine {
 		
 	function __construct($app_dir = 'app/') {
 		$this->app_dir = $app_dir;		
-		$this->enableModule('core');
+		$this->enableModule('core');		
 	}
 
 	public function enableModule($module_name) {
-		if (!$this->moduleEnabled($module_name)) {
-			require_once __DIR__ . "/modules/$module_name.php";
-			$module_class = $module_name . 'Module';
-			$module = new $module_class($this);
-			$module->name = $module_name;
+		try {			
+			if (!$this->moduleEnabled($module_name)) {
+				require_once __DIR__ . "/modules/$module_name.php";
+				$module_class = $module_name . 'Module';
+				$module = new $module_class($this);
+				$module->name = $module_name;
 
-			$module_config_path = $this->app_dir . "config/$module_name.php";
-			if (file_exists($module_config_path)) {
-				$module->config = include $module_config_path;
-			}		
-			
-			$this->modules[$module_name] = $module;
-			$this->$module_name = $module;
-			
-			if (method_exists($module, 'onEnabled')) {
-				$module->onEnabled();
+				$module_config_path = $this->app_dir . "config/$module_name.php";
+				if (file_exists($module_config_path)) {
+					$module->config = include $module_config_path;
+				}		
+				
+				$this->modules[$module_name] = $module;
+				$this->$module_name = $module;
+				
+				if (method_exists($module, 'onEnabled')) {
+					$module->onEnabled();
+				}
 			}
+		} catch (Exception $e) {			
+			die(sprintf('Error when enabling module %s: %s',$module_name, $e->getMessage()));
 		}
 	}
 
