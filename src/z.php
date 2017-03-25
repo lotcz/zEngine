@@ -42,6 +42,10 @@ class zEngine {
 		return isset($this->modules[$module_name]);
 	}
 		
+	public function isDebugMode() {
+		return $this->core->debug_mode;
+	}
+	
 	public function run() {
 		try {
 			
@@ -81,7 +85,7 @@ class zEngine {
 				}
 			}
 		} catch (Exception $e) {
-			if ($this->core->debug_mode) {
+			if ($this->isDebugMode()) {
 				http_response_code(500);
 				die($e->getMessage());
 			} else {

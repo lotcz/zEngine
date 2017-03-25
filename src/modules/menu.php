@@ -49,7 +49,7 @@ class menuModule extends zModule {
 				<ul class="dropdown-menu">
 					<?php
 						foreach ($submenu->items as $item) {
-							$this->renderMenuLink($item->href, $item->label);
+							$this->renderItem($item);
 						}
 					?>
 			  </ul>

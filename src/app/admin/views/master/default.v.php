@@ -14,7 +14,9 @@
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
 		
 		<?php		
-			$this->renderCSSIncludes();			
+			$this->renderCSSIncludes();
+			$this->renderLESSIncludes();
+			$this->renderJSIncludes_head();
 		?>
 		
 		<title><?=$this->data['site_title'] ?> - Administration - <?=$this->data['page_title'] ?></title>

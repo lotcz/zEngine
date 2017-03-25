@@ -20,7 +20,9 @@ class coreModule extends zModule {
 	];
 	
 	public $include_js = [];
+	public $include_js_head = [];
 	public $include_css = [];
+	public $include_less = [];
 	
 	public $controllers = ['master' => 'default', 'main' => 'default', 'page' => 'default'];	
 	public $templates = ['master' => null, 'main' => null, 'page' => null];
@@ -62,7 +64,7 @@ class coreModule extends zModule {
 			}
 		}
 	}
-	
+		
 	public function parseURL($url_path) {
 		$this->path = explode('/', trimSlashes(strtolower($url_path)));
 		$this->raw_path = implode('/', $this->path);
@@ -108,11 +110,27 @@ class coreModule extends zModule {
 		}
 	}
 	
+	public function includeJS_head($js_path, $abs = false) {
+		if ($abs) {
+			$this->include_js_head[] = $js_path;			
+		} else {
+			$this->include_js_head[] = $this->url($js_path);
+		}
+	}
+	
 	public function includeCSS($css_path, $abs = false) {
 		if ($abs) {
 			$this->include_css[] = $css_path;			
 		} else {
 			$this->include_css[] = $this->url($css_path);
+		}
+	}
+	
+	public function includeLESS($less_path, $abs = false) {
+		if ($abs) {
+			$this->include_less[] = $less_path;			
+		} else {
+			$this->include_less[] = $this->url($less_path);
 		}
 	}
 	
@@ -313,16 +331,28 @@ class coreModule extends zModule {
 		
 	public function renderJSIncludes() {
 		foreach ($this->include_js as $js) {
-			echo sprintf('<script src="%s"></script>',$js);
+			echo sprintf('<script src="%s"></script>', $js);
+		}
+	}
+	
+	public function renderJSIncludes_head() {
+		foreach ($this->include_js_head as $js) {
+			echo sprintf('<script src="%s"></script>', $js);
 		}
 	}
 	
 	public function renderCSSIncludes() {
 		foreach ($this->include_css as $css) {
-			echo sprintf('<link rel="stylesheet" href="%s">',$css);
+			echo sprintf('<link rel="stylesheet" href="%s">', $css);
 		}
 	}
 	
+	public function renderLESSIncludes() {
+		foreach ($this->include_less as $less) {
+			echo sprintf('<link rel="stylesheet/less" type="text/css" href="%s" />', $less);
+		}
+	}
+		
 	/*
 		CONTROLLERS
 	*/
