@@ -74,8 +74,10 @@ function formValidation(frm) {
 	this.show_validation = function(field_name, validation, is_valid) {
 		if (is_valid) {
 			$('#' + field_name + '_validation_' + validation, this.frm).hide();		
+			$('#' + field_name + '_form_group', this.frm).removeClass('has-error');	
 		} else {
 			$('#' + field_name + '_validation_' + validation, this.frm).show();
+			$('#' + field_name + '_form_group', this.frm).addClass('has-error');	
 		}
 	}
 	

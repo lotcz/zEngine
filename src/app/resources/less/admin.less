@@ -1,5 +1,26 @@
+@default-padding: 10px;
+
 @top-menu-height: 50px;
 
 body {
-	margin-top: @top-menu-height;
+	margin-top: @top-menu-height + @default-padding;
+}
+
+.form-validation {
+	display:none;
+	color:red;
+	margin-top: @default-padding;
+}
+
+.form-button {
+	margin-left:@default-padding;
+	margin-right:@default-padding;
+}
+
+.form-buttons {
+	display:block;
+	text-align:center;
+	margin-left:auto;
+	margin-right:auto;
+	margin-top:@default-padding;
 }

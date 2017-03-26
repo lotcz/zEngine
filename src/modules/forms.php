@@ -169,7 +169,7 @@ class formsModule extends zModule {
 				<?php
 			} else {
 				?>
-					<div class="form-group">
+					<div id="<?=$field->name ?>_form_group" class="form-group">
 						<label for="<?=$field->name ?>" class="col-sm-4 control-label"><?=$this->z->core->t($field->label) ?>:</label>
 						<div class="col-sm-8">
 							<?php

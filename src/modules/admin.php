@@ -22,8 +22,8 @@ class adminModule extends zModule {
 		$this->requireModule('menu');
 		$this->z->core->includeJS('resources/jquery.min.js');
 		if ($this->z->isDebugMode()) {
-			$this->z->core->includeJS_head('resources/less/less.min.js');
 			$this->z->core->includeLESS('resources/less/admin.less');
+			$this->z->core->includeJS_head('resources/less/less.min.js');			
 		} else {
 			$this->z->core->includeCSS('resources/admin.css');		
 		}		
