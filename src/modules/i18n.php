@@ -1,12 +1,13 @@
 <?php
 
-require_once __DIR__ . '/../models/language.m.php';
-require_once __DIR__ . '/../models/currency.m.php';
+require_once __DIR__ . '/../app/models/language.m.php';
+require_once __DIR__ . '/../app/models/currency.m.php';
 
 class i18nModule extends zModule {
 	
 	private $db = null;
-	public $cookie_name = 'language';
+	public $language_cookie_name = 'language';
+	public $currency_cookie_name = 'currency';
 	public $language_data = null;
 	public $available_languages = null;
 	public $selected_language = null;
@@ -17,41 +18,82 @@ class i18nModule extends zModule {
 		$this->requireModule('mysql');
 		$this->db = $this->z->core->db;
 		
-		// LANGUAGE
-		
+		$this->language_cookie_name = $this->getConfigValue('language_cookie_name', $this->language_cookie_name);
+		$this->currency_cookie_name = $this->getConfigValue('currency_cookie_name', $this->currency_cookie_name);
+				
+		$this->available_currencies = CurrencyModel::all($this->db);
 		$this->available_languages = LanguageModel::all($this->db);
-		
-		// TO DO: if custauth Module is enabled then use customers default language
-		//
+			
+		// first use currency and language from cookies, if available
+		if (isset($_COOKIE[$this->currency_cookie_name])) {
+			$this->selectCurrencyByID($_COOKIE[$this->currency_cookie_name]);
+		}		
+		if (isset($_COOKIE[$this->language_cookie_name])) {
+			$this->selectLanguageByID($_COOKIE[$this->language_cookie_name]);
+		}
+
+		if ($this->z->moduleEnabled('custauth') && $this->z->custauth->isAuth()) {
+			// update customer default currency if different from cookie values
+			if (isset($this->selected_currency)) {
+				if ($this->z->custauth->ival('customer_currency_id') != $this->selected_currency->ival('currency_id')) {
+					$this->z->custauth->customer->set('customer_currency_id', $this->selected_currency->ival('currency_id'));
+					$this->z->custauth->customer->save($this->db);
+				} 
+			} else {
+				// use saved customer defaults otherwise
+				$this->selectCurrencyByID($this->z->custauth->ival('customer_currency_id'));
+			}
+			
+			// update customer default language if different from cookie values
+			if (isset($this->selected_language)) {
+				if ($this->z->custauth->ival('customer_language_id') != $this->selected_language->ival('language_id')) {
+					$this->z->custauth->customer->set('customer_language_id', $this->selected_language->ival('language_id'));
+					$this->z->custauth->customer->save($this->db);
+				} 
+			} else {
+				// use saved customer defaults otherwise
+				$this->selectLanguageByID($this->z->custauth->ival('customer_language_id'));
+			}
+		}
 		
 		// try to use browser's language if available
 		if (!isset($this->selected_language)) {
 			if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
-				$this->selected_language = zModel::find($this->available_languages, 'language_code', strtolower(substr($_SERVER['HTTP_ACCEPT_LANGUAGE'],0,2)));
+				$this->selectLanguageByCode(strtolower(substr($_SERVER['HTTP_ACCEPT_LANGUAGE'],0,2)));
 			}
 		}
 		
 		// fallback to default language
 		if (!isset($this->selected_language)) {
-			$this->selected_language = zModel::find($this->available_languages, 'language_code', $this->config['default_language']);
+			$this->selectLanguageByCode($this->config['default_language']);
 		}
 		
-		$this->loadLanguage($this->selected_language->val('language_code'));
-		
-		// CURRENCY
-		
-		$this->available_currencies = CurrencyModel::all($this->db);
-		$this->selectCurrency($this->selected_language->ival('language_default_currency_id'));
 	}
 	
-	public function selectLanguage($language_id) {
-		$this->selected_language = zModel::find($this->available_languages, 'language_id', $language_id);
-		$this->loadLanguage($this->selected_language->val('language_code'));		
-		$this->selectCurrency($this->selected_language->ival('language_default_currency_id'));
+	public function selectLanguage($language) {
+		$this->selected_language = $language;
+		if (isset($this->selected_language)) {
+			$this->loadLanguage($this->selected_language->val('language_code'));
+			if (!isset($this->selected_currency)) {
+				$this->selectCurrencyByID($this->selected_language->ival('language_default_currency_id'));
+			}
+		}		
 	}
 	
-	public function selectCurrency($currency_id) {
-		$this->selected_currency = zModel::find($this->available_currencies, 'currency_id', $currency_id);
+	public function selectLanguageByID($language_id) {
+		$this->selectLanguage(zModel::find($this->available_languages, 'language_id', $language_id));
+	}
+	
+	public function selectLanguageByCode($language_code) {
+		$this->selectLanguage(zModel::find($this->available_languages, 'language_code', $language_code));
+	}
+	
+	public function selectCurrency($currency) {
+		$this->selected_currency = $currency;
+	}
+	
+	public function selectCurrencyByID($currency_id) {
+		$this->selectCurrency(zModel::find($this->available_currencies, 'currency_id', $currency_id));
 	}
 	
 	function loadLanguage($lang_code) {		

@@ -10,9 +10,13 @@ class adminModule extends zModule {
 	// directory base for views and controllers of admin protected area, relative to application dir
 	public $base_dir = 'admin/';
 	
+	public $is_admin_area = false;
+	
 	// the only page of admin area that is accessible for public
 	// also when authentication fails, user is redirected here
 	public $login_url = 'login';
+	
+	public $is_login_page = false;
 	
 	public $menu = null;
 	
@@ -34,17 +38,17 @@ class adminModule extends zModule {
 	}
 	
 	public function onInit() {
-		$is_admin_area = (count($this->z->core->path) > 0 && ($this->z->core->path[0] == $this->base_url));
-		if ($is_admin_area) {
+		$this->is_admin_area = (count($this->z->core->path) > 0 && ($this->z->core->path[0] == $this->base_url));
+		if ($this->is_admin_area) {
 			array_shift($this->z->core->path);
 			$this->z->core->app_dir .= $this->base_dir;
 			$this->z->core->default_app_dir .= $this->base_dir;
 			$this->requireModule('forms');
 			$this->requireModule('tables');
-			$is_login_page = (count($this->z->core->path) == 2 && ($this->z->core->path[1] == $this->login_url));
-			if (!$is_login_page && !$this->z->auth->isAuth()) {
+			$this->is_login_page = (count($this->z->core->path) == 2 && ($this->z->core->path[1] == $this->login_url));
+			if (!$this->is_login_page && !$this->z->auth->isAuth()) {
 				$this->z->core->path = [$this->login_url];
-			} else if ($is_login_page && $this->z->auth->isAuth()) {
+			} else if ($this->is_login_page && $this->z->auth->isAuth()) {
 				$this->z->core->path = [$this->base_url];
 			}
 		}
@@ -52,38 +56,42 @@ class adminModule extends zModule {
 		$this->initializeAdminMenu();
 	}
 	
+	public function getAdminAreaURL($page) {
+		return $this->base_url . '/' . $page;
+	}
+	
 	// returns basic admin menu including users, languages etc. based on enabled modules
 	private function initializeAdminMenu() {
-		$menu = new zMenu('', 'Home');
-		
-		//custom menu from app's admin config
-		$custom_items =	$this->getConfigValue('menu');
-		if (isset($custom_items) && count($custom_items) > 0) {
-			foreach ($custom_items as $item) {
-				$menu->addItem($item[0], $item[1]);
-			}
-		}
-		
-		//standard admin menu
-		$submenu = $menu->addSubmenu('Admin');
-		$submenu->addSeparator();
-		$submenu->addHeader('Administrators');
-		$submenu->addItem('admin/users', 'Administrators');
-		$submenu->addItem('admin/roles', 'Roles');
-		$submenu->addItem('admin/permissions', 'Permissions');
-		$submenu->addSeparator();
-		$submenu->addHeader('Advanced');
-		$submenu->addItem('admin/aliases', 'Aliases');
-		$submenu->addItem('admin/languages', 'Languages');
-		$submenu->addItem('admin/translations', 'Translations');
-		$submenu->addItem('admin/ip_failed_attempts', 'Failed login attempts');
-		$submenu->addItem('admin/jobs', 'Jobs');
-		$submenu->addItem('admin/phpinfo', 'PHP Info');
+		$menu = new zMenu($this->getAdminAreaURL(''), 'Home');
 		
 		if ($this->z->auth->isAuth()) {
+		
+			//custom menu from app's admin config
+			$custom_items =	$this->getConfigValue('menu');
+			if (isset($custom_items) && count($custom_items) > 0) {
+				foreach ($custom_items as $item) {
+					$menu->addItem($item[0], $item[1]);
+				}
+			}
+			
+			//standard admin menu
+			$submenu = $menu->addSubmenu('Admin');
+			$submenu->addHeader('Administrators');
+			$submenu->addItem('admin/users', 'Administrators');
+			$submenu->addItem('admin/roles', 'Roles');
+			$submenu->addItem('admin/permissions', 'Permissions');
+			$submenu->addSeparator();
+			$submenu->addHeader('Advanced');
+			$submenu->addItem('admin/aliases', 'Aliases');
+			$submenu->addItem('admin/languages', 'Languages');
+			$submenu->addItem('admin/translations', 'Translations');
+			$submenu->addItem('admin/ip_failed_attempts', 'Failed login attempts');
+			$submenu->addItem('admin/jobs', 'Jobs');
+			$submenu->addItem('admin/phpinfo', 'PHP Info');			
+		
 			$menu->addRightItem('admin/logout', 'Log out');
-		} else {
-			$menu->addRightItem('admin', 'Log in');
+		} else if (!$this->is_login_page) {
+			$menu->addRightItem($this->getAdminAreaURL($this->login_url), 'Log in');
 		}
 		
 		$this->menu = $menu;
