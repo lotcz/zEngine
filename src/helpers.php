@@ -99,6 +99,11 @@ function generateToken($len) {
 	return $s;
 }
 
+function dbg($var) {
+	var_dump($var);
+	die();
+}
+
 /*
 	ZIP
 */

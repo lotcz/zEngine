@@ -39,5 +39,17 @@ class zMenu {
 	public function addRightItem($href, $label) {
 		$this->right_items[] = new zMenu($href, $label);
 	}
-			
+	
+	public function loadItemsFromArray($custom_items) {
+		if (isset($custom_items) && count($custom_items) > 0) {
+			foreach ($custom_items as $item) {
+				if (is_array($item[0])) {
+					$submenu = $this->addSubMenu($item[1]);
+					$submenu->loadItemsFromArray($item[0]);					
+				} else {
+					$this->addItem($item[0], $item[1]);
+				}
+			}
+		}
+	}
 }

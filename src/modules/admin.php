@@ -45,14 +45,14 @@ class adminModule extends zModule {
 			$this->z->core->default_app_dir .= $this->base_dir;
 			$this->requireModule('forms');
 			$this->requireModule('tables');
-			$this->is_login_page = (count($this->z->core->path) == 2 && ($this->z->core->path[1] == $this->login_url));
+			$this->is_login_page = (count($this->z->core->path) == 1 && ($this->z->core->path[0] == $this->login_url));
 			if (!$this->is_login_page && !$this->z->auth->isAuth()) {
 				$this->z->core->path = [$this->login_url];
 			} else if ($this->is_login_page && $this->z->auth->isAuth()) {
 				$this->z->core->path = [$this->base_url];
 			}
 		}
-		
+
 		$this->initializeAdminMenu();
 	}
 	
@@ -65,15 +65,10 @@ class adminModule extends zModule {
 		$menu = new zMenu($this->getAdminAreaURL(''), 'Home');
 		
 		if ($this->z->auth->isAuth()) {
-		
+
 			//custom menu from app's admin config
-			$custom_items =	$this->getConfigValue('menu');
-			if (isset($custom_items) && count($custom_items) > 0) {
-				foreach ($custom_items as $item) {
-					$menu->addItem($item[0], $item[1]);
-				}
-			}
-			
+			$menu->loadItemsFromArray($this->getConfigValue('menu'));
+
 			//standard admin menu
 			$submenu = $menu->addSubmenu('Admin');
 			$submenu->addHeader('Administrators');
@@ -91,7 +86,7 @@ class adminModule extends zModule {
 		
 			$menu->addRightItem('admin/logout', 'Log out');
 		} else if (!$this->is_login_page) {
-			$menu->addRightItem($this->getAdminAreaURL($this->login_url), 'Log in');
+			//$menu->addRightItem($this->getAdminAreaURL($this->login_url), 'Log in');
 		}
 		
 		$this->menu = $menu;
