@@ -20,6 +20,10 @@ class i18nModule extends zModule {
 		
 		$this->language_cookie_name = $this->getConfigValue('language_cookie_name', $this->language_cookie_name);
 		$this->currency_cookie_name = $this->getConfigValue('currency_cookie_name', $this->currency_cookie_name);
+
+	}
+	
+	public function onInit() {
 				
 		$this->available_currencies = CurrencyModel::all($this->db);
 		$this->available_languages = LanguageModel::all($this->db);
@@ -34,8 +38,8 @@ class i18nModule extends zModule {
 
 		if ($this->z->moduleEnabled('custauth') && $this->z->custauth->isAuth()) {
 			// update customer default currency if different from cookie values
-			if (isset($this->selected_currency)) {
-				if ($this->z->custauth->ival('customer_currency_id') != $this->selected_currency->ival('currency_id')) {
+			if (isset($this->selected_currency)) {				
+				if ($this->z->custauth->customer->ival('customer_currency_id') != $this->selected_currency->ival('currency_id')) {
 					$this->z->custauth->customer->set('customer_currency_id', $this->selected_currency->ival('currency_id'));
 					$this->z->custauth->customer->save($this->db);
 				} 
@@ -46,7 +50,7 @@ class i18nModule extends zModule {
 			
 			// update customer default language if different from cookie values
 			if (isset($this->selected_language)) {
-				if ($this->z->custauth->ival('customer_language_id') != $this->selected_language->ival('language_id')) {
+				if ($this->z->custauth->customer->ival('customer_language_id') != $this->selected_language->ival('language_id')) {
 					$this->z->custauth->customer->set('customer_language_id', $this->selected_language->ival('language_id'));
 					$this->z->custauth->customer->save($this->db);
 				} 

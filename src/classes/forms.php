@@ -13,6 +13,7 @@ class zForm {
 	public $processed_input = [];
 	public $is_valid = true;
 	public $render_wrapper = false;
+	public $images_module = null;
 	
 	function __construct($id = 'entity_name', $action = '', $method = 'POST', $css = 'form-horizontal admin-form') {
 		$this->id = $id;
@@ -51,12 +52,13 @@ class zForm {
 					$result[$field->name] = isset($data[$field->name]) ? 1 : 0;
 				} elseif ($field->type == 'image') {
 					/* upload image */
-					global $images;
+					if (!isset($this->images_module)){
+						throw new Exception("Images module is not enabled, cannot upload image!");
+					}
 					$name = $field->name . '_image_file';
 					if (isset($_FILES[$name]) && strlen($_FILES[$name]['name'])) {
-						$image = $images->uploadImage($name);
-						if (isset($image) && strlen($image) > 0) {
-							
+						$image = $this->images_module->uploadImage($name);
+						if (isset($image) && strlen($image) > 0) {							
 							$result[$field->name] = $image;
 						} else {
 							$is_valid = false;							

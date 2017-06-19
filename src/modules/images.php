@@ -2,7 +2,7 @@
 
 class imagesModule extends zModule {
 
-	public $formats = ''
+	public $formats = '';
 	public $root_images_disk_path = '';
 	public $root_images_url = '';
 
@@ -10,8 +10,8 @@ class imagesModule extends zModule {
 		$this->requireConfig();
 		
 		$this->root_images_disk_path = $this->config['images_disk_path'];
-		$this->root_images_url = this->config['images_url'];   
-		$this->formats = this->config['formats'];   
+		$this->root_images_url = $this->config['images_url'];   
+		$this->formats = $this->config['formats'];   
 	}
 	
 	public function getImagePath( $image, $format = null ) {
@@ -128,7 +128,7 @@ class imagesModule extends zModule {
 				imagedestroy($tmp);
 				
 			} else {
-				handleErr("Image $original_path not found. Cannot resize.", 'error');
+				throw new Exception("Image $original_path not found. Cannot resize.");
 			}
 		}
 	}
@@ -172,7 +172,6 @@ class imagesModule extends zModule {
 	}
 	
 	public function uploadImage($name) {
-		global $messages;
 		$image = null;
 		if (isset($_FILES[$name]) && strlen($_FILES[$name]['name']) > 0) {
 			$image = basename($_FILES[$name]['name']);
@@ -186,14 +185,14 @@ class imagesModule extends zModule {
 				$uploadOk = true;
 			} else {
 				$uploadOk = false;
-				$messages->add('File is not image.', 'warning');
+				$this->z->messages->add('File is not image.', 'warning');
 			}
 			
-			 if (move_uploaded_file($_FILES[$name]['tmp_name'], $target_file)) {
+			if (move_uploaded_file($_FILES[$name]['tmp_name'], $target_file)) {
 				$uploadOk = true;
 			} else {
 				$uploadOk = false;
-				$messages->add(sprintf('Cannot upload image to %s',$target_file), 'warning');
+				$this->z->messages->add(sprintf('Cannot upload image to %s',$target_file), 'warning');
 			}
 		}
 		

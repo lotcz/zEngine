@@ -19,7 +19,10 @@ class formsModule extends zModule {
 	
 	public function processForm($form, $model_class_name) {
 		$model = new $model_class_name($this->z->core->db);		
-		if (isPost()) {		
+		if (isPost()) {	
+			if ($this->z->moduleEnabled('images')) {
+				$form->images_module = $this->z->images;
+			}		
 			if ($form->processInput($_POST)) {
 				if (parseInt($_POST[$model->id_name]) > 0) {
 					$model->loadById($_POST[$model->id_name]);			
@@ -207,8 +210,9 @@ class formsModule extends zModule {
 									break;
 									
 									case 'image' :
-										global $images;
-										$images->renderImage($field->value, 'mini-thumb');
+										if (isset($field->value)) {
+											$this->z->images->renderImage($field->value, 'mini-thumb');
+										}
 									?>
 										<input type="hidden" name="<?=$field->name ?>" id="field_<?=$field->name ?>" value="<?=$field->value ?>" />
 										<input type="file" name="<?=$field->name ?>_image_file" <?=$disabled ?> class="form-control-file" />

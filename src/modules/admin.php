@@ -80,8 +80,7 @@ class adminModule extends zModule {
 			$submenu->addItem('admin/aliases', 'Aliases');
 			$submenu->addItem('admin/languages', 'Languages');
 			$submenu->addItem('admin/translations', 'Translations');
-			$submenu->addItem('admin/ip_failed_attempts', 'Failed login attempts');
-			$submenu->addItem('admin/jobs', 'Jobs');
+			$submenu->addItem('admin/ip_failed_attempts', 'Failed login attempts');			
 			$submenu->addItem('admin/phpinfo', 'PHP Info');			
 		
 			$menu->addRightItem('admin/logout', 'Log out');
