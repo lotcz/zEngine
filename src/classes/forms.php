@@ -91,8 +91,15 @@ class zForm {
 						null, /* bindings */
 						null, /* types */
 						null, /* paging */
-						$field->select_label_field /* orderby */
+						$field->select_label_field /* orderby */						
 					);
+					
+					if (isset($field->empty_option_name) && strlen($field->empty_option_name) > 0) {
+						$empty_option = new	zModel();
+						$empty_option->set($field->select_id_field, null);
+						$empty_option->set($field->select_label_field, $field->empty_option_name);
+						$field->select_data[] = $empty_option;
+					}
 				} elseif ($field->type == 'foreign_key_link') {
 					$entity = new zModel($db);
 					$entity->table_name = $field->link_table;

@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/../app/models/category.m.php';
 require_once __DIR__ . '/../app/models/product.m.php';
+require_once __DIR__ . '/../app/models/product_variant.m.php';
 require_once __DIR__ . '/../app/models/cart.m.php';
 
 class cartModule extends zModule {

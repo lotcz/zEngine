@@ -22,6 +22,14 @@
 
 <script>
 
+	function showAjaxLoaders() {
+		$('.ajax-loader').animate({opacity:1});
+	}
+
+	function hideAjaxLoaders() {
+		$('.ajax-loader').animate({opacity:0});
+	}
+
 	function cons(str) {
 		$('#console_inner').append(str);
 		$('#console').scrollTop($('#console_inner').height());
@@ -38,10 +46,10 @@
 		showAjaxLoaders();
 		$.ajax({
 			dataType: 'html',
-			url: '<?=_url('jobs.php') ?>',
+			url: '<?=$this->url($this->z->jobs->base_url) ?>/' + name,
 			data: {
 					job: name,
-					security_token: '<?=$config['security_token'] ?>'
+					security_token: '<?=$this->z->jobs->security_token ?>'
 				},
 			success: jobFinished
 		});

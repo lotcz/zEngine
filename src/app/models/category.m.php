@@ -210,7 +210,7 @@ class CategoryModel extends zModel {
 		} else {
 			$url = 'category/' . $this->val('category_id');
 		}
-		return _url($url);
+		return $url;
 	}	
 	
 }

@@ -39,6 +39,8 @@ class resourcesModule extends zModule {
 				header('Content-Length: ' . filesize($resource_path));
 				readfile($resource_path);
 				exit;
+			} else {
+				die("Resource file $resource_path not found!");
 			}
 		}
 	}

@@ -12,8 +12,8 @@ class AliasModel extends zModel {
 	
 	public function setUrl($url) {
 		if ($url != $this->val('alias_url')) {
-			$a = new Alias($this->db);
-			$url = Alias::generateAliasUrl(myTrim($url));
+			$a = new AliasModel($this->db);
+			$url = AliasModel::generateAliasUrl(customTrim($url));
 			$new_url = $url;
 			$a->loadByUrl($new_url);
 			$counter = 0;
@@ -21,7 +21,7 @@ class AliasModel extends zModel {
 				$counter += 1;
 				$new_url = $url . '-' . $counter;
 				$a->loadByUrl($new_url);
-			}		
+			}
 			$this->data['alias_url'] = $new_url;
 		}
 	}
