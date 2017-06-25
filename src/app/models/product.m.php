@@ -30,8 +30,8 @@ class ProductModel extends zModel {
 		return $this->val('product_name');		
 	}
 	
-	public function getAliasPath() {
-		return 'product/' . $this->val('product_id');
+	public function getViewPath() {
+		return 'default/default/product/' . $this->val('product_id');
 	}
 	
 	static function getSortingItems() {

@@ -6,7 +6,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
-		<meta name="description" content="wiseman">
+		<meta name="description" content="z">
 		<meta name="author" content="Karel Zavadil">
 
 		<title><?=$this->data['site_title'] ?> - <?=$this->data['page_title'] ?></title>

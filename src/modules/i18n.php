@@ -28,7 +28,7 @@ class i18nModule extends zModule {
 		$this->available_currencies = CurrencyModel::all($this->db);
 		$this->available_languages = LanguageModel::all($this->db);
 			
-		// first use currency and language from cookies, if available
+		// first, use currency and language from cookies, if available
 		if (isset($_COOKIE[$this->currency_cookie_name])) {
 			$this->selectCurrencyByID($_COOKIE[$this->currency_cookie_name]);
 		}		

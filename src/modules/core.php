@@ -211,6 +211,10 @@ class coreModule extends zModule {
 		}
 	}
 	
+	public function formatAndConvertMoney($price) {
+		return $this->formatMoney($this->convertMoney($price));
+	}
+	
 	public function formatDecimal($number, $decimals = 2) {
 		if ($this->z->moduleEnabled('i18n')) {
 			return $this->z->i18n->selected_language->formatDecimal($number, $decimals);
@@ -281,33 +285,33 @@ class coreModule extends zModule {
 	
 	public function renderView($type = 'page') {
 		if (!isset($this->templates[$type])) {
-			if ($this->debug_mode) {
-				echo "<!-- setting $type view template to value from controller: " . $this->controllers[$type] . " -->";
-			}
+			//if ($this->debug_mode) {
+			//	echo "<!-- setting $type view template to value from controller: " . $this->controllers[$type] . " -->";
+			//}
 			 $this->templates[$type] = $this->controllers[$type];
 		}
 		$template_path = $this->app_dir . "views/$type/" .  $this->templates[$type] . '.v.php';
 		if (file_exists($template_path)) {
-			if ($this->debug_mode) {
-				echo "<!-- rendering $type view: $template_path -->";
-			}
+			//if ($this->debug_mode) {
+			//	echo "<!-- rendering $type view: $template_path -->";
+			//}
 			include $template_path;
-			if ($this->debug_mode) {
-				echo "<!-- end of $type view: $template_path -->";
-			}
+			//if ($this->debug_mode) {
+			//	echo "<!-- end of $type view: $template_path -->";
+			//}
 		} else {
-			if ($this->debug_mode) {
-				echo "<!-- $type view: $template_path not found, rendering default -->";
-			}
+			//if ($this->debug_mode) {
+			//	echo "<!-- $type view: $template_path not found, rendering default -->";
+			//}
 			$default_template_path = $this->default_app_dir . "views/$type/" .  $this->templates[$type] . '.v.php';
 			if (file_exists($default_template_path)) {
-				if ($this->debug_mode) {
-					echo "<!-- rendering default $type view: $default_template_path -->";
-				}
+				//if ($this->debug_mode) {
+				//	echo "<!-- rendering default $type view: $default_template_path -->";
+				//}
 				include $default_template_path;
-				if ($this->debug_mode) {
-					echo "<!-- end of default $type view: $default_template_path -->";
-				}
+				//if ($this->debug_mode) {
+				//	echo "<!-- end of default $type view: $default_template_path -->";
+				//}
 			} else {
 				echo "Template for $type view not found: $default_template_path!";
 			}
