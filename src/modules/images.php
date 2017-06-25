@@ -9,7 +9,7 @@ class imagesModule extends zModule {
 	function onEnabled() {
 		$this->requireConfig();
 		
-		$this->root_images_disk_path = $this->config['images_disk_path'];
+		$this->root_images_disk_path = $this->getConfigValue('images_disk_path', $this->root_images_disk_path);
 		$this->root_images_url = $this->config['images_url'];   
 		$this->formats = $this->config['formats'];   
 	}

@@ -176,7 +176,7 @@ class CategoryModel extends zModel {
 		}		
 	}
 	
-	public function getParentAlias() {
+	public function loadParentAlias() {
 		if ($this->ival('category_parent_id') > 0) {
 			$p = new Self($this->db, $this->ival('category_parent_id'));
 			$pa = new AliasModel($this->db, $p->ival('category_alias_id'));
@@ -192,7 +192,7 @@ class CategoryModel extends zModel {
 	}
 	
 	public function getAliasUrl() {
-		$pa = $this->getParentAlias();
+		$pa = $this->loadParentAlias();
 		if (isset($pa) && $pa->is_loaded) {
 			return $pa->val('alias_url') . '/' . $this->val('category_name');
 		} else {
@@ -200,15 +200,15 @@ class CategoryModel extends zModel {
 		}
 	}
 	
-	public function getAliasPath() {
-		return 'category/' . $this->val('category_id');
+	public function getViewPath() {
+		return 'default/default/category/' . $this->val('category_id');
 	}
 	
-	public function getLinkUrl() {
+	public function getLinkPath() {
 		if (strlen($this->val('alias_url')) > 0) {
 			$url = $this->val('alias_url');		
 		} else {
-			$url = 'category/' . $this->val('category_id');
+			$url = $this->getViewPath();
 		}
 		return $url;
 	}	

@@ -208,8 +208,4 @@ class zPaging {
 		}
 	}
 	
-	public function renderSorting() {
-		renderPartial('prod-sort', $this);		
-	}
-
 }

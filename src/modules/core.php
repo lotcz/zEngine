@@ -326,9 +326,10 @@ class coreModule extends zModule {
 		$this->renderView();
 	}
 	
-	public function renderPartialView($partial_name) {
+	public function renderPartialView($partial_name, $data = null) {
 		$template_path = $this->app_dir . 'views/partial/' .  $partial_name . '.v.php';
 		if (file_exists($template_path)) {
+			$this->setData("partials.$partial_name", $data);
 			include $template_path;
 		} else {
 			echo "Template for partial view $partial_name not found: $template_path!";
