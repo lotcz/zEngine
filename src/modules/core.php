@@ -211,7 +211,7 @@ class coreModule extends zModule {
 		}
 	}
 	
-	public function formatAndConvertMoney($price) {
+	public function convertAndFormatMoney($price) {
 		return $this->formatMoney($this->convertMoney($price));
 	}
 	

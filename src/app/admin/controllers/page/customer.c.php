@@ -85,6 +85,11 @@
 				'type' => 'begin_group'
 			],
 			[
+				'name' => 'customer_use_ship_address',
+				'label' => 'Use different shipping address',
+				'type' => 'bool'
+			],			
+			[
 				'name' => 'customer_ship_name',
 				'label' => 'Name',
 				'type' => 'text',
