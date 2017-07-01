@@ -14,7 +14,7 @@ class imagesModule extends zModule {
 		$this->formats = $this->config['formats'];   
 	}
 	
-	public function getImagePath( $image, $format = null ) {
+	public function getImagePath($image, $format = null ) {
 		if (isset($format)) {
 			$path_parts = pathinfo( $image );
 			return $this->root_images_disk_path . $format . '/' . $path_parts['filename'] . '-' . $format . '.' . $path_parts['extension'];
@@ -23,7 +23,7 @@ class imagesModule extends zModule {
 		}
 	}
 
-	public function getImageURL( $image, $format = null ) {
+	public function getImageURL($image, $format = null ) {
 		if ($this->exists($image, $format)) {
 			if (isset($format)) {
 				$path_parts = pathinfo( $image );
@@ -34,7 +34,7 @@ class imagesModule extends zModule {
 		}
 	}
 
-	public function prepareImage( $image, $format = null ) {		
+	public function prepareImage($image, $format = null ) {		
 		if (!$this->exists($image, $format)) {
 			if (!is_dir($this->root_images_disk_path . $format)) {
 				mkdir($this->root_images_disk_path . $format, 0777, true);
@@ -128,12 +128,12 @@ class imagesModule extends zModule {
 				imagedestroy($tmp);
 				
 			} else {
-				throw new Exception("Image $original_path not found. Cannot resize.");
+				//throw new Exception("Image $original_path not found. Cannot resize.");
 			}
 		}
 	}
 
-	public function deleteImageCache( $image ) {
+	public function deleteImageCache($image) {
 		foreach ($this->formats as $key => $format) {
 			$resized_path = $this->getImagePath( $image, $key );
 				if (file_exists($resized_path)) {
@@ -142,7 +142,7 @@ class imagesModule extends zModule {
 		}
 	}
 	
-	public function deleteImage( $image ) {
+	public function deleteImage($image) {
 		$this->deleteImageCache($image);
 		$original_path = $this->getImagePath( $image );
 		if (file_exists($original_path)) {
@@ -150,14 +150,13 @@ class imagesModule extends zModule {
 		}
 	}
 
-	public function exists( $image, $format = null ) {
-		$original_path = $this->getImagePath( $image, $format );
-		return file_exists($original_path);
+	public function exists($image, $format = null ) {
+		return file_exists($this->getImagePath($image, $format));
 	}
 	
-	public function img( $image, $format = null ) {
-		$this->prepareImage( $image, $format );
-		return $this->getImageURL( $image, $format );
+	public function img($image, $format = null) {
+		$this->prepareImage($image, $format );
+		return $this->getImageURL($image, $format );
 	}
 	
 	public function renderImage($image, $format = 'thumb', $alt = '', $css = '') {

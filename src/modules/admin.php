@@ -103,6 +103,7 @@ class adminModule extends zModule {
 		$this->z->core->setPageTemplate('admin');
 		
 		$form = new zForm($entity_name);
+		$form->render_wrapper = true;
 		$form->addField([
 			'name' => 'form_buttons',				
 			'type' => 'buttons',

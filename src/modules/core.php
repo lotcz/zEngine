@@ -15,7 +15,7 @@ class coreModule extends zModule {
 	public $return_path = false;
 	
 	public $data = [
-		'page_title' => 'Page Title',
+		'page_title' => null,
 		'site_title' => null
 	];
 	
@@ -102,6 +102,15 @@ class coreModule extends zModule {
 		$this->setData('page_title', $this->t($page_title));
 	}
 	
+	public function getFullPageTitle() {
+		$page_title = $this->getData('page_title');
+		if (strlen($page_title) > 0) {
+			return $page_title . ' - ' .  $this->getData('site_title');
+		} else {
+			return $this->getData('site_title');
+		}
+	}
+	
 	public function includeJS($js_path, $abs = false) {
 		if ($abs) {
 			$this->include_js[] = $js_path;			
@@ -137,6 +146,38 @@ class coreModule extends zModule {
 	/*
 		HELPERS
 	*/
+		
+	public function parseInt($val) {		
+		if (isset($val) && strlen(trim($val)) > 0) {
+			return intval($val);
+		} else {
+			return null;
+		}
+	}
+
+	public function parseFloat($val) {		
+		if (isset($val) && strlen(trim($val)) > 0) {
+			return floatval($val);
+		} else {
+			return null;
+		}
+	}
+
+	public function isPost() {
+		return ($_SERVER['REQUEST_METHOD'] === 'POST');
+	}
+
+	public function get($name, $def = null) {
+		return isset($_GET[$name]) ? $_GET[$name] : (isset($_POST[$name]) ? $_POST[$name] : $def);
+	}
+
+	public function getInt($name, $def = null) {
+		return $this->parseInt(get($name, $def));
+	}
+
+	public function getFloat($name, $def = null) {
+		return $this->parseFloat($this->get($name, $def));
+	}
 	
 	public function requireClass($class_name) {
 		require_once __DIR__ . "/../classes/$class_name.php";
@@ -285,33 +326,15 @@ class coreModule extends zModule {
 	
 	public function renderView($type = 'page') {
 		if (!isset($this->templates[$type])) {
-			//if ($this->debug_mode) {
-			//	echo "<!-- setting $type view template to value from controller: " . $this->controllers[$type] . " -->";
-			//}
-			 $this->templates[$type] = $this->controllers[$type];
+			$this->templates[$type] = $this->controllers[$type];
 		}
 		$template_path = $this->app_dir . "views/$type/" .  $this->templates[$type] . '.v.php';
 		if (file_exists($template_path)) {
-			//if ($this->debug_mode) {
-			//	echo "<!-- rendering $type view: $template_path -->";
-			//}
 			include $template_path;
-			//if ($this->debug_mode) {
-			//	echo "<!-- end of $type view: $template_path -->";
-			//}
 		} else {
-			//if ($this->debug_mode) {
-			//	echo "<!-- $type view: $template_path not found, rendering default -->";
-			//}
 			$default_template_path = $this->default_app_dir . "views/$type/" .  $this->templates[$type] . '.v.php';
 			if (file_exists($default_template_path)) {
-				//if ($this->debug_mode) {
-				//	echo "<!-- rendering default $type view: $default_template_path -->";
-				//}
 				include $default_template_path;
-				//if ($this->debug_mode) {
-				//	echo "<!-- end of default $type view: $default_template_path -->";
-				//}
 			} else {
 				echo "Template for $type view not found: $default_template_path!";
 			}

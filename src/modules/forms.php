@@ -17,9 +17,17 @@ class formsModule extends zModule {
 		return $this->z->core->getPath(-2);
 	}
 	
+	public function isPost() {
+		return $this->z->core->isPost();
+	}
+
+	public function get($name, $def = null) {
+		return $this->z->core->get($name, $def);
+	}
+
 	public function processForm($form, $model_class_name) {
 		$model = new $model_class_name($this->z->core->db);		
-		if (isPost()) {	
+		if ($this->isPost()) {	
 			if ($this->z->moduleEnabled('images')) {
 				$form->images_module = $this->z->images;
 			}		
@@ -193,7 +201,7 @@ class formsModule extends zModule {
 									
 									case 'bool' :
 									?>
-										<input type="checkbox" name="<?=$field->name ?>" <?=$disabled ?> value="1" <?=($field->value) ? 'checked' : '' ?> class="form-control form-control-checkbox" />
+										<input type="checkbox" id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> value="1" <?=($field->value) ? 'checked' : '' ?> class="form-control form-control-checkbox" />
 									<?php
 									break;	
 									

@@ -63,11 +63,18 @@ class CategoryModel extends zModel {
 		}
 	}
 
-	public function setSelectedPath() {
+	private function setSelectedPath() {
 		$this->is_on_selected_path = true;
 		if (isset($this->treeParent)) {			
 			$this->treeParent->setSelectedPath();
 		}
+	}
+	
+	public function setSelectedCategory($selected_id) {
+		$sc = $this->findInChildren($selected_id);
+		$sc->is_selected = true;
+		$sc->setSelectedPath();
+		return $sc;
 	}
 	
 	public function getSubTreeIDs() {
@@ -117,9 +124,7 @@ class CategoryModel extends zModel {
 		}
 		
 		if (isset($selected_id)) {
-			$sc = $tree_root->findInChildren($selected_id);
-			$sc->is_selected = true;
-			$sc->setSelectedPath();
+			
 		}
 		
 		return $tree_root;		
