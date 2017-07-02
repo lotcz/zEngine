@@ -1,13 +1,23 @@
 <?php
 
-require_once __DIR__ . '/../classes/message.php';
+class zMessage {
+	
+	public $type = 'info';	
+	public $text = '';
+	
+	function __construct($text, $type = 'info') {		
+		$this->type = $type;
+		$this->text = $text;
+	}
+	
+}
 
 class messagesModule extends zModule{
 
 	public $messages = [];
 	
 	public function add($text, $type = 'info') {
-		$this->messages[] = new Message($text, $type);
+		$this->messages[] = new zMessage($text, $type);
 	}
 	
 	public function clear() {
@@ -21,10 +31,14 @@ class messagesModule extends zModule{
 	public function render() {
 		if (count($this->messages) > 0) {
 			?>
-				<div class="spaced well messages">
+				<div class="spaced messages">
 					<?php
-						foreach ($this->messages as $m) {				
-							echo $m->render();
+						foreach ($this->messages as $m) {
+							?>
+								<div class="alert alert-<?=($m->type == 'error') ? 'danger' : $m->type ?>">
+									<?=$m->text ?>
+								</div>
+							<?php
 						}
 					?>
 				</div>

@@ -217,18 +217,17 @@ CREATE TABLE IF NOT EXISTS `customers` (
   `customer_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `customer_deleted` BOOL NOT NULL DEFAULT FALSE,
   `customer_anonymous` BOOL NOT NULL DEFAULT TRUE,
-  `customer_email` VARCHAR(50) NOT NULL,
+  `customer_email` VARCHAR(100),
   `customer_password_hash` VARCHAR(255) ,
   `customer_failed_attempts` INT UNSIGNED NOT NULL DEFAULT 0,
   `customer_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `customer_last_access` TIMESTAMP,
-
-  `customer_fb_access_token` VARCHAR(255),
-    
-  `customer_delivery_type_id` TINYINT UNSIGNED NULL,
-  `customer_payment_type_id` TINYINT UNSIGNED NULL,
+  
+  `customer_language_id` TINYINT UNSIGNED NOT NULL,  
   `customer_currency_id` TINYINT UNSIGNED NOT NULL,
-  `customer_language_id` TINYINT UNSIGNED NOT NULL,
+  
+  `customer_delivery_type_id` TINYINT UNSIGNED NULL,
+  `customer_payment_type_id` TINYINT UNSIGNED NULL,  
   
   `customer_name` NVARCHAR(50),
   `customer_address_city` NVARCHAR(50),
@@ -242,7 +241,7 @@ CREATE TABLE IF NOT EXISTS `customers` (
   `customer_ship_zip` INT NULL,  
   
   PRIMARY KEY (`customer_id`),
-  UNIQUE INDEX `customers_email_unique` (`customer_email` ASC),
+  INDEX `customers_email_index` (`customer_email` ASC),
   CONSTRAINT `customer_delivery_type_fk`
     FOREIGN KEY (`customer_delivery_type_id`)
     REFERENCES `delivery_types` (`delivery_type_id`),

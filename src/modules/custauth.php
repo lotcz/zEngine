@@ -13,6 +13,7 @@ class custauthModule extends zModule {
 	public function onEnabled() {
 		$this->requireModule('i18n');
 		$this->requireModule('messages');
+		$this->requireModule('emails');
 		$this->requireConfig();
 	}
 
@@ -166,7 +167,7 @@ class custauthModule extends zModule {
 		
 		if (isset($_COOKIE[$this->config['cookie_name']])) {			
 			unset($_COOKIE[$this->config['cookie_name']]);
-			setcookie($this->cookie_name, '', time()-3600, '/', false, false);
+			setcookie($this->config['cookie_name'], '', time()-3600, '/', false, false);
 		}
 		
 		if (isset($this->session)) {
@@ -195,4 +196,19 @@ class custauthModule extends zModule {
 		return password_verify($pass, $hash);
 	}
 	
+	public function sendEmailToCustomer($subject, $body, $customer_id = null) {		
+		if ($customer_id == null) {
+			$customer = $this->z->core->getCustomer();
+		} else {
+			$customer = new CustomerModel($this->z->core->db, $customer_id);
+		}
+		$from = $this->getConfigValue('from_address', $this->z->emails->getConfigValue('from_address'));
+		$to = $customer->val('customer_email');
+		$this->z->emails->sendHTML($from, $to, null, $subject, $body);
+	}
+	
+	public function sendRegistrationEmail($customer_id = null) {
+		
+		Emails::sendPlain('info@zshop.com', $email, null, 'Welcome to zShop', 'Hello, you have been registered.');
+	}
 }

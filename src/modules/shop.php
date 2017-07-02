@@ -9,7 +9,7 @@ require_once __DIR__ . '/../app/models/delivery_type.m.php';
 class shopModule extends zModule {
 	
 	public function onEnabled() {
-		$this->requireModule('cart');
+		$this->requireModule('cart');		
 	}
 	
 	public function createOrder() {
@@ -63,5 +63,10 @@ class shopModule extends zModule {
 			$this->z->cart->emptyCart();
 		}
 		return $order;
+	}
+		
+	public function sendOrderConfirmationEmail($order) {
+		$email_body = $this->z->emails->renderEmailBody('confirm', $order);
+		$this->z->custauth->sendEmailToCustomer('Your order has been accepted.', $email_body);
 	}
 }

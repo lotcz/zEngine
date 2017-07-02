@@ -189,13 +189,13 @@ class formsModule extends zModule {
 									
 									case 'text' :
 									?>
-										<input type="text" name="<?=$field->name ?>" <?=$disabled ?> value="<?=$field->value ?>" class="form-control" />
+										<input type="text" id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> value="<?=$field->value ?>" class="form-control" />
 									<?php
 									break;			
 									
 									case 'password' :
 									?>
-										<input type="password" name="<?=$field->name ?>" <?=$disabled ?> value="<?=$field->value ?>" class="form-control" />
+										<input type="password" id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> value="<?=$field->value ?>" class="form-control" />
 									<?php
 									break;	
 									
@@ -207,13 +207,13 @@ class formsModule extends zModule {
 									
 									case 'date' :
 									?>
-										<input type="datetime" name="<?=$field->name ?>" <?=$disabled ?> value="<?=$field->value ?>" class="form-control" />
+										<input type="datetime" id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> value="<?=$field->value ?>" class="form-control" />
 									<?php
 									break;
 									
 									case 'file' :
 									?>										
-										<input type="file" name="<?=$field->name ?>" <?=$disabled ?> class="form-control-file" />
+										<input type="file" id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> class="form-control-file" />
 									<?php
 									break;
 									

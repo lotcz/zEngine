@@ -34,7 +34,7 @@ class zEngine {
 				}
 			}
 		} catch (Exception $e) {			
-			die(sprintf('Error when enabling module %s: %s',$module_name, $e->getMessage()));
+			die(sprintf('Error when enabling module %s: %s', $module_name, $e->getMessage()));
 		}
 	}
 

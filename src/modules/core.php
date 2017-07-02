@@ -39,7 +39,7 @@ class coreModule extends zModule {
 		$this->debug_mode = $this->config['debug_mode'];
 		$this->error_page = $this->config['error_page'];
 		$this->setData('site_title', $this->getConfigValue('site_title', 'Site Name'));
-		$this->return_path = get('r', false);
+		$this->return_path = $this->get('r', false);
 	}
 	
 	public function pathExists($index) {
@@ -179,6 +179,30 @@ class coreModule extends zModule {
 		return $this->parseFloat($this->get($name, $def));
 	}
 	
+	function customTrim($s, $chrs = ' .,-*/1234567890') {				
+		do {
+			$trimmed = false;
+			if (strlen($s)) {
+				for ($i = 0, $max = strlen($chrs); $i < $max; $i++) {
+					if ($s[0] == $chrs[$i]) {
+						$s = substr($s,1,strlen($s)-1);
+						$trimmed = true;
+					}
+					if ($s[strlen($s)-1] == $chrs[$i]) {
+						$s = substr($s,0,strlen($s)-1);
+						$trimmed = true;
+					}
+				}
+			}
+		} while ($trimmed);		
+		
+		return $s;
+	}
+
+	function trimSlashes($s) {		
+		return customTrim($s, '/');
+	}
+
 	public function requireClass($class_name) {
 		require_once __DIR__ . "/../classes/$class_name.php";
 	}	
@@ -187,6 +211,14 @@ class coreModule extends zModule {
 		header('Location: ' . trimSlashes($this->base_url) . '/' . trimSlashes($url), true, $statusCode);
 		die();
 	}	
+	
+	public function redirectBack($fallback_url = '') {
+		if ($this->return_path) {
+			$this->redirect($this->return_path);
+		} else {
+			$this->redirect($fallback_url);
+		}
+	}
 	
 	public function url($link = '', $ret = null) {
 		$url = $this->base_url . '/' . $link;
