@@ -7,6 +7,7 @@ class formsModule extends zModule {
 	public function onEnabled() {
 		$this->requireModule('mysql');
 		$this->requireModule('messages');
+		$this->z->core->includeJS('resources/forms.js');
 	}
 	
 	public function pathParam() {

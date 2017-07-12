@@ -48,6 +48,21 @@ function validate_price(value) {
 	return validate_decimal(value);
 }
 
+function validate_name(value) {
+	var is_valid = true;
+	if (value && (value.length >= 1)) {
+		var arr = value.split(' ');
+		is_valid = arr.length > 1 && arr[0].length > 0 && arr[1].length > 0;
+	} else {
+		is_valid = false;
+	}
+	return is_valid;
+}
+
+function validate_zip(zip) {	
+	return validate_integer(zip, false) && (parseInt(zip) > 9999 && parseInt(zip) < 100000);
+}
+
 function formValidation(frm) {	
 	this.frm = $('#' + frm);
 	this.is_valid = true;

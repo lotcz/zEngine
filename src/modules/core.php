@@ -40,6 +40,7 @@ class coreModule extends zModule {
 		$this->error_page = $this->config['error_page'];
 		$this->setData('site_title', $this->getConfigValue('site_title', 'Site Name'));
 		$this->return_path = $this->get('r', false);
+		$this->includeJS('resources/jquery.min.js');
 	}
 	
 	public function pathExists($index) {

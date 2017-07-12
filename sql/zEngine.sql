@@ -2,7 +2,6 @@ DROP DATABASE IF EXISTS zshop;
 CREATE DATABASE zshop DEFAULT char set utf8;
 USE zshop;
 
-
 CREATE TABLE `site_globals` (
   `site_global_name` varchar(100) NOT NULL,
   `site_global_label` varchar(100),
@@ -161,8 +160,6 @@ CREATE TABLE IF NOT EXISTS `role_permissions` (
   `role_permission_permission_id` INT UNSIGNED NOT NULL,  
   PRIMARY KEY (`role_permission_role_id`,  `role_permission_permission_id`)
 ) ENGINE = InnoDB;
-
-
 
 INSERT INTO permissions (permission_name, permission_description) VALUES ('browse order', 'Browse orders');
 INSERT INTO permissions (permission_name, permission_description) VALUES ('edit order', 'Edit orders');

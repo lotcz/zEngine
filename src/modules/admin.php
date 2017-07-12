@@ -24,17 +24,10 @@ class adminModule extends zModule {
 		$this->requireModule('auth');
 		$this->requireModule('resources');
 		$this->requireModule('menu');
-		$this->z->core->includeJS('resources/jquery.min.js');
-		if ($this->z->isDebugMode()) {
-			$this->z->core->includeLESS('resources/less/admin.less');
-			$this->z->core->includeJS_head('resources/less/less.min.js');			
-		} else {
-			$this->z->core->includeCSS('resources/admin.css');		
-		}		
 		$this->db = $this->z->core->db;
 		$this->base_url = $this->getConfigValue('admin_area_base_url', $this->base_url);
 		$this->base_dir = $this->getConfigValue('admin_area_base_dir', $this->base_dir);
-		$this->login_url = $this->getConfigValue('login_page_url', $this->login_url);		
+		$this->login_url = $this->getConfigValue('login_page_url', $this->login_url);
 	}
 	
 	public function onInit() {
@@ -53,7 +46,17 @@ class adminModule extends zModule {
 			}
 		}
 
-		$this->initializeAdminMenu();
+		if ($this->z->auth->isAuth() || $this->is_admin_area) {
+			if ($this->z->isDebugMode()) {
+				$this->z->core->includeLESS('resources/less/admin.less');
+				$this->z->core->includeJS_head('resources/less/less.min.js');			
+			} else {
+				$this->z->core->includeCSS('resources/admin.css');		
+			}			
+		}
+
+		$this->initializeAdminMenu();		
+		
 	}
 	
 	public function getAdminAreaURL($page) {

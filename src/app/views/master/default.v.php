@@ -9,6 +9,12 @@
 		<meta name="description" content="z">
 		<meta name="author" content="Karel Zavadil">
 
+		<?php		
+			$this->renderCSSIncludes();
+			$this->renderLESSIncludes();
+			$this->renderJSIncludes_head();
+		?>
+		
 		<title><?=$this->data['site_title'] ?> - <?=$this->data['page_title'] ?></title>
 	</head>
 
