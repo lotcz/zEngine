@@ -2,11 +2,13 @@
 
 /*
 
-	zEngine's Little Helpers
+	zEngine's Little Helpers ARE OBSOLETE!!!!
+
+	EVERYTHING SHOULD BE IN CORE OR ONE OF THE MODULES!
 
 */
 
-function parseInt($val) {		
+function parseInt($val) {
 	if (isset($val) && strlen(trim($val)) > 0) {
 		return intval($val);
 	} else {
@@ -14,7 +16,7 @@ function parseInt($val) {
 	}
 }
 
-function parseFloat($val) {		
+function parseFloat($val) {
 	if (isset($val) && strlen(trim($val)) > 0) {
 		return floatval($val);
 	} else {
@@ -37,8 +39,8 @@ function getInt($name, $def = null) {
 function getFloat($name, $def = null) {
 	return parseFloat($this->get($name, $def));
 }
-	
-function customTrim($s, $chrs = '.,-*/1234567890') {				
+
+function customTrim($s, $chrs = '.,-*/1234567890') {
 	do {
 		$trimmed = false;
 		$s = trim($s);
@@ -54,21 +56,21 @@ function customTrim($s, $chrs = '.,-*/1234567890') {
 				}
 			}
 		}
-	} while ($trimmed);		
-	
+	} while ($trimmed);
+
 	return $s;
 }
 
 /*
 	remove slashes if they are present at first or last character of the string
 */
-function trimSlashes($s) {		
+function trimSlashes($s) {
 	return customTrim($s, '/');
 }
 
 /*
 	TOKEN GENERATOR
-	
+
 	example: $token = generateToken(10);
 	-- now $token is something like '9HuE48ErZ1'
 */
@@ -82,7 +84,7 @@ function getRandomLowercase() {
 
 function getRandomUppercase() {
 	return strtoupper(getRandomLowercase());
-}	
+}
 
 function generateToken($len) {
 	$s = '';

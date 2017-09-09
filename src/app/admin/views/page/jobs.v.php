@@ -7,7 +7,8 @@
 			<a href="#" onclick="javascript:runJob('clean');return false;" class="btn btn-default"><?=$this->t('Clean sessions') ?></a>
 			<a href="#" onclick="javascript:runJob('abx');return false;" class="btn btn-default"><?=$this->t('Import from ABX') ?></a>
 			<a href="#" onclick="javascript:runJob('cube');return false;" class="btn btn-default"><?=$this->t('Import from Cubecart') ?></a>
-			<a href="#" onclick="javascript:runJob('implang');return false;" class="btn btn-default"><?=$this->t('Import Language') ?></a>
+			<a href="#" onclick="javascript:runJob('implangs');return false;" class="btn btn-default"><?=$this->t('Import translations') ?></a>
+			<a href="#" onclick="javascript:runJob('explangs');return false;" class="btn btn-default"><?=$this->t('Export translations') ?></a>
 		</div>
 
 		<div>

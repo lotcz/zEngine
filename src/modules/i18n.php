@@ -100,13 +100,19 @@ class i18nModule extends zModule {
 		$this->selectCurrency(zModel::find($this->available_currencies, 'currency_id', $currency_id));
 	}
 
-	function loadLanguage($lang_code) {
-		$file = $this->config['localization_dir'] . $lang_code . '.php';
-		if (file_exists($file)) {
-			$this->language_data = include $file;
-		} else {
-			$this->language_data = null;
+	public function getLanguageFilePath($lang_code) {
+		return $this->getConfigValue('localization_dir') . $lang_code . '.php';
+	}
+
+	public function loadLanguageData($lang_code) {
+		$file_path = $this->getLanguageFilePath($lang_code);
+		if (file_exists($file_path)) {
+			return include $file_path;
 		}
+	}
+
+	public function loadLanguage($lang_code) {
+		$this->language_data = $this->loadLanguageData($lang_code);
 	}
 
 	// directly translates string if translation exists
@@ -123,7 +129,7 @@ class i18nModule extends zModule {
 	public function formatMoney($price) {
 		return $this->selected_currency->format(number_format($price, $this->selected_currency->ival('currency_decimals'), $this->selected_language->val('language_decimal_separator'), $this->selected_language->val('langauge_thousands_separator')));
 	}
-	
+
 	public function convertMoney($price) {
 		return $this->selected_currency->convert($price);
 	}

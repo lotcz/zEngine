@@ -204,6 +204,10 @@ class coreModule extends zModule {
 		return customTrim($s, '/');
 	}
 
+	function escapeSingleQuotes($str) {
+		return str_replace('\'', '\\\'', $str);
+	}
+
 	public function requireClass($class_name) {
 		require_once __DIR__ . "/../classes/$class_name.php";
 	}
