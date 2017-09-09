@@ -52,6 +52,10 @@ class zModel {
 		return floatval($this->val($key, $default));		
 	}
 	
+	public function bval($key, $default = false) {
+		return boolval($this->ival($key, $default));		
+	}
+	
 	public function loadSingleFiltered($where, $bindings = null, $types = null) {
 		$statement = zSqlQuery::select($this->db, $this->table_name, $where, $bindings, $types);
 		if ($statement) {

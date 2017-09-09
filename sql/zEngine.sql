@@ -111,6 +111,7 @@ CREATE TABLE IF NOT EXISTS `user_sessions` (
   `user_session_user_id` INT(10) UNSIGNED NOT NULL,
   `user_session_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `user_session_expires` TIMESTAMP NOT NULL,
+  `user_session_ip` VARCHAR(15),
   PRIMARY KEY (`user_session_id`),
   CONSTRAINT `user_session_user_fk`
     FOREIGN KEY (`user_session_user_id`)
@@ -259,6 +260,7 @@ CREATE TABLE IF NOT EXISTS `customer_sessions` (
   `customer_session_customer_id` INT(10) UNSIGNED NOT NULL,
   `customer_session_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `customer_session_expires` TIMESTAMP NOT NULL,
+  `customer_session_ip` VARCHAR(15) NOT NULL,
   PRIMARY KEY (`customer_session_id`),
   CONSTRAINT `customer_session_customer_fk`
     FOREIGN KEY (`customer_session_customer_id`)
@@ -422,7 +424,8 @@ CREATE TABLE IF NOT EXISTS `orders` (
   `order_total_price` DECIMAL(10,2) UNSIGNED NOT NULL DEFAULT 0,
     
   `order_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `order_last_status_change` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `order_last_status_change` TIMESTAMP NULL,
+  /*`order_last_status_change` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,*/
  
   `order_ship_name` VARCHAR(50),
   `order_ship_city` VARCHAR(50),
