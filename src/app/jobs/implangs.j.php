@@ -19,4 +19,4 @@
 		}
 	}
 
-	echo 'Languages imported.';
+	echo 'Translations imported.';

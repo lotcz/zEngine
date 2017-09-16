@@ -26,4 +26,4 @@
 		fclose($file);
 	}
 
-	echo 'Languages exported.';
+	echo 'Translations exported.';
