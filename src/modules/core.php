@@ -212,7 +212,7 @@ class coreModule extends zModule {
 		require_once __DIR__ . "/../classes/$class_name.php";
 	}
 
-	public function redirect($url, $statusCode = 303) {
+	public function redirect($url = '', $statusCode = 303) {
 		header('Location: ' . trimSlashes($this->base_url) . '/' . trimSlashes($url), true, $statusCode);
 		die();
 	}

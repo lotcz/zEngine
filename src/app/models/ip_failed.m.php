@@ -6,8 +6,7 @@ class IpFailedAttemptModel extends zModel {
 	public $id_name = 'ip_failed_attempt_id';
 
 	public function loadByIp($ip) {
-		$filter['ip_failed_attempt_ip'] = $ip;
-		$this->loadSingleFiltered($filter);
+		$this->loadSingleFiltered('ip_failed_attempt_ip = ?', [$ip], 's');
 	}
 
 	public static function saveFailedAttempt($db) {

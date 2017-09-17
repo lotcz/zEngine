@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/../app/models/user.m.php';
 require_once __DIR__ . '/../app/models/session.m.php';
+require_once __DIR__ . '/../app/models/ip_failed.m.php';
 
 class authModule extends zModule {
 
@@ -118,8 +119,12 @@ class authModule extends zModule {
 		}
 	}
 
-	private function generateToken() {
-		return generateToken(50);
+	public function generatePasswordToken() {
+		return $this->generateRandomToken(50);
+	}
+
+	public function generateResetPasswordToken() {
+		return $this->generateRandomToken(100);
 	}
 
 	static function hashPassword($pass) {
@@ -128,6 +133,39 @@ class authModule extends zModule {
 
 	static function verifyPassword($pass, $hash) {
 		return password_verify($pass, $hash);
+	}
+
+	/*
+		TOKEN GENERATOR
+
+		example: $token = generateRandomToken(10);
+		-- now $token is something like '9HuE48ErZ1'
+	*/
+	private function getRandomNumber() {
+		return rand(0,9);
+	}
+
+	private function getRandomLowercase() {
+		return chr(rand(97,122));
+	}
+
+	private function getRandomUppercase() {
+		return strtoupper($this->getRandomLowercase());
+	}
+
+	public function generateRandomToken($len) {
+		$s = '';
+		for ($i = 0; $i < $len; $i++) {
+			$case = rand(0,2);
+			if ($case == 0) {
+				$s .= $this->getRandomNumber();
+			} elseif ($case == 1) {
+				$s .= $this->getRandomUppercase();
+			} else {
+				$s .= $this->getRandomLowercase();
+			}
+		}
+		return $s;
 	}
 
 }
