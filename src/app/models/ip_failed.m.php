@@ -10,7 +10,7 @@ class IpFailedAttemptModel extends zModel {
 		$this->loadSingleFiltered($filter);
 	}
 
-	public function saveFailedAttempt($db) {
+	public static function saveFailedAttempt($db) {
 		$attempt = new IpFailedAttemptModel($db);
 		$ip = $_SERVER['REMOTE_ADDR'];
 		$attempt->loadByIp($ip);

@@ -49,7 +49,7 @@ class custauthModule extends zModule {
 		$session->data['customer_session_token_hash'] = $token_hash;
 		$session->data['customer_session_customer_id'] = $this->customer->val('customer_id');
 		$session->data['customer_session_expires'] = zSqlQuery::mysqlTimestamp($expires);
-		$session->data['customer_session_ip'] = $ip;		
+		$session->data['customer_session_ip'] = $ip;
 		$session->save();
 		setcookie($this->config['cookie_name'], $session->val('customer_session_id') . "-" . $token, $expires, '/', false, false);
 		$this->session = $session;
@@ -77,20 +77,25 @@ class custauthModule extends zModule {
 				$this->z->messages->error($this->z->core->t('Max. number of login attempts exceeded. Please ask for new password.'));
 			}
 			if (Self::verifyPassword($password, $customer->val('customer_password_hash'))) {
+				if ($this->isAuth()) {
+					$old_customer_id = $this->customer->ival('customer_id');
+				}
 				// success - create new session
 				$this->customer = $customer;
 				$this->createSession();
 				$this->updateLastAccess();
+				//if user put any products into cart before logging in, copy cart products
+				if ($this->z->moduleEnabled('cart') && isset($old_customer_id)) {
+					$this->z->cart->transferCart($old_customer_id, $this->customer->ival('customer_id'));
+				}
 				return true;
 			} else {
-				//TO DO: lof IP failed attempt
 				$customer->data['customer_failed_attempts'] += 1;
 				$customer->save();
+				IpFailedAttemptModel::saveFailedAttempt($db);
 			}
 		}
-
 		return false;
-
 	}
 
 	public function loginWithFacebook($access) {
