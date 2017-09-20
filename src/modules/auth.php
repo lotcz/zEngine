@@ -49,7 +49,7 @@ class authModule extends zModule {
 				// success - create new session
 				$this->user = $user;
 				$this->updateLastAccess();
-				$token = $this->generateToken();
+				$token = $this->generatePasswordToken();
 				$token_hash = Self::hashPassword($token);
 				$expires = time()+$this->config['session_expire'];
 				$session = new UserSessionModel($this->db);
@@ -141,28 +141,28 @@ class authModule extends zModule {
 		example: $token = generateRandomToken(10);
 		-- now $token is something like '9HuE48ErZ1'
 	*/
-	private function getRandomNumber() {
+	static function getRandomNumber() {
 		return rand(0,9);
 	}
 
-	private function getRandomLowercase() {
+	static function getRandomLowercase() {
 		return chr(rand(97,122));
 	}
 
-	private function getRandomUppercase() {
-		return strtoupper($this->getRandomLowercase());
+	static function getRandomUppercase() {
+		return strtoupper(Self::getRandomLowercase());
 	}
 
-	public function generateRandomToken($len) {
+	static function generateRandomToken($len) {
 		$s = '';
 		for ($i = 0; $i < $len; $i++) {
 			$case = rand(0,2);
 			if ($case == 0) {
-				$s .= $this->getRandomNumber();
+				$s .= Self::getRandomNumber();
 			} elseif ($case == 1) {
-				$s .= $this->getRandomUppercase();
+				$s .= Self::getRandomUppercase();
 			} else {
-				$s .= $this->getRandomLowercase();
+				$s .= Self::getRandomLowercase();
 			}
 		}
 		return $s;

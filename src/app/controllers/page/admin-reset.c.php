@@ -1,16 +1,13 @@
 <?php
+	$this->setPageTitle('Reset Password');
 
-	include_once $home_dir . 'classes/emails.php';
-	
-	$page_title = t('Reset Password');
-	
-	$data['show_form'] = false;
-	
-	if (isset($path[2]) && isset($_GET['reset_token'])) {
-		$user_id = intval($path[2]);
-		$reset_token = $_GET['reset_token'];
-		$zUser = new User($db, $user_id);
-				
+	$show_form = false;
+	$reset_token = $this->get('reset_token');
+	$user_email = $this->get('user');
+
+	if (isset($reset_token) && isset($user_email)) {
+		$user = new UserModel($this->core->db);
+
 		if ($zUser->is_loaded && $zUser->val('user_reset_password_expires') > ModelBase::mysqlTimestamp(time()) && password_verify($reset_token, $zUser->val('user_reset_password_hash'))) {
 			if (isset($_POST['password']) && isset($_POST['password2'])) {
 				if ($_POST['password'] == $_POST['password2']) {
@@ -34,3 +31,5 @@
 	} else {
 		$messages->error(t('This page should only be accessed from link sent to your e-mail.'));
 	}
+
+	$this->setData('show_form', $show_form);
