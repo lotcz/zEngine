@@ -40,7 +40,7 @@ class custauthModule extends zModule {
 		// TODO: check if IP address has too many sessions already
 
 		if (!(isset($token))) {
-			$token = $this->generateToken();
+			$token = $this->generatePasswordToken();
 		}
 
 		$token_hash = Self::hashPassword($token);
@@ -191,16 +191,20 @@ class custauthModule extends zModule {
 		return (strlen($password) >= $this->config['min_password_length']);
 	}
 
-	private function generateToken() {
-		return generateToken(50);
+	public function generateResetPasswordToken() {
+		return authModule::generateRandomToken(100);
+	}
+
+	private function generatePasswordToken() {
+		return authModule::generateRandomToken(50);
 	}
 
 	static function hashPassword($pass) {
-		return password_hash($pass, PASSWORD_DEFAULT);
+		return authModule::hashPassword($pass, PASSWORD_DEFAULT);
 	}
 
 	static function verifyPassword($pass, $hash) {
-		return password_verify($pass, $hash);
+		return authModule::verifyPassword($pass, $hash);
 	}
 
 	/* EMAILS */

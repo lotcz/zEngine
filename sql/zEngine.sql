@@ -94,7 +94,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `user_failed_attempts` INT NOT NULL DEFAULT 0,
   `user_last_access` TIMESTAMP,
   `user_reset_password_hash` VARCHAR(255) NULL,
-  `user_reset_password_until` TIMESTAMP NULL,
+  `user_reset_password_expires` DATETIME NULL,
   `user_language_id` TINYINT UNSIGNED NOT NULL,
  
   PRIMARY KEY (`user_id`),
@@ -220,6 +220,8 @@ CREATE TABLE IF NOT EXISTS `customers` (
   `customer_failed_attempts` INT UNSIGNED NOT NULL DEFAULT 0,
   `customer_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `customer_last_access` TIMESTAMP,
+  `customer_reset_password_hash` VARCHAR(255) NULL,
+  `customer_reset_password_expires` DATETIME NULL,
   
   `customer_language_id` TINYINT UNSIGNED NOT NULL,  
   `customer_currency_id` TINYINT UNSIGNED NOT NULL,

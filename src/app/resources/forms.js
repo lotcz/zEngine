@@ -11,7 +11,7 @@ function validate_match(value, param) {
 }
 
 function validate_password(value, param) {
-	return true;
+	return validate_length(value, 5);
 }
 
 function validate_ip(value) {

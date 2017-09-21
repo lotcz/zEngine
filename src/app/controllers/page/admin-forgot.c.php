@@ -10,9 +10,10 @@
 			$reset_token = $this->z->auth->generateResetPasswordToken();
 			$expires = time() + $this->z->auth->getConfigValue('reset_password_expires');
 			$user->set('user_reset_password_hash', $this->z->auth->hashPassword($reset_token));
+			$user->set('user_reset_password_expires', zSqlQuery::mysqlTimestamp($expires));
 			$user->save();
 
-			$email_text = $this->t('To reset your password, visit this link: %s?user=%s&reset_token=%s. This link is only valid for %d days.', $user->val('user_email'), $this->url('admin-reset'), $reset_token, 7);
+			$email_text = $this->t('To reset your password, visit this link: %s?user=%s&reset_token=%s. This link is only valid for %d days.', $this->url('admin-reset'), $user->val('user_email'), $reset_token, 7);
 			$this->z->emails->sendPlain($user->val('user_email'), $this->t('Forgotten Password'), $email_text);
 			$this->message('An e-mail was sent to your address with reset password instructions.');
 		} else {

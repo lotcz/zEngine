@@ -6,30 +6,38 @@
 	$user_email = $this->get('user');
 
 	if (isset($reset_token) && isset($user_email)) {
-		$user = new UserModel($this->core->db);
+		$user = new UserModel($this->db);
+		$user->loadByLoginOrEmail($user_email);
 
-		if ($zUser->is_loaded && $zUser->val('user_reset_password_expires') > ModelBase::mysqlTimestamp(time()) && password_verify($reset_token, $zUser->val('user_reset_password_hash'))) {
-			if (isset($_POST['password']) && isset($_POST['password2'])) {
-				if ($_POST['password'] == $_POST['password2']) {
-					$zUser->data['user_password_hash'] = Authentication::hashPassword($_POST['password']);
-					$zUser->data['user_reset_password_hash'] = null;
-					$zUser->data['user_reset_password_expires'] = null;
-					$zUser->save();
-					$messages->add(t('Your password was reset.'), 'success');
+		$token_not_expired = ($user->val('user_reset_password_expires') > zSqlQuery::mysqlTimestamp(time()));
+		$token_valid = authModule::verifyPassword($reset_token, $user->val('user_reset_password_hash'));
+
+		if ($user->is_loaded && $token_not_expired && $token_valid) {
+			$password = $this->get('password');
+			$password2 = $this->get('password2');
+			if (isset($password) && isset($password2)) {
+				if ($password == $password2) {
+					$user->set('user_password_hash', $this->z->auth->hashPassword($password));
+					$user->set('user_reset_password_hash', null);
+					$user->set('user_reset_password_expires', null);
+					$user->save();
+					$this->message('Your password was reset.', 'success');
 				} else {
-					$messages->error(t('Passwords don\'t match.'));
+					$this->message('Passwords don\'t match.', 'error');
 				}
 			} else {
-				$data['show_form'] = true;
-				$data['user_id'] = $zUser->val('user_id');
-				$data['reset_token'] = $reset_token;
-				$messages->add(t('Enter your new password.'));
+				$show_form = true;
+				$this->z->core->includeJS('resources/forms.js');
+				$user_email = $user->val('user_email');
+				$this->message('Enter your new password.');
 			}
 		} else {
-			$messages->error(t('Your link seems to be invalid.'));
+			$this->message('Your link seems to be invalid.', 'error');
 		}
 	} else {
-		$messages->error(t('This page should only be accessed from link sent to your e-mail.'));
+		$this->message('This page should only be accessed from link sent to your e-mail.', 'error');
 	}
 
 	$this->setData('show_form', $show_form);
+	$this->setData('reset_token', $reset_token);
+	$this->setData('user_email', $user_email);
