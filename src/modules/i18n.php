@@ -127,7 +127,7 @@ class i18nModule extends zModule {
 	}
 
 	public function formatMoney($price) {
-		return $this->selected_currency->format(number_format($price, $this->selected_currency->ival('currency_decimals'), $this->selected_language->val('language_decimal_separator'), $this->selected_language->val('langauge_thousands_separator')));
+		return $this->selected_currency->format(number_format($price, $this->selected_currency->ival('currency_decimals'), $this->selected_language->val('language_decimal_separator'), $this->selected_language->val('language_thousands_separator')));
 	}
 
 	public function convertMoney($price) {

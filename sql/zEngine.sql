@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS `currencies` (
 ENGINE = InnoDB;
 
 INSERT INTO currencies (currency_name, currency_format, currency_value, currency_decimals) VALUES ('Kč','%s&nbsp;Kč', 1, 0);
-INSERT INTO currencies (currency_name, currency_format, currency_value, currency_decimals) VALUES ('EUR','EUR%s', 27.02, 2);
+INSERT INTO currencies (currency_name, currency_format, currency_value, currency_decimals) VALUES ('EUR','%s&nbsp;EUR', 27.02, 2);
 
 CREATE TABLE IF NOT EXISTS `ip_failed_attempts` (
   `ip_failed_attempt_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
