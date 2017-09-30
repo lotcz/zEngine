@@ -20,19 +20,16 @@ class custauthModule extends zModule {
 	public function onInit() {
 		$this->db = $this->z->core->db;
 		$this->checkAuthentication();
-		// create anonymous session
-		if (!$this->isAuth()) {
-			$token = $this->generateToken();
-			$this->customer = new CustomerModel($this->db);
-			$this->customer->data['customer_anonymous'] = 1;
-			$this->customer->data['customer_name'] = $this->z->core->t('Anonymous');
-			$this->customer->data['customer_email'] = 'anonymous@' . $token;
-			$this->customer->data['customer_language_id'] = 'anonymous@' . $token;
-			$this->customer->data['customer_currency_id'] = $this->z->i18n->selected_currency->val('currency_id');
-			$this->customer->data['customer_language_id'] = 1;
-			$this->customer->save();
-			$this->createSession();
-		}
+	}
+
+	public function createAnonymousSession() {
+		$this->customer = new CustomerModel($this->db);
+		$this->customer->data['customer_anonymous'] = 1;
+		$this->customer->data['customer_name'] = $this->z->core->t('Anonymous');
+		$this->customer->data['customer_currency_id'] = $this->z->i18n->selected_currency->val('currency_id');
+		$this->customer->data['customer_language_id'] = 1;
+		$this->customer->save();
+		$this->createSession();
 	}
 
 	private function createSession($token = null) {
@@ -40,7 +37,7 @@ class custauthModule extends zModule {
 		// TODO: check if IP address has too many sessions already
 
 		if (!(isset($token))) {
-			$token = $this->generatePasswordToken();
+			$token = $this->generateSessionToken();
 		}
 
 		$token_hash = Self::hashPassword($token);
@@ -98,35 +95,6 @@ class custauthModule extends zModule {
 		return false;
 	}
 
-	public function loginWithFacebook($access) {
-
-		if (isset($_COOKIE[$this->cookie_name])) {
-			$this->logout();
-		}
-
-		$customer = new CustomerModel($this->db);
-		$customer->loadSingleFiltered(
-			'customer_fb_access = ?',
-			[$access]
-		);
-
-		if ($customer->is_loaded) {
-			if ($customer->val('customer_failed_attempts') > $this->config['max_attempts']) {
-				die('Max. number of login attempts exceeded. Please ask for new password.');
-			}
-
-			$this->customer = $customer;
-			$this->createSession();
-			$this->updateLastAccess();
-
-		} else {
-			//TO DO: lof IP failed attempt
-			$customer->data['customer_failed_attempts'] += 1;
-			$customer->save();
-		}
-
-	}
-
 	public function checkAuthentication() {
 		$this->customer = null;
 
@@ -145,7 +113,7 @@ class custauthModule extends zModule {
 				$session->data['customer_session_expires'] = zSqlQuery::mysqlTimestamp($expires);
 				$session->save();
 				setcookie($this->config['cookie_name'], $this->session->val('customer_session_id') . '-' . $session_token, $expires, '/', false, false);
-				$this->customer = new CustomerModel($this->db, $this->session->val('customer_session_customer_id'));
+				$this->customer = new CustomerModel($this->db, $this->session->ival('customer_session_customer_id'));
 				$this->updateLastAccess();
 			}
 		}
@@ -199,8 +167,12 @@ class custauthModule extends zModule {
 		return authModule::generateRandomToken(50);
 	}
 
+	private function generateSessionToken() {
+		return authModule::generateRandomToken(50);
+	}
+
 	static function hashPassword($pass) {
-		return authModule::hashPassword($pass, PASSWORD_DEFAULT);
+		return authModule::hashPassword($pass);
 	}
 
 	static function verifyPassword($pass, $hash) {
