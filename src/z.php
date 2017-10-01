@@ -7,7 +7,6 @@ class zEngine {
 
 	public $app_dir = '';
 	public $modules = [];
-	public $version = '0.1';
 
 	function __construct($app_dir = 'app/') {
 		$this->app_dir = $app_dir;
