@@ -1,2 +1,2 @@
-git pull origin $1
-chown -R www-data:www-data .
+git checkout $1
+./update.sh
