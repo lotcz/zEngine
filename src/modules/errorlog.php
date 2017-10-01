@@ -5,7 +5,7 @@ class errorlogModule extends zModule {
 	public $path = '/var/log/zengine.log';
 
 	public function onEnabled() {
-		$this->base_url = $this->getConfigValue('error_log_path', $this->path);
+		$this->path = $this->getConfigValue('error_log_path', $this->path);
 	}
 
 	public function write($message) {
