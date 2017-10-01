@@ -1,2 +1,2 @@
-git pull origin $1
+git checkout $1
 ./update.sh
