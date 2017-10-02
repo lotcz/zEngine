@@ -51,7 +51,7 @@ class adminModule extends zModule {
 				$this->z->core->includeLESS('resources/less/admin.less');
 				$this->z->core->includeJS_head('resources/less/less.min.js');
 			} else {
-				$this->z->core->includeCSS('resources/admin.css');
+				$this->z->core->includeCSS('resources/admin.min.css');
 			}
 		}
 
@@ -85,7 +85,7 @@ class adminModule extends zModule {
 			$submenu->addItem('admin/translations', 'Translations');
 			$submenu->addItem('admin/ip_failed_attempts', 'Failed login attempts');
 			$submenu->addItem('admin/phpinfo', 'PHP Info');
-			$submenu->addItem('admin/about', 'About');			
+			$submenu->addItem('admin/about', 'About');
 
 			$menu->addRightItem('admin/logout', 'Log out');
 		} else if (!$this->is_login_page) {

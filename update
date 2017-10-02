@@ -1,2 +1,5 @@
 git pull
+cd src/app/resources/less
+make rebuild
+cd ../../../..
 chown -R www-data:www-data .

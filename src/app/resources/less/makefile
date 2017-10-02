@@ -14,5 +14,5 @@ min:
 clean:
 	rm -f *.css
 
-rebuild: clean build
+rebuild: clean build min
 
