@@ -1,5 +1,5 @@
-NODE = /usr/bin/nodejs
-LESS = /usr/local/bin/lessc
+NODE = nodejs
+LESS = ~/node_modules/less/bin/lessc
 IN = admin.less
 OUT = ../admin.css
 MIN-OUT = ../admin.min.css
