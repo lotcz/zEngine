@@ -227,7 +227,7 @@ class coreModule extends zModule {
 
 	public function url($link = '', $ret = null) {
 		$url = $this->base_url . '/' . $link;
-		if (isset($ret)) {
+		if (isset($ret) && strlen($ret) > 0) {
 			$url .= '?r=' . $ret;
 		}
 		return $url;
