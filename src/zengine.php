@@ -1,13 +1,13 @@
 <?php
 
-require_once __DIR__ . '/helpers.php';
+require_once __DIR__ . '/classes/z.php';
 require_once __DIR__ . '/classes/module.php';
 
 class zEngine {
 
 	public $app_dir = '';
 	public $modules = [];
-	public $version = 1.03;
+	public $version = 1.1;
 
 	function __construct($app_dir = 'app/') {
 		$this->app_dir = $app_dir;
