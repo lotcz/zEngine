@@ -30,7 +30,7 @@ class cartModule extends zModule {
 			$statement = zSqlQuery::executeSQL($this->db, $sql, [$customer_id]);
 			$result = $statement->get_result();
 			if ($row = $result->fetch_assoc()) {
-				$totals['total_cart_price'] = parseFloat($row['total_cart_price']);
+				$totals['total_cart_price'] = z::parseFloat($row['total_cart_price']);
 				$totals['total_cart_price_converted'] = $this->z->i18n->convertMoney($totals['total_cart_price']);
 				$totals['total_cart_price_formatted'] = $this->z->i18n->formatMoney($totals['total_cart_price_converted']);
 			}

@@ -1,8 +1,8 @@
-function validate_length(value, param) {		
+function validate_length(value, param) {
 	return value && (value.length >= parseInt(param));
 }
 
-function validate_maxlen(value, param) {		
+function validate_maxlen(value, param) {
 	return (!value) || (value.length <= parseInt(param));
 }
 
@@ -23,12 +23,12 @@ function validate_date(value, param) {
 }
 
 // simple email validation
-function validate_email(value) {		
+function validate_email(value) {
 	var re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 	return re.test(value);
 }
 
-// integer - param => allow empty 
+// integer - param => allow empty
 function validate_integer(n, param) {
 	if (param == 'false' || param == '0') {
 		param = false;
@@ -59,15 +59,22 @@ function validate_name(value) {
 	return is_valid;
 }
 
-function validate_zip(zip) {	
-	return validate_integer(zip, false) && (parseInt(zip) > 9999 && parseInt(zip) < 100000);
+function validate_zip(zip) {
+	var nZip;
+	if (!validate_integer(zip, false)) {
+		zZip = parseInt(zip.replace(' ',''));
+	} else {
+		nZip = zip;
+	}
+
+	return (parseInt(nZip) > 9999 && parseInt(nZip) < 100000);
 }
 
-function formValidation(frm) {	
+function formValidation(frm) {
 	this.frm = $('#' + frm);
 	this.is_valid = true;
 	this.fields = [];
-	
+
 	this.submit = function() {
 		this.is_valid = true;
 		for (var i = 0, max = this.fields.length; i < max; i++) {
@@ -77,25 +84,25 @@ function formValidation(frm) {
 			this.frm.submit();
 		}
 	}
-	
+
 	this.add = function(field_name, validation, param) {
 		this.fields.push(new formField(field_name, validation, param));
 	}
-	
+
 	this.val = function (field_name) {
 		return $("input[name='" + field_name + "']", this.frm).val();
 	}
-	
+
 	this.show_validation = function(field_name, validation, is_valid) {
 		if (is_valid) {
-			$('#' + field_name + '_validation_' + validation, this.frm).hide();		
-			$('#' + field_name + '_form_group', this.frm).removeClass('has-error');	
+			$('#' + field_name + '_validation_' + validation, this.frm).hide();
+			$('#' + field_name + '_form_group', this.frm).removeClass('has-error');
 		} else {
 			$('#' + field_name + '_validation_' + validation, this.frm).show();
-			$('#' + field_name + '_form_group', this.frm).addClass('has-error');	
+			$('#' + field_name + '_form_group', this.frm).addClass('has-error');
 		}
 	}
-	
+
 	this.validate = function(field) {
 		var is_valid = true;
 		var value = this.val(field.name);
@@ -106,17 +113,17 @@ function formValidation(frm) {
 			break;
 			default:
 				is_valid = window['validate_' + field.validation](value, field.param);
-		}		
+		}
 		this.show_validation(field.name, field.validation, is_valid);
 		return is_valid;
 	}
-	
+
 }
 
 function formField(field_name, validation, param) {
 	this.name = field_name;
 	this.validation = validation || 'length';
-	this.param = param || 1;	
+	this.param = param || 1;
 }
 
 function deleteItemConfirm(delete_question, delete_url) {

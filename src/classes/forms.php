@@ -1,28 +1,26 @@
 <?php
 
 class zForm {
-	
+
 	public $id;
-	public $action;	
+	public $action;
 	public $method;
 	public $css;
 	public $entity_title;
-	public $ret = false;
 	public $fields = [];
-	public $data = [];	
+	public $data = [];
 	public $processed_input = [];
 	public $is_valid = true;
 	public $render_wrapper = false;
 	public $images_module = null;
-	
+
 	function __construct($id = 'entity_name', $action = '', $method = 'POST', $css = 'form-horizontal admin-form') {
 		$this->id = $id;
-		$this->action = $action;		
+		$this->action = $action;
 		$this->method = $method;
 		$this->css = $css;
-		$this->ret = get('r', false);
 	}
-	
+
 	public function addField($field) {
 		$objField = (object)$field;
 		$objField->value = isset($objField->value) ? $objField->value : null;
@@ -32,17 +30,17 @@ class zForm {
 			$this->fields[] = $objField;
 		}
 	}
-	
+
 	public function add($fields) {
-		if (is_array($fields)) {			
+		if (is_array($fields)) {
 			foreach ($fields as $field) {
 				$this->addField($field);
-			}			
+			}
 		} else {
 			$this->addField($fields);
 		}
 	}
-	
+
 	public function processInput($data) {
 		$result = [];
 		$is_valid = true;
@@ -58,12 +56,12 @@ class zForm {
 					$name = $field->name . '_image_file';
 					if (isset($_FILES[$name]) && strlen($_FILES[$name]['name'])) {
 						$image = $this->images_module->uploadImage($name);
-						if (isset($image) && strlen($image) > 0) {							
+						if (isset($image) && strlen($image) > 0) {
 							$result[$field->name] = $image;
 						} else {
-							$is_valid = false;							
+							$is_valid = false;
 						}
-					}				
+					}
 				} elseif (isset($data[$field->name]) && !isset($field->disabled)) {
 					$result[$field->name] = $data[$field->name];
 				}
@@ -75,25 +73,25 @@ class zForm {
 	
 	public function prepare($db, $data) {
 		$this->data = $data;
-		
+
 		foreach ($this->fields as $field) {
 			if (isset($field->name)) {
 				$field->value = $this->data->val($field->name);
-				
+
 				if (($field->type == 'select') && (!isset($field->select_data))) {
-					
+
 					// prepare select filter
-					
+
 					$field->select_data = zModel::select(
-						$db, 
+						$db,
 						$field->select_table, /* table */
 						null, /* where */
 						null, /* bindings */
 						null, /* types */
 						null, /* paging */
-						$field->select_label_field /* orderby */						
+						$field->select_label_field /* orderby */
 					);
-					
+
 					if (isset($field->empty_option_name) && strlen($field->empty_option_name) > 0) {
 						$empty_option = new	zModel();
 						$empty_option->set($field->select_id_field, null);
@@ -111,11 +109,11 @@ class zForm {
 			}
 		}
 	}
-	
+
 	public function renderStartTag() {
 		?>
 			<form id="form_<?=$this->id ?>" action="<?=$this->action ?>" method="<?=$this->method ?>" class="<?=$this->css ?>" enctype="multipart/form-data">
 		<?php
 	}
-			
+
 }

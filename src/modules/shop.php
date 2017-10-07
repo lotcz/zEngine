@@ -53,10 +53,10 @@ class shopModule extends zModule {
 			$order_product->set('order_product_variant_id', $product->ival('car_variant_id'));
 			$order_product->set('order_product_name', $product->val('product_name'));
 			$order_product->set('order_product_variant_name', $product->val('product_variant_name'));
-			$order_product->set('order_product_price',  parseFloat($currency->convert($product->fval('actual_price'))));
+			$order_product->set('order_product_price', z::parseFloat($currency->convert($product->fval('actual_price'))));
 			$order_product->set('order_product_count', $product->ival('cart_count'));
 			$item_price = $currency->convert($product->fval('item_price'));
-			$order_product->set('order_product_item_price',  parseFloat($item_price));
+			$order_product->set('order_product_item_price', z::parseFloat($item_price));
 			$total_cart_value += $item_price;
 			$order_products[] = $order_product;
 		}

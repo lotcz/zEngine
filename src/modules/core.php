@@ -39,7 +39,7 @@ class coreModule extends zModule {
 		$this->debug_mode = $this->getConfigValue('debug_mode', $this->debug_mode);
 		$this->error_page = $this->getConfigValue('error_page', $this->error_page);
 		$this->setData('site_title', $this->getConfigValue('site_title', 'Site Name'));
-		$this->return_path = $this->get('r', false);
+		$this->return_path = z::get('r', false);
 		$this->includeJS('resources/jquery.min.js');
 	}
 
@@ -67,7 +67,7 @@ class coreModule extends zModule {
 	}
 
 	public function parseURL($url_path) {
-		$this->path = explode('/', trimSlashes(strtolower($url_path)));
+		$this->path = explode('/', z::trimSlashes(strtolower($url_path)));
 		$this->raw_path = implode('/', $this->path);
 	}
 
@@ -152,11 +152,13 @@ class coreModule extends zModule {
 		z::redirect(z::trimSlashes($this->base_url) . '/' . z::trimSlashes($url), $statusCode);
 	}
 
-	public function redirectBack($fallback_url = '') {
+	public function redirectBack($fallback_url = null) {
 		if ($this->return_path) {
 			$this->redirect($this->return_path);
-		} else {
+		} elseif (isset($fallback_url)) {
 			$this->redirect($fallback_url);
+		} else {
+			$this->redirect($this->raw_path);
 		}
 	}
 

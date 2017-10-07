@@ -3,23 +3,19 @@
 require_once __DIR__ . '/../classes/forms.php';
 
 class formsModule extends zModule {
-	
+
 	public function onEnabled() {
 		$this->requireModule('mysql');
 		$this->requireModule('messages');
 		$this->z->core->includeJS('resources/forms.js');
 	}
-	
+
 	public function pathParam() {
 		return $this->z->core->getPath(-1);
 	}
-	
+
 	public function pathAction() {
 		return $this->z->core->getPath(-2);
-	}
-	
-	public function isPost() {
-		return $this->z->core->isPost();
 	}
 
 	public function get($name, $def = null) {
@@ -27,26 +23,24 @@ class formsModule extends zModule {
 	}
 
 	public function processForm($form, $model_class_name) {
-		$model = new $model_class_name($this->z->core->db);		
-		if ($this->isPost()) {	
+		$model = new $model_class_name($this->z->core->db);
+		if (z::isPost()) {
 			if ($this->z->moduleEnabled('images')) {
 				$form->images_module = $this->z->images;
-			}		
+			}
 			if ($form->processInput($_POST)) {
 				if (parseInt($_POST[$model->id_name]) > 0) {
-					$model->loadById($_POST[$model->id_name]);			
+					$model->loadById($_POST[$model->id_name]);
 				}
 				$model->setData($form->processed_input);
 				if ($model->save()) {
-					if ($form->ret) {
-						$this->z->core->redirect($form->ret);
-					}
+					$this->z->core->redirectBack();
 				}
 			} else {
 				$this->z->messages->error('Input does not validate.');
 				$model->setData($form->processed_input);
 			}
-		} elseif ($this->pathAction() == 'edit') {		
+		} elseif ($this->pathAction() == 'edit') {
 			$model->loadById($this->pathParam());
 			$this->z->core->setPageTitle($this->z->core->t($form->entity_title) . ': ' . $this->z->core->t('Editing'));
 		} elseif ($this->pathAction() == 'delete') {
@@ -55,12 +49,12 @@ class formsModule extends zModule {
 					$this->z->core->redirect($form->ret);
 				}
 			}
-		} else {			
+		} else {
 			$this->z->core->setPageTitle($this->z->core->t($form->entity_title) . ': ' . $this->z->core->t('New'));
-		}		
+		}
 		$form->prepare($this->z->core->db, $model);
 	}
-	
+
 	public function getValidationMessage($validation) {
 		$type = $validation['type'];
 		$param = '';
@@ -81,8 +75,8 @@ class formsModule extends zModule {
 					return $this->z->core->t('This field cannot be empty.');
 				}
 			break;
-			case 'maxlen' :				
-				return $this->z->core->t('Maximum length is %s characters.', $param);				
+			case 'maxlen' :
+				return $this->z->core->t('Maximum length is %s characters.', $param);
 			break;
 			case 'email' :
 				return $this->z->core->t('Please enter valid e-mail address.');
@@ -100,11 +94,11 @@ class formsModule extends zModule {
 			case 'price' :
 				return $this->z->core->t('Please enter valid decimal number.');
 			break;
-			default:				
-				return $this->z->core->t('Required.');		
+			default:
+				return $this->z->core->t('Required.');
 		}
 	}
-	
+
 	public function renderSelect($name, $items, $id_name, $label_name, $selected_value = null) {
 		?>
 			<select name="<?=$name ?>" class="form-control">
@@ -121,26 +115,26 @@ class formsModule extends zModule {
 					}
 				?>
 			</select>
-		<?php		
+		<?php
 	}
-	
+
 	public function renderForm($form) {
-		
+
 		$this->z->core->includeJS('resources/forms.js');
-		
+
 		if ($form->render_wrapper) {
 			$form->renderStartTag();
 		}
-		
-		if ($form->ret) {
+
+		if ($this->z->core->return_path) {
 			?>
-				<input type="hidden" name="r" value="<?=$form->ret ?>" />
+				<input type="hidden" name="r" value="<?=$this->z->core->return_path ?>" />
 			<?php
 		}
-		
+
 		foreach ($form->fields as $field) {
 			$disabled = (isset($field->disabled)) ? $field->disabled : '';
-			
+
 			if ($field->type == 'hidden') {
 				?>
 					<input type="hidden" name="<?=$field->name ?>" id="field_<?=$field->name ?>" value="<?=$field->value ?>" />
@@ -157,7 +151,7 @@ class formsModule extends zModule {
 				?>
 						</div>
 					</div>
-				<?php					
+				<?php
 			} elseif ($field->type == 'buttons') {
 				?>
 					<div class="form-buttons">
@@ -185,39 +179,39 @@ class formsModule extends zModule {
 						<label for="<?=$field->name ?>" class="col-sm-4 control-label form-label"><?=$this->z->core->t($field->label) ?>:</label>
 						<div class="col-sm-8 form-field">
 							<?php
-														
-								switch ($field->type) {									
-									
+
+								switch ($field->type) {
+
 									case 'text' :
 									?>
 										<input type="text" id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> value="<?=$field->value ?>" class="form-control" />
 									<?php
-									break;			
-									
+									break;
+
 									case 'password' :
 									?>
 										<input type="password" id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> value="<?=$field->value ?>" class="form-control" />
 									<?php
-									break;	
-									
+									break;
+
 									case 'bool' :
 									?>
 										<input type="checkbox" id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> value="1" <?=($field->value) ? 'checked' : '' ?> class="form-control form-control-checkbox" />
 									<?php
-									break;	
-									
+									break;
+
 									case 'date' :
 									?>
 										<input type="datetime" id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> value="<?=$field->value ?>" class="form-control" />
 									<?php
 									break;
-									
+
 									case 'file' :
-									?>										
+									?>
 										<input type="file" id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> class="form-control-file" />
 									<?php
 									break;
-									
+
 									case 'image' :
 										if (isset($field->value)) {
 											$this->z->images->renderImage($field->value, 'mini-thumb');
@@ -227,7 +221,7 @@ class formsModule extends zModule {
 										<input type="file" name="<?=$field->name ?>_image_file" <?=$disabled ?> class="form-control-file" />
 									<?php
 									break;
-							
+
 									case 'select' :
 										$this->renderSelect(
 											$field->name,
@@ -237,27 +231,27 @@ class formsModule extends zModule {
 											$field->value
 										);
 									break;
-									
+
 									case 'foreign_key_link' :
 										?>
 											<p class="form-control-static">
 												<?php
 													$this->z->core->renderLink(
 														$field->link_url,
-														$field->link_label															
+														$field->link_label
 													);
 												?>
 											</p>
 										<?php
 									break;
-									
+
 									case 'static' :
 										?>
 											<p class="form-control-static"><?=$field->value ?></p>
 										<?php
 									break;
 								}
-							
+
 								if (isset($field->validations)) {
 									foreach ($field->validations as $validation) {
 										?>
@@ -265,29 +259,29 @@ class formsModule extends zModule {
 										<?php
 									}
 								}
-								
+
 								if (isset($field->hint)) {
 									?>
 										<small class="text-muted"><?=$this->z->core->t($field->hint) ?></small>
 									<?php
 								}
-							?>											
-							
+							?>
+
 						</div>
-						
+
 					</div>
 				<?php
-			}						
+			}
 		}
-	
+
 		if ($form->render_wrapper) {
 			?>
 				</form>
 			<?php
 		}
-		
+
 		?>
-				
+
 			<script>
 				function validateForm_<?=$form->id ?>() {
 					var frm = new formValidation('form_<?=$form->id ?>');
@@ -301,11 +295,11 @@ class formsModule extends zModule {
 									}
 								}
 							}
-						?>						
+						?>
 					frm.submit();
-				}			
+				}
 			</script>
-		
+
 		<?php
 	}
 

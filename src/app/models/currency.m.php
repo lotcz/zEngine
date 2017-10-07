@@ -6,11 +6,11 @@ class CurrencyModel extends zModel {
 	public $id_name = 'currency_id';
 
 	public function convert($price) {
-		return parseFloat($price) / $this->fval('currency_value');
+		return z::parseFloat($price) / $this->fval('currency_value');
 	}
 
 	public function format($price) {
 		return sprintf($this->val('currency_format'), $price);
 	}
-		
+
 }

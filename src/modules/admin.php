@@ -120,12 +120,12 @@ class adminModule extends zModule {
 
 	public function getAdminFormButtons($form) {
 		$buttons = [];
-		$buttons[] = ['type' => 'link', 'label' => 'Back', 'link_url' => $form->ret];
+		$buttons[] = ['type' => 'link', 'label' => 'Back', 'link_url' => $this->z->core->return_path];
 
 		$model_id = $form->data->ival($form->data->id_name);
 		if ($model_id > 0) {
 			$delete_question = $this->z->core->t('Are you sure to delete this item?');
-			$delete_url = $this->z->core->url(sprintf($this->base_url . '/default/default/' . $form->id . '/delete/%d', $model_id), $form->ret);
+			$delete_url = $this->z->core->url(sprintf($this->base_url . '/default/default/' . $form->id . '/delete/%d', $model_id), $this->z->core->return_path);
 			$buttons[] = ['type' => 'button', 'label' => 'Delete', 'onclick' => 'deleteItemConfirm(\'' . $delete_question . '\',' . '\'' . $delete_url . '\');', 'css' => 'btn btn-error' ];
 		}
 
