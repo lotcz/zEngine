@@ -101,7 +101,7 @@ class adminModule extends zModule {
 	}
 
 	public function renderAdminTable($table_name, $entity_name, $fields, $filter_fields = null) {
-		$form = new zForm($entity_name, '', 'POST', 'form-inline spaced');
+		$form = new zForm($entity_name, '', 'POST', 'form-inline');
 		$form->render_wrapper = true;
 		$form->addField([
 			'name' => 'form_buttons',

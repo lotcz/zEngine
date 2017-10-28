@@ -19,7 +19,7 @@
 		);
 
 		foreach ($translations as $translation) {
-			fwrite($file, sprintf('$language_data[\'%s\'] = \'%s\';', $this->z->core->escapeSingleQuotes($translation->val('translation_name')), $this->z->core->escapeSingleQuotes($translation->val('translation_translation'))) . PHP_EOL);
+			fwrite($file, sprintf('$language_data[\'%s\'] = \'%s\';', z::escapeSingleQuotes($translation->val('translation_name')), z::escapeSingleQuotes($translation->val('translation_translation'))) . PHP_EOL);
 		}
 
 		fwrite($file, 'return $language_data;' . PHP_EOL);
