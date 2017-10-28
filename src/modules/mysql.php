@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../classes/query.php';
+require_once __DIR__ . '/../classes/paging.php';
 require_once __DIR__ . '/../classes/model.php';
 
 class mysqlModule extends zModule {

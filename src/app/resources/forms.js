@@ -22,6 +22,10 @@ function validate_date(value, param) {
 	return validate_length(value, 5);
 }
 
+function validate_html(value, param) {
+	return true;
+}
+
 // simple email validation
 function validate_email(value) {
 	var re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;

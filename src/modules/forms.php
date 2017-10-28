@@ -7,7 +7,7 @@ class formsModule extends zModule {
 	public function onEnabled() {
 		$this->requireModule('mysql');
 		$this->requireModule('messages');
-		$this->z->core->includeJS('resources/forms.js');
+		$this->z->core->includeJS('resources/forms.js');		
 	}
 
 	public function pathParam() {
@@ -29,11 +29,19 @@ class formsModule extends zModule {
 				$form->images_module = $this->z->images;
 			}
 			if ($form->processInput($_POST)) {
-				if (parseInt($_POST[$model->id_name]) > 0) {
+				if (z::parseInt($_POST[$model->id_name]) > 0) {
 					$model->loadById($_POST[$model->id_name]);
 				}
 				$model->setData($form->processed_input);
+				if ($form->onBeforeUpdate !== null) {
+					$onBeforeUpdate = $form->onBeforeUpdate;
+					$onBeforeUpdate($this->z, $form, $model);
+				}
 				if ($model->save()) {
+					if ($form->onAfterUpdate !== null) {
+						$onAfterUpdate = $form->onAfterUpdate;
+						$onAfterUpdate($this->z, $form, $model);
+					}
 					$this->z->core->redirectBack();
 				}
 			} else {
@@ -44,8 +52,17 @@ class formsModule extends zModule {
 			$model->loadById($this->pathParam());
 			$this->z->core->setPageTitle($this->z->core->t($form->entity_title) . ': ' . $this->z->core->t('Editing'));
 		} elseif ($this->pathAction() == 'delete') {
-			if ($model->deleteById($this->pathParam())) {
-				if ($form->ret) {
+			$model_id = z::parseInt($this->pathParam());
+			if ($form->onBeforeDelete !== null) {
+				$onBeforeDelete = $form->onBeforeDelete;
+				$onBeforeDelete($this->z, $form, $model_id);
+			}
+			if ($model->deleteById($model_id)) {
+				if ($form->onAfterDelete !== null) {
+					$onAfterDelete = $form->onAfterDelete;
+					$onAfterDelete($this->z, $form, $model_id);
+				}
+				if (isset($form->ret)) {
 					$this->z->core->redirect($form->ret);
 				}
 			}
@@ -69,7 +86,7 @@ class formsModule extends zModule {
 				return $this->z->core->t('Value must be higher than %s.', $param);
 			break;
 			case 'length' :
-				if (parseInt($param) > 1) {
+				if (z::parseInt($param) > 1) {
 					return $this->z->core->t('Value must be at least %s characters long.', $param);
 				} else {
 					return $this->z->core->t('This field cannot be empty.');
@@ -119,8 +136,6 @@ class formsModule extends zModule {
 	}
 
 	public function renderForm($form) {
-
-		$this->z->core->includeJS('resources/forms.js');
 
 		if ($form->render_wrapper) {
 			$form->renderStartTag();
@@ -185,6 +200,18 @@ class formsModule extends zModule {
 									case 'text' :
 									?>
 										<input type="text" id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> value="<?=$field->value ?>" class="form-control" />
+									<?php
+									break;
+
+									case 'textarea' :
+									?>
+										<textarea id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> class="form-control"><?=$field->value ?></textarea>
+									<?php
+									break;
+
+									case 'html' :
+									?>
+										<textarea id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> class="htmlarea"><?=$field->value ?></textarea>
 									<?php
 									break;
 

@@ -4,17 +4,14 @@ require_once __DIR__ . '/../classes/paging.php';
 require_once __DIR__ . '/../classes/tables.php';
 
 class tablesModule extends zModule {
-	
+
 	public function onEnabled() {
 		$this->requireModule('mysql');
 	}
-	
-	public function renderTable($table) {	
-	
-		// TO DO - render filter form here, take from original tables class
-		
+
+	public function renderTable($table) {
 		$table->paging->renderLinks();
-		
+
 		?>
 
 			<div class="table-responsive">
@@ -33,7 +30,7 @@ class tablesModule extends zModule {
 					</thead>
 					<tbody>
 					<?php
-						
+
 						foreach ($table->data as $row) {
 							$item_url = $this->z->core->url(sprintf($table->edit_link, $row->val($table->id_field)), $this->z->core->raw_path);
 							?>
@@ -55,6 +52,6 @@ class tablesModule extends zModule {
 			</div>
 
 		<?php
-	}	
-	
+	}
+
 }

@@ -13,6 +13,11 @@ class zForm {
 	public $is_valid = true;
 	public $render_wrapper = false;
 	public $images_module = null;
+	
+	public $onBeforeUpdate = null;
+	public $onAfterUpdate = null;
+	public $onBeforeDelete = null;
+	public $onAfterDelete = null;
 
 	function __construct($id = 'entity_name', $action = '', $method = 'POST', $css = 'form-horizontal admin-form') {
 		$this->id = $id;
@@ -70,7 +75,7 @@ class zForm {
 		$this->processed_input = $result;
 		return ($is_valid) ? $result : false;
 	}
-	
+
 	public function prepare($db, $data) {
 		$this->data = $data;
 

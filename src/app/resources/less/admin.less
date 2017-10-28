@@ -6,6 +6,10 @@ body {
 	margin-top: @top-menu-height + @default-padding;
 }
 
+.spaced {
+	padding-top:@default-padding;
+}
+
 .form-validation {
 	display:none;
 	color:red;
@@ -25,6 +29,11 @@ body {
 	margin-top:@default-padding;
 }
 
+.form-inline .form-buttons {
+	display:inline-block;
+	text-align:left;
+}
+
 .form-field {
 	text-align:left;
 }
@@ -41,8 +50,18 @@ body {
 .ajax-loader {
 	opacity:0;
 	display:inline-block;
-	margin:auto;	
+	margin:auto;
 	background-image:url('/resources/ajax-loader.gif');
 	width:31px;
 	height:31px;
+}
+
+.htmlarea {
+	height:450px;
+	width:100%;
+	display:inline-block;
+}
+
+.jHtmlArea .h1, .jHtmlArea .h2, .jHtmlArea .h3, .jHtmlArea .h4, .jHtmlArea .h5, .jHtmlArea .h6 {
+	margin:0;
 }

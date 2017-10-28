@@ -67,4 +67,8 @@ class z {
 		return str_replace('\'', '\\\'', $str);
 	}
 
+  static function debug($var) {
+    var_dump($var);
+    die();
+  }
 }

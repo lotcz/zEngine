@@ -11,6 +11,7 @@ class custauthModule extends zModule {
 	public $session = null;
 
 	public function onEnabled() {
+		$this->requireModule('auth');
 		$this->requireModule('i18n');
 		$this->requireModule('messages');
 		$this->requireModule('emails');

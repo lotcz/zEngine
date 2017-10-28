@@ -74,6 +74,7 @@ class adminModule extends zModule {
 
 			//standard admin menu
 			$submenu = $menu->addSubmenu('Admin');
+			$submenu->addItem('admin/static_pages', 'Static pages');
 			$submenu->addHeader('Administrators');
 			$submenu->addItem('admin/users', 'Administrators');
 			$submenu->addItem('admin/roles', 'Roles');
@@ -99,14 +100,8 @@ class adminModule extends zModule {
 		$this->z->menu->renderMenu($this->menu);
 	}
 
-	public function renderAdminTable($table_name, $entity_name, $fields) {
-		$table = new zAdminTable($table_name, $entity_name);
-		$table->add($fields);
-		$table->prepare($this->z->core->db);
-		$this->z->core->setData('table', $table);
-		$this->z->core->setPageTemplate('admin');
-
-		$form = new zForm($entity_name);
+	public function renderAdminTable($table_name, $entity_name, $fields, $filter_fields = null) {
+		$form = new zForm($entity_name, '', 'POST', 'form-inline spaced');
 		$form->render_wrapper = true;
 		$form->addField([
 			'name' => 'form_buttons',
@@ -115,7 +110,30 @@ class adminModule extends zModule {
 				['type' => 'link', 'label' => 'New', 'css' => 'btn btn-success' , 'link_url' => $this->base_url . '/' . $entity_name . '?r=' . $this->z->core->raw_path]
 			]
 		]);
+		if (isset($filter_fields)) {
+			$form->add($filter_fields);
+			$form->addField([
+				'name' => 'form_filter_button',
+				'type' => 'buttons',
+				'buttons' => [
+					['type' => 'submit', 'label' => 'Search', 'css' => 'btn btn-success'],
+					['type' => 'link', 'label' => 'Reset', 'css' => 'btn btn-default', 'link_url' => $this->z->core->raw_path]
+				]
+			]);
+		}
+		if (z::isPost()) {
+			$form->processInput($_POST);
+		}
 		$this->z->core->setData('form', $form);
+
+		$table = new zAdminTable($table_name, $entity_name);
+		$table->add($fields);
+		if (isset($filter_fields)) {
+			$table->filter_form = $form;
+		}
+		$table->prepare($this->z->core->db);
+		$this->z->core->setData('table', $table);
+		$this->z->core->setPageTemplate('admin');
 	}
 
 	public function getAdminFormButtons($form) {
@@ -133,10 +151,15 @@ class adminModule extends zModule {
 		return $buttons;
 	}
 
-	public function renderAdminForm($entity_name, $model_class_name, $fields) {
+	public function renderAdminForm($entity_name, $model_class_name, $fields, $onBeforeUpdate = null, $onAfterUpdate = null, $onBeforeDelete = null, $onAfterDelete = null) {
 		$form = new zForm($entity_name);
 		$form->entity_title = ucwords(str_replace('_', ' ', $entity_name));
 		$form->render_wrapper = true;
+		$form->onBeforeUpdate = $onBeforeUpdate;
+		$form->onAfterUpdate = $onAfterUpdate;
+		$form->onBeforeDelete = $onBeforeDelete;
+		$form->onAfterDelete = $onAfterDelete;
+
 		$form->addField(
 			[
 				'name' => $entity_name . '_id',

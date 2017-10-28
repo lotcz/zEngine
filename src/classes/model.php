@@ -89,6 +89,7 @@ class zModel {
 			while ($row = $result->fetch_assoc()) {
 				$model = new $class($db);
 				$model->setData($row);
+				$model->is_loaded = true;
 				$list[] = $model;
 			}
 			$stmt->close();
@@ -222,4 +223,13 @@ class zModel {
 			}
 		}
 	}
+
+	static function sum($arr, $field) {
+		$sum = 0;
+		foreach ($arr as $model) {
+			$sum += $model->fval($field, 0);
+		}
+		return $sum;
+	}
+
 }

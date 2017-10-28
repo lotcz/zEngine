@@ -270,12 +270,12 @@ class coreModule extends zModule {
 		$this->z->admin->renderAdminMenu();
 	}
 
-	public function renderAdminTable($table_name, $entity_name, $fields) {
-		$this->z->admin->renderAdminTable($table_name, $entity_name, $fields);
+	public function renderAdminTable($table_name, $entity_name, $fields, $filter_fields = null) {
+		$this->z->admin->renderAdminTable($table_name, $entity_name, $fields, $filter_fields);
 	}
 
-	public function renderAdminForm($entity_name, $model_class_name, $fields) {
-		$this->z->admin->renderAdminForm($entity_name, $model_class_name, $fields);
+	public function renderAdminForm($entity_name, $model_class_name, $fields, $onBeforeUpdate = null, $onAfterUpdate = null, $onBeforeDelete = null, $onAfterDelete = null) {
+		$this->z->admin->renderAdminForm($entity_name, $model_class_name, $fields, $onBeforeUpdate, $onAfterUpdate, $onBeforeDelete, $onAfterDelete);
 	}
 
 	/*
@@ -333,7 +333,12 @@ class coreModule extends zModule {
 			$this->setData("partials.$partial_name", $data);
 			include $template_path;
 		} else {
+			$default_template_path = $this->default_app_dir . "views/partial/" .  $partial_name . '.v.php';
+			if (file_exists($default_template_path)) {
+				include $default_template_path;
+			} else {
 			echo "Template for partial view $partial_name not found: $template_path!";
+			}
 		}
 	}
 

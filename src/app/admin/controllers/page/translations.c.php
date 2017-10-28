@@ -17,5 +17,13 @@
 				'name' => 'language_name',
 				'label' => 'Language'
 			]
+		],
+		[
+			[
+				'name' => 'search_text',
+				'label' => 'Search',
+				'type' => 'text',
+				'filter_fields' => ['translation_name', 'translation_translation']
+			]
 		]
 	);

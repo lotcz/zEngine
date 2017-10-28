@@ -28,48 +28,52 @@ class i18nModule extends zModule {
 		$this->available_currencies = CurrencyModel::all($this->db);
 		$this->available_languages = LanguageModel::all($this->db);
 
-		// first, use currency and language from cookies, if available
-		if (isset($_COOKIE[$this->currency_cookie_name])) {
-			$this->selectCurrencyByID($_COOKIE[$this->currency_cookie_name]);
-		}
-		if (isset($_COOKIE[$this->language_cookie_name])) {
-			$this->selectLanguageByID($_COOKIE[$this->language_cookie_name]);
-		}
+		if (!$this->getConfigValue('force_default_language')) {
 
-		if ($this->z->moduleEnabled('custauth') && $this->z->custauth->isAuth()) {
-			// update customer default currency if different from cookie values
-			if (isset($this->selected_currency)) {
-				if ($this->z->custauth->customer->ival('customer_currency_id') != $this->selected_currency->ival('currency_id')) {
-					$this->z->custauth->customer->set('customer_currency_id', $this->selected_currency->ival('currency_id'));
-					$this->z->custauth->customer->save($this->db);
+			// first, use currency and language from cookies, if available
+			if (isset($_COOKIE[$this->currency_cookie_name])) {
+				$this->selectCurrencyByID($_COOKIE[$this->currency_cookie_name]);
+			}
+			if (isset($_COOKIE[$this->language_cookie_name])) {
+				$this->selectLanguageByID($_COOKIE[$this->language_cookie_name]);
+			}
+
+			if ($this->z->moduleEnabled('custauth') && $this->z->custauth->isAuth()) {
+				// update customer default currency if different from cookie values
+				if (isset($this->selected_currency)) {
+					if ($this->z->custauth->customer->ival('customer_currency_id') != $this->selected_currency->ival('currency_id')) {
+						$this->z->custauth->customer->set('customer_currency_id', $this->selected_currency->ival('currency_id'));
+						$this->z->custauth->customer->save($this->db);
+					}
+				} else {
+					// use saved customer defaults otherwise
+					$this->selectCurrencyByID($this->z->custauth->ival('customer_currency_id'));
 				}
-			} else {
-				// use saved customer defaults otherwise
-				$this->selectCurrencyByID($this->z->custauth->ival('customer_currency_id'));
-			}
 
-			// update customer default language if different from cookie values
-			if (isset($this->selected_language)) {
-				if ($this->z->custauth->customer->ival('customer_language_id') != $this->selected_language->ival('language_id')) {
-					$this->z->custauth->customer->set('customer_language_id', $this->selected_language->ival('language_id'));
-					$this->z->custauth->customer->save($this->db);
+				// update customer default language if different from cookie values
+				if (isset($this->selected_language)) {
+					if ($this->z->custauth->customer->ival('customer_language_id') != $this->selected_language->ival('language_id')) {
+						$this->z->custauth->customer->set('customer_language_id', $this->selected_language->ival('language_id'));
+						$this->z->custauth->customer->save($this->db);
+					}
+				} else {
+					// use saved customer defaults otherwise
+					$this->selectLanguageByID($this->z->custauth->ival('customer_language_id'));
 				}
-			} else {
-				// use saved customer defaults otherwise
-				$this->selectLanguageByID($this->z->custauth->ival('customer_language_id'));
 			}
-		}
 
-		// try to use browser's language if available
-		if (!isset($this->selected_language)) {
-			if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
-				$this->selectLanguageByCode(strtolower(substr($_SERVER['HTTP_ACCEPT_LANGUAGE'],0,2)));
+			// try to use browser's language if available
+			if (!isset($this->selected_language)) {
+				if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+					$this->selectLanguageByCode(strtolower(substr($_SERVER['HTTP_ACCEPT_LANGUAGE'],0,2)));
+				}
 			}
+			
 		}
 
 		// fallback to default language
 		if (!isset($this->selected_language)) {
-			$this->selectLanguageByCode($this->config['default_language']);
+			$this->selectLanguageByCode($this->getConfigValue('default_language'));
 		}
 
 	}

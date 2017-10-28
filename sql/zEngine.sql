@@ -463,7 +463,7 @@ CREATE TABLE IF NOT EXISTS `order_products` (
   `order_product_item_price` DECIMAL(10,2) UNSIGNED NOT NULL,
 
   PRIMARY KEY (`order_product_id`),
-  CONSTRAINT `order_product_pruduct_fk`
+  CONSTRAINT `order_product_product_fk`
     FOREIGN KEY (`order_product_product_id`)
     REFERENCES `products` (`product_id`)
     ON DELETE SET NULL,
@@ -476,6 +476,27 @@ CREATE TABLE IF NOT EXISTS `order_products` (
     REFERENCES `product_variants` (`product_variant_id`)
     ON DELETE SET NULL
 ) ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS `static_pages` (
+ `static_page_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+ `static_page_title` VARCHAR(100) NOT NULL,
+ `static_page_alias_id` INT UNSIGNED,
+ `static_page_content` TEXT,
+ 
+  PRIMARY KEY (`static_page_id`),
+   CONSTRAINT `static_page_alias_fk`
+    FOREIGN KEY (`static_page_alias_id`)
+    REFERENCES `aliases` (`alias_id`)
+    ON DELETE SET NULL
+) ENGINE = InnoDB;
+
+DROP VIEW IF EXISTS `viewStaticPages`;
+
+CREATE VIEW viewStaticPages AS
+	SELECT *
+    FROM static_pages sp
+    LEFT OUTER JOIN aliases a ON (a.alias_id = sp.static_page_alias_id);
+
 
 DROP VIEW IF EXISTS `viewCategories`;
 
@@ -501,7 +522,6 @@ CREATE VIEW viewProductsInCart AS
     LEFT OUTER JOIN products p ON (c.cart_product_id = p.product_id)
     LEFT OUTER JOIN product_variants pv ON (c.cart_variant_id = pv.product_variant_id)
     LEFT OUTER JOIN aliases a ON (a.alias_id = p.product_alias_id);
-    
 
 DROP VIEW IF EXISTS `viewOrders`;
 
