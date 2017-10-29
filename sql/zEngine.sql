@@ -110,7 +110,7 @@ CREATE TABLE IF NOT EXISTS `user_sessions` (
   `user_session_token_hash` VARCHAR(255) NOT NULL,
   `user_session_user_id` INT(10) UNSIGNED NOT NULL,
   `user_session_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `user_session_expires` TIMESTAMP NOT NULL,
+  `user_session_expires` DATETIME NULL,
   `user_session_ip` VARCHAR(15),
   PRIMARY KEY (`user_session_id`),
   CONSTRAINT `user_session_user_fk`
@@ -219,7 +219,7 @@ CREATE TABLE IF NOT EXISTS `customers` (
   `customer_password_hash` VARCHAR(255) ,
   `customer_failed_attempts` INT UNSIGNED NOT NULL DEFAULT 0,
   `customer_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `customer_last_access` TIMESTAMP,
+  `customer_last_access` DATETIME,
   `customer_reset_password_hash` VARCHAR(255) NULL,
   `customer_reset_password_expires` DATETIME NULL,
   
@@ -261,7 +261,7 @@ CREATE TABLE IF NOT EXISTS `customer_sessions` (
   `customer_session_token_hash` VARCHAR(255) NOT NULL,
   `customer_session_customer_id` INT(10) UNSIGNED NOT NULL,
   `customer_session_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `customer_session_expires` TIMESTAMP NOT NULL,
+  `customer_session_expires` DATETIME NULL,
   `customer_session_ip` VARCHAR(15) NOT NULL,
   PRIMARY KEY (`customer_session_id`),
   CONSTRAINT `customer_session_customer_fk`
