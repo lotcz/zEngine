@@ -40,23 +40,7 @@ class z {
 	}
 
 	static function trim($s, $chrs = ' .,-*/1234567890') {
-		do {
-			$trimmed = false;
-			if (strlen($s)) {
-				for ($i = 0, $max = strlen($chrs); $i < $max; $i++) {
-					if ($s[0] == $chrs[$i]) {
-						$s = substr($s,1,strlen($s)-1);
-						$trimmed = true;
-					}
-					if ($s[strlen($s)-1] == $chrs[$i]) {
-						$s = substr($s,0,strlen($s)-1);
-						$trimmed = true;
-					}
-				}
-			}
-		} while ($trimmed);
-
-		return $s;
+		return trim($s, $chrs);
 	}
 
 	static function trimSlashes($s) {

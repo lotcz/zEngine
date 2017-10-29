@@ -7,7 +7,7 @@ class formsModule extends zModule {
 	public function onEnabled() {
 		$this->requireModule('mysql');
 		$this->requireModule('messages');
-		$this->z->core->includeJS('resources/forms.js');		
+		$this->z->core->includeJS('resources/forms.js');
 	}
 
 	public function pathParam() {
@@ -116,7 +116,7 @@ class formsModule extends zModule {
 		}
 	}
 
-	public function renderSelect($name, $items, $id_name, $label_name, $selected_value = null) {
+	public function renderSelect($name, $items, $id_name, $label_name, $localized = false, $selected_value = null) {
 		?>
 			<select name="<?=$name ?>" class="form-control">
 				<?php
@@ -126,9 +126,13 @@ class formsModule extends zModule {
 						if ($value == $selected_value) {
 							$selected = 'selected';
 						}
-						?>
-							<option value="<?=$items[$i]->val($id_name) ?>" <?=$selected ?> ><?=$items[$i]->val($label_name) ?></option>
-						<?php
+						$label_text = $items[$i]->val($label_name);
+						if ($localized) {
+							$label_text = $this->z->core->t($items[$i]->val($label_name));
+						}
+							?>
+								<option value="<?=$items[$i]->val($id_name) ?>" <?=$selected ?> ><?=$label_text ?></option>
+							<?php
 					}
 				?>
 			</select>
@@ -136,6 +140,16 @@ class formsModule extends zModule {
 	}
 
 	public function renderForm($form) {
+		$label_css = '';
+		$value_css = '';
+
+		if ($form->type == 'inline') {
+			$label_css = '';
+			$value_css = '';
+		} else {
+			$label_css = 'col-sm-4';
+			$value_css = 'col-sm-8';
+		}
 
 		if ($form->render_wrapper) {
 			$form->renderStartTag();
@@ -191,8 +205,8 @@ class formsModule extends zModule {
 			} else {
 				?>
 					<div id="<?=$field->name ?>_form_group" class="form-group">
-						<label for="<?=$field->name ?>" class="col-sm-4 control-label form-label"><?=$this->z->core->t($field->label) ?>:</label>
-						<div class="col-sm-8 form-field">
+						<label for="<?=$field->name ?>" class="<?=$label_css ?> control-label form-label"><?=$this->z->core->t($field->label) ?>:</label>
+						<div class="<?=$value_css ?> form-field">
 							<?php
 
 								switch ($field->type) {
@@ -255,6 +269,7 @@ class formsModule extends zModule {
 											$field->select_data,
 											$field->select_id_field,
 											$field->select_label_field,
+											$field->select_label_localized,
 											$field->value
 										);
 									break;
@@ -275,6 +290,18 @@ class formsModule extends zModule {
 									case 'static' :
 										?>
 											<p class="form-control-static"><?=$field->value ?></p>
+										<?php
+									break;
+
+									case 'staticdate' :
+										?>
+											<p class="form-control-static"><?=$this->z->i18n->formatDatetime(strtotime($field->value));?></p>
+										<?php
+									break;
+
+									case 'staticlocalized' :
+										?>
+											<p class="form-control-static"><?=$this->z->core->t($field->value);?></p>
 										<?php
 									break;
 								}

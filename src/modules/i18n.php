@@ -68,7 +68,7 @@ class i18nModule extends zModule {
 					$this->selectLanguageByCode(strtolower(substr($_SERVER['HTTP_ACCEPT_LANGUAGE'],0,2)));
 				}
 			}
-			
+
 		}
 
 		// fallback to default language
@@ -136,6 +136,14 @@ class i18nModule extends zModule {
 
 	public function convertMoney($price) {
 		return $this->selected_currency->convert($price);
+	}
+
+	public function formatDate($date) {
+		return $this->selected_language->formatDate($date);
+	}
+
+	public function formatDatetime($date) {
+		return $this->selected_language->formatDatetime($date);
 	}
 
 	// return javascript equivalent of formatMoney and convertMoney

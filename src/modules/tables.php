@@ -10,7 +10,9 @@ class tablesModule extends zModule {
 	}
 
 	public function renderTable($table) {
-		$table->paging->renderLinks();
+		if (isset($table->paging)) {
+			$table->paging->renderLinks();
+		}
 
 		?>
 
@@ -38,7 +40,17 @@ class tablesModule extends zModule {
 									<?php
 										foreach ($table->fields as $field) {
 											?>
-												<td><?=$row->val($field->name) ?></td>
+												<td>
+													<?php
+														if (!isset($field->type)) {
+															echo $row->val($field->name);
+														} elseif ($field->type == 'date') {
+															echo $this->z->i18n->formatDatetime(strtotime($row->val($field->name)));
+														} elseif ($field->type == 'localized') {
+															echo $this->z->core->t($row->val($field->name));
+														}
+													?>
+												</td>
 											<?php
 										}
 									?>

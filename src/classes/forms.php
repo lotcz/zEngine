@@ -3,6 +3,7 @@
 class zForm {
 
 	public $id;
+	public $type = 'horizontal';
 	public $action;
 	public $method;
 	public $css;
@@ -13,7 +14,7 @@ class zForm {
 	public $is_valid = true;
 	public $render_wrapper = false;
 	public $images_module = null;
-	
+
 	public $onBeforeUpdate = null;
 	public $onAfterUpdate = null;
 	public $onBeforeDelete = null;
@@ -29,6 +30,7 @@ class zForm {
 	public function addField($field) {
 		$objField = (object)$field;
 		$objField->value = isset($objField->value) ? $objField->value : null;
+		$objField->select_label_localized = isset($objField->select_label_localized) ? $objField->select_label_localized : false;
 		if (isset($field['name'])) {
 			$this->fields[$field['name']] = $objField;
 		} else {
