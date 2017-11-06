@@ -5,7 +5,7 @@
 
 	if (z::isPost()) {
 		$user = new UserModel($this->db);
-		$user->loadByLoginOrEmail($this->get('email'));
+		$user->loadByLoginOrEmail(z::get('email'));
 		if ($user->is_loaded) {
 			$reset_token = $this->z->auth->generateResetPasswordToken();
 			$expires = time() + $this->z->auth->getConfigValue('reset_password_expires');
