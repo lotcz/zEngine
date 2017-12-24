@@ -111,7 +111,7 @@ class custauthModule extends zModule {
 				$expires = time()+$this->config['session_expire'];
 				$session = new CustomerSessionModel($this->db);
 				$session->data['customer_session_id'] = $session_id;
-				$session->data['customer_session_expires'] = zSqlQuery::mysqlTimestamp($expires);
+				$session->data['customer_session_expires'] = zSqlQuery::mysqlDatetime($expires);
 				$session->save();
 				setcookie($this->config['cookie_name'], $this->session->val('customer_session_id') . '-' . $session_token, $expires, '/', false, false);
 				$this->customer = new CustomerModel($this->db, $this->session->ival('customer_session_customer_id'));
@@ -133,7 +133,7 @@ class custauthModule extends zModule {
 		if ($this->isAuth()) {
 			$customer = new CustomerModel($this->db);
 			$customer->data['customer_id'] = $this->customer->val('customer_id');
-			$customer->data['customer_last_access'] = zSqlQuery::mysqlTimestamp(time());
+			$customer->data['customer_last_access'] = zSqlQuery::mysqlDatetime();
 			$customer->save();
 		}
 	}

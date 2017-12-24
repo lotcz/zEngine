@@ -1,6 +1,6 @@
-DROP DATABASE IF EXISTS zshop;
-CREATE DATABASE zshop DEFAULT char set utf8;
-USE zshop;
+DROP DATABASE IF EXISTS belbin;
+CREATE DATABASE belbin DEFAULT char set utf8;
+USE belbin;
 
 CREATE TABLE `site_globals` (
   `site_global_name` varchar(100) NOT NULL,

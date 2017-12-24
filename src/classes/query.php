@@ -24,12 +24,26 @@ class zSqlQuery {
 		}
 	}
 	
-	static function mysqlTimestamp($d) {
-		if (isset($d)) {
-			return date('Y-m-d H:i:s', $d);	
+	static function phpDatetime($mysqldate) {
+		if (isset($mysqldate)) {
+			strtotime($mysqldate);
 		} else {
-			return null;
-		}		
+			time();
+		}
+	}
+	
+	static function mysqlDatetime($time = null) {
+		if (!isset($time)) {
+			$time = time();
+		}
+		return date('Y-m-d H:i:s', $time);			
+	}
+	
+	static function mysqlTimestamp($time = null) {
+		if (!isset($time)) {
+			$time = time();
+		}
+		return date('Y-m-d H:i:s', $time);			
 	}
 	
 	static function validateColumn($col) {

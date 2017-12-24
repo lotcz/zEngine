@@ -19,10 +19,7 @@ class coreModule extends zModule {
 		'site_title' => null
 	];
 
-	public $include_js = [];
-	public $include_js_head = [];
-	public $include_css = [];
-	public $include_less = [];
+	public $includes = ['head' => [], 'default' => [], 'bottom' => []];
 
 	public $controllers = ['master' => 'default', 'main' => 'default', 'page' => 'default'];
 	public $templates = ['master' => null, 'main' => null, 'page' => null];
@@ -111,39 +108,7 @@ class coreModule extends zModule {
 			return $this->getData('site_title');
 		}
 	}
-
-	public function includeJS($js_path, $abs = false) {
-		if ($abs) {
-			$this->include_js[] = $js_path;
-		} else {
-			$this->include_js[] = $this->url($js_path);
-		}
-	}
-
-	public function includeJS_head($js_path, $abs = false) {
-		if ($abs) {
-			$this->include_js_head[] = $js_path;
-		} else {
-			$this->include_js_head[] = $this->url($js_path);
-		}
-	}
-
-	public function includeCSS($css_path, $abs = false) {
-		if ($abs) {
-			$this->include_css[] = $css_path;
-		} else {
-			$this->include_css[] = $this->url($css_path);
-		}
-	}
-
-	public function includeLESS($less_path, $abs = false) {
-		if ($abs) {
-			$this->include_less[] = $less_path;
-		} else {
-			$this->include_less[] = $this->url($less_path);
-		}
-	}
-
+	
 	public function requireClass($class_name) {
 		require_once __DIR__ . "/../classes/$class_name.php";
 	}
@@ -278,6 +243,81 @@ class coreModule extends zModule {
 		$this->z->admin->renderAdminForm($entity_name, $model_class_name, $fields, $onBeforeUpdate, $onAfterUpdate, $onBeforeDelete, $onAfterDelete);
 	}
 
+	/* 
+	
+	INCLUDES
+	
+	included JS, CSS files and other content 
+	
+	*/
+	
+	public function addToIncludes($content, $type, $placement = 'default') {
+		$this->includes[$placement][] = [$content, $type];
+	}	
+	
+	public function insertJS($js_content, $placement = 'head') {
+		$this->addToIncludes($js_content, 'inline_js', $placement);
+	}
+	
+	public function includeJS($js_path, $abs = false, $placement = 'bottom') {
+		if (!$abs) {
+			$js_path = $this->url($js_path);
+		}
+		$this->addToIncludes($js_path, 'link_js', $placement);
+	}
+
+	public function includeJS_head($js_path, $abs = false) {
+		$this->includeJS($js_path, $abs, 'head');
+	}
+
+	public function includeCSS($css_path, $abs = false, $placement = 'head') {
+		if (!$abs) {			
+			$css_path = $this->url($css_path);
+		}
+		$this->addToIncludes($css_path, 'link_css', $placement);
+	}
+
+	public function includeLESS($less_path, $abs = false, $placement = 'head') {
+		if (!$abs) {
+			$less_path = $this->url($less_path);
+		}
+		$this->addToIncludes($less_path, 'link_less', $placement);
+	}
+
+	public function renderIncludes($placement = 'default') {
+		foreach ($this->includes[$placement] as $incl) {
+			switch ($incl[1]) {
+				case 'inline_js':
+					if (is_object($incl[0]) || is_array($incl[0])) {
+						echo '<script>';
+						foreach ($incl[0] as $key => $value) {
+							if (is_string($value)) {
+								echo sprintf('var %s = \'%s\';', $key, $value);
+							} else {
+								echo sprintf('var %s = %s;', $key, $value);
+							}							
+						}
+						echo '</script>';
+					} else {
+						echo sprintf('<script>%s</script>', $incl[0]);
+					}
+				break;
+				case 'link_js':
+					echo sprintf('<script src="%s"></script>', $incl[0]);
+				break;
+				case 'link_css':
+					echo sprintf('<link rel="stylesheet" type="text/css" href="%s">', $incl[0]);
+				break;
+				case 'link_less':
+					echo sprintf('<link rel="stylesheet/less" type="text/css" href="%s" />', $incl[0]);
+				break;
+				default:
+					throw new Exception(sprintf('Unknown include type: ', $incl[1]));
+				break;
+			}
+		}
+	}	
+	
 	/*
 		RENDERING
 	*/
@@ -352,30 +392,6 @@ class coreModule extends zModule {
 
 	public function renderImage($src, $alt, $css = '') {;
 		echo sprintf('<img src="%s" class="%s" alt="%s" />', $this->url('images/' . $src), $css, $this->t($alt));
-	}
-
-	public function renderJSIncludes() {
-		foreach ($this->include_js as $js) {
-			echo sprintf('<script src="%s"></script>', $js);
-		}
-	}
-
-	public function renderJSIncludes_head() {
-		foreach ($this->include_js_head as $js) {
-			echo sprintf('<script src="%s"></script>', $js);
-		}
-	}
-
-	public function renderCSSIncludes() {
-		foreach ($this->include_css as $css) {
-			echo sprintf('<link rel="stylesheet" href="%s">', $css);
-		}
-	}
-
-	public function renderLESSIncludes() {
-		foreach ($this->include_less as $less) {
-			echo sprintf('<link rel="stylesheet/less" type="text/css" href="%s" />', $less);
-		}
 	}
 
 	/*

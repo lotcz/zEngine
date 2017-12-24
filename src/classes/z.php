@@ -2,7 +2,7 @@
 
 class z {
 
-  static function redirect($url = '', $statusCode = 303) {
+	static function redirect($url = '', $statusCode = 303) {
 		header('Location: ' . $url, true, $statusCode);
 		die();
 	}
@@ -51,8 +51,8 @@ class z {
 		return str_replace('\'', '\\\'', $str);
 	}
 
-  static function debug($var) {
-    var_dump($var);
-    die();
-  }
+	static function debug($var) {
+		var_dump($var);
+		die();
+	}
 }
