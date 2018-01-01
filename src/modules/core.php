@@ -36,8 +36,7 @@ class coreModule extends zModule {
 		$this->debug_mode = $this->getConfigValue('debug_mode', $this->debug_mode);
 		$this->error_page = $this->getConfigValue('error_page', $this->error_page);
 		$this->setData('site_title', $this->getConfigValue('site_title', 'Site Name'));
-		$this->return_path = z::get('r', false);
-		$this->includeJS('resources/jquery.min.js');
+		$this->return_path = z::get('r', false);		
 	}
 
 	public function pathExists($index) {
@@ -136,6 +135,9 @@ class coreModule extends zModule {
 	}
 
 	public function getLink($path, $title, $css = '', $ret = null) {
+		if ($this->raw_path == $path) {
+			$css .= ' active';
+		}
 		return sprintf('<a href="%s" class="%s">%s</a>', $this->url($path, $ret), $css, $this->t($title));
 	}
 
@@ -215,15 +217,49 @@ class coreModule extends zModule {
 		if ($this->z->moduleEnabled('i18n')) {
 			return $this->z->i18n->selected_language->formatDate($date);
 		} else {
-			return $number;
+			return $date;
 		}
 	}
 
+	public function formatDuration($duration) {
+		$result = [];
+		$days = 0;
+		$hours = 0;
+		$minutes = 0;
+		$seconds = 0;		
+		$remainder = $duration;
+		
+		$days = floor($duration / (60*60*24));
+		if ($days > 0) {
+			$result[] = $this->t('%d days', $days);
+			$remainder = $duration - ($days*60*60*24);
+		}
+		
+		$hours = floor($remainder / (60*60));
+		if ($hours > 0) {
+			$result[] = $this->t('%d hours', $hours);
+			$remainder = $remainder - ($hours*60*60);
+		}
+		
+		$minutes = floor($remainder / 60);
+		if ($minutes > 0) {
+			$result[] = $this->t('%d minutes', $minutes);
+			$remainder = $remainder - ($minutes*60);
+		}
+		
+		$seconds = floor($remainder);
+		if ($seconds > 0) {
+			$result[] = $this->t('%d seconds', $seconds);
+		}	
+		
+		return implode(' ', $result);		
+	}
+	
 	public function formatDatetime($date) {
 		if ($this->z->moduleEnabled('i18n')) {
 			return $this->z->i18n->selected_language->formatDatetime($date);
 		} else {
-			return $number;
+			return $date;
 		}
 	}
 
@@ -283,19 +319,15 @@ class coreModule extends zModule {
 		}
 		$this->addToIncludes($less_path, 'link_less', $placement);
 	}
-
+	
 	public function renderIncludes($placement = 'default') {
 		foreach ($this->includes[$placement] as $incl) {
 			switch ($incl[1]) {
 				case 'inline_js':
 					if (is_object($incl[0]) || is_array($incl[0])) {
 						echo '<script>';
-						foreach ($incl[0] as $key => $value) {
-							if (is_string($value)) {
-								echo sprintf('var %s = \'%s\';', $key, $value);
-							} else {
-								echo sprintf('var %s = %s;', $key, $value);
-							}							
+						foreach ($incl[0] as $key => $value) {							
+							echo sprintf('var %s = %s;', $key, z::formatForJS($value));														
 						}
 						echo '</script>';
 					} else {

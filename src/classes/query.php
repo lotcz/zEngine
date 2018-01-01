@@ -26,9 +26,9 @@ class zSqlQuery {
 	
 	static function phpDatetime($mysqldate) {
 		if (isset($mysqldate)) {
-			strtotime($mysqldate);
+			return strtotime($mysqldate);
 		} else {
-			time();
+			return time();
 		}
 	}
 	

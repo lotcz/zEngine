@@ -55,4 +55,8 @@ class z {
 		var_dump($var);
 		die();
 	}
+	
+	static function formatForJS($value) {
+		return json_encode($value);		
+	}
 }

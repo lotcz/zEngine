@@ -20,7 +20,7 @@ class emailsModule extends zModule {
 			$from = $this->z->emails->getConfigValue('from_address');
 		}
 		$headers = "From: $from;\r\n";
-		$headers .= "Content-Type: $content_type;\r\n";
+		$headers .= "Content-Type: $content_type;charset=utf-8\r\n";
 		mail($to, $subject, $body, $headers);
 	}
 

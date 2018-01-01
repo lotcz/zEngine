@@ -55,6 +55,10 @@ class zModel {
 	public function bval($key, $default = false) {
 		return boolval($this->ival($key, $default));
 	}
+	
+	public function dtval($key, $default = false) {
+		return zSqlQuery::phpDatetime($this->val($key, $default));
+	}
 
 	public function loadSingleFiltered($where, $bindings = null, $types = null) {
 		$statement = zSqlQuery::select($this->db, $this->table_name, $where, $bindings, $types);
@@ -230,6 +234,18 @@ class zModel {
 			$sum += $model->fval($field, 0);
 		}
 		return $sum;
+	}
+	
+	static function columnAsArray($arr, $field, $type = 's') {
+		$result = [];
+		foreach ($arr as $model) {
+			if ($type == 'i') {
+				$result[] = $model->ival($field);
+			} else {
+				$result[] = $model->val($field);
+			}
+		}
+		return $result;
 	}
 
 }

@@ -101,9 +101,11 @@ function formValidation(frm) {
 		if (is_valid) {
 			$('#' + field_name + '_validation_' + validation, this.frm).hide();
 			$('#' + field_name + '_form_group', this.frm).removeClass('has-error');
+			$('#' + field_name, this.frm).removeClass('is-invalid');
 		} else {
 			$('#' + field_name + '_validation_' + validation, this.frm).show();
 			$('#' + field_name + '_form_group', this.frm).addClass('has-error');
+			$('#' + field_name, this.frm).addClass('is-invalid');
 		}
 	}
 
