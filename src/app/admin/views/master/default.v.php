@@ -15,9 +15,7 @@
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
 		
 		<?php		
-			$this->renderCSSIncludes();
-			$this->renderLESSIncludes();
-			$this->renderJSIncludes_head();
+			$this->renderIncludes('head');
 		?>
 				
 	</head>
@@ -26,9 +24,14 @@
 		<?php
 			$this->renderAdminMenu();
 			$this->renderMainView();
-			$this->renderJSIncludes();			
+			$this->renderIncludes('default');
 		?>
+		
+		<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>		
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 
+		<?php
+			$this->renderIncludes('bottom');
+		?>
 	</body>
 </html>

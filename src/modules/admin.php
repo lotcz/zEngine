@@ -44,16 +44,13 @@ class adminModule extends zModule {
 			} else if ($this->is_login_page && $this->z->auth->isAuth()) {
 				$this->z->core->path = [$this->base_url];
 			}
-		}
-
-		if ($this->z->auth->isAuth() || $this->is_admin_area) {
 			if ($this->z->isDebugMode()) {
 				$this->z->core->includeLESS('resources/less/admin.less');
 				$this->z->core->includeJS_head('resources/less/less.min.js');
 			} else {
 				$this->z->core->includeCSS('resources/admin.min.css');
 			}
-		}
+		}	
 
 		$this->initializeAdminMenu();
 

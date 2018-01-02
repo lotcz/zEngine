@@ -221,10 +221,15 @@ class zModel {
 	/* static methods for working with arrays of models */
 
 	static function find($arr, $field, $value) {
-		foreach ($arr as $model) {
-			if ($model->val($field) == $value) {
-				return $model;
+		if (isset($arr) && count($arr) > 0) {
+			foreach ($arr as $model) {
+				if ($model->val($field) == $value) {
+					return $model;
+				}
 			}
+			return null;
+		} else {
+			return null;
 		}
 	}
 
