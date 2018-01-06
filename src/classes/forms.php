@@ -58,7 +58,7 @@ class zForm {
 				} elseif ($field->type == 'image') {
 					/* upload image */
 					if (!isset($this->images_module)){
-						throw new Exception("Images module is not enabled, cannot upload image!");
+						throw new Exception('Images module is not enabled, cannot upload image!');
 					}
 					$name = $field->name . '_image_file';
 					if (isset($_FILES[$name]) && strlen($_FILES[$name]['name'])) {

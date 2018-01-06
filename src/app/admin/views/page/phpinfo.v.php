@@ -1,5 +1,6 @@
-<iframe 
-	style="display:block;width:100%;height:750px;" 
-	src="<?=$this->url('phpinfo.php?security_token=' . $config['security_token'] )?>"
->
-</iframe>
+<?php
+	if (z::get('security_token','') == $this->getConfigValue('security_token')) {
+		phpinfo();
+	} else {
+		die('Wrong security token.');
+	}

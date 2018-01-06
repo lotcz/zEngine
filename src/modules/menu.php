@@ -70,7 +70,17 @@ class menuModule extends zModule {
 							<span class="icon-bar"></span>
 						 </button>
 
-						 <a class="navbar-brand" href="<?=$this->z->core->url($menu->href) ?>"><?=$this->z->core->t($menu->label) ?></a>								
+						 <?php
+							if (isset($menu->href)) {
+								?>
+									<a class="navbar-brand" href="<?=$this->z->core->url($menu->href) ?>"><?=$this->z->core->t($menu->label) ?></a>								
+								<?php
+							} else {
+								?>
+									<span class="navbar-brand"><?=$this->z->core->t($menu->label) ?></span>								
+								<?php
+							}
+						?>
 					</div>
 
 					<div class="collapse navbar-collapse" id="navbar">		

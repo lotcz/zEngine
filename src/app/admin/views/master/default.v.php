@@ -27,6 +27,11 @@
 			$this->renderIncludes('default');
 		?>
 		
+		<footer class="container-fluid spaced">
+			<hr>
+			<p>&copy; Karel Zavadil 2018. Z-engine v. <strong><?=$this->z->version ?></strong>. Application version <strong><?=$this->z->app->version ?></strong>.</p>
+		</footer>
+		
 		<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>		
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 

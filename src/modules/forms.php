@@ -121,7 +121,7 @@ class formsModule extends zModule {
 			<select name="<?=$name ?>" class="form-control">
 				<?php
 					for ($i = 0, $max = count($items); $i < $max; $i++) {
-						$value = $items[$i]->val($id_name);
+						$value = $items[$i]->ival($id_name);						
 						$selected = '';
 						if ($value == $selected_value) {
 							$selected = 'selected';

@@ -14,10 +14,18 @@ class LanguageModel extends zModel {
 	}
 	
 	public function formatDate($date) {
-		return date($this->val('language_date_format'), $date);
+		if (isset($date)) {
+			return date($this->val('language_date_format'), $date);
+		} else {
+			return '';
+		}
 	}
 	
 	public function formatDatetime($date) {
-		return date($this->val('language_datetime_format'), $date);
+		if (isset($date)) {
+			return date($this->val('language_datetime_format'), $date);
+		} else {
+			return '';
+		}		
 	}
 }

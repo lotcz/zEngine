@@ -94,7 +94,7 @@ function formValidation(frm) {
 	}
 
 	this.val = function (field_name) {
-		return $("input[name='" + field_name + "']", this.frm).val();
+		return $('#' + field_name, this.frm).val();
 	}
 
 	this.show_validation = function(field_name, validation, is_valid) {

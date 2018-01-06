@@ -62,8 +62,9 @@ class adminModule extends zModule {
 
 	// returns basic admin menu including users, languages etc. based on enabled modules
 	private function initializeAdminMenu() {
-		$menu = new zMenu($this->getAdminAreaURL(''), 'Home');
-
+		$menu = new zMenu(null, $this->z->core->getConfigValue('site_title', 'Home'));
+		$menu->addItem('', 'Go to website &raquo;');
+		
 		if ($this->z->auth->isAuth()) {
 
 			//custom menu from app's admin config
@@ -72,6 +73,8 @@ class adminModule extends zModule {
 			//standard admin menu
 			$submenu = $menu->addSubmenu('Admin');
 			$submenu->addItem('admin/static_pages', 'Static pages');
+			$submenu->addHeader('Customers');
+			$submenu->addItem('admin/customers', 'Customers');	
 			$submenu->addHeader('Administrators');
 			$submenu->addItem('admin/users', 'Administrators');
 			$submenu->addItem('admin/roles', 'Roles');
@@ -82,7 +85,7 @@ class adminModule extends zModule {
 			$submenu->addItem('admin/languages', 'Languages');
 			$submenu->addItem('admin/translations', 'Translations');
 			$submenu->addItem('admin/ip_failed_attempts', 'Failed login attempts');
-			$submenu->addItem('admin/phpinfo', 'PHP Info');
+			$submenu->addItem('admin/info', 'Server Info');
 			$submenu->addItem('admin/about', 'About');
 
 			$menu->addRightItem('admin/logout', 'Log out');

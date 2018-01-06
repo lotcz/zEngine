@@ -56,7 +56,7 @@ class zModel {
 		return boolval($this->ival($key, $default));
 	}
 	
-	public function dtval($key, $default = false) {
+	public function dtval($key, $default = null) {
 		return zSqlQuery::phpDatetime($this->val($key, $default));
 	}
 

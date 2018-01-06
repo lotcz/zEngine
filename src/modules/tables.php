@@ -45,7 +45,9 @@ class tablesModule extends zModule {
 														if (!isset($field->type)) {
 															echo $row->val($field->name);
 														} elseif ($field->type == 'date') {
-															echo $this->z->i18n->formatDatetime(strtotime($row->val($field->name)));
+															echo $this->z->i18n->formatDate($row->dtval($field->name));
+														} elseif ($field->type == 'datetime') {
+															echo $this->z->i18n->formatDatetime($row->dtval($field->name));
 														} elseif ($field->type == 'localized') {
 															echo $this->z->core->t($row->val($field->name));
 														}

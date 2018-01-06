@@ -1,5 +1,6 @@
 <div class="container-fluid">
-	<?php	
+	<?php
+		$this->renderMessages();
 		$this->renderPageView();
 	?>
 </div>
