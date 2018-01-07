@@ -246,6 +246,8 @@ class zModel {
 		foreach ($arr as $model) {
 			if ($type == 'i') {
 				$result[] = $model->ival($field);
+			} elseif ($type == 'f') {
+				$result[] = $model->fval($field);
 			} else {
 				$result[] = $model->val($field);
 			}

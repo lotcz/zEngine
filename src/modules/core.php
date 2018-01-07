@@ -11,7 +11,8 @@ class coreModule extends zModule {
 	public $base_url = '';
 	public $debug_mode = false;
 	public $error_page = 'error.html';
-
+	public $error_view = 'error';
+	
 	public $return_path = false;
 
 	public $data = [
@@ -220,40 +221,6 @@ class coreModule extends zModule {
 			return $date;
 		}
 	}
-
-	public function formatDuration($duration) {
-		$result = [];
-		$days = 0;
-		$hours = 0;
-		$minutes = 0;
-		$seconds = 0;		
-		$remainder = $duration;
-		
-		$days = floor($duration / (60*60*24));
-		if ($days > 0) {
-			$result[] = $this->t('%d days', $days);
-			$remainder = $duration - ($days*60*60*24);
-		}
-		
-		$hours = floor($remainder / (60*60));
-		if ($hours > 0) {
-			$result[] = $this->t('%d hours', $hours);
-			$remainder = $remainder - ($hours*60*60);
-		}
-		
-		$minutes = floor($remainder / 60);
-		if ($minutes > 0) {
-			$result[] = $this->t('%d minutes', $minutes);
-			$remainder = $remainder - ($minutes*60);
-		}
-		
-		$seconds = floor($remainder);
-		if ($seconds > 0) {
-			$result[] = $this->t('%d seconds', $seconds);
-		}	
-		
-		return implode(' ', $result);		
-	}
 	
 	public function formatDatetime($date) {
 		if ($this->z->moduleEnabled('i18n')) {
@@ -349,6 +316,14 @@ class coreModule extends zModule {
 			}
 		}
 	}	
+	
+	public function showErrorView($message = null) {
+		$this->setPageTemplate($this->error_view);
+		$this->setPageTitle('Error');
+		if (isset($message)) {
+			$this->message($message, 'error');
+		}
+	}
 	
 	/*
 		RENDERING

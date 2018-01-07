@@ -23,6 +23,18 @@ class z {
 		}
 	}
 
+	static function safeDivide($a, $b) {
+		if (isset($a) && isset($b)) {
+			if ($b == 0) {
+				return 0;
+			} else {
+				return $a / $b;
+			}			
+		} else {
+			return null;
+		}
+	}
+	
 	static function isPost() {
 		return ($_SERVER['REQUEST_METHOD'] === 'POST');
 	}

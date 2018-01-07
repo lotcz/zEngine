@@ -87,10 +87,13 @@ function formValidation(frm) {
 		if (this.is_valid) {
 			this.frm.submit();
 		}
+		return this.is_valid;
 	}
 
 	this.add = function(field_name, validation, param) {
-		this.fields.push(new formField(field_name, validation, param));
+		var field = new formField(field_name, validation, param);
+		this.fields.push(field);
+		return field;
 	}
 
 	this.val = function (field_name) {

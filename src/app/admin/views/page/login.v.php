@@ -14,14 +14,14 @@
 					<div id="user_name_form_group" class="form-group">
 						<label for="user_name" class="col-sm-4 control-label form-label"><?=$this->t('Login')?></label>
 						<div class="col-sm-8 form-field">
-							<input name="user_name" id="user_name" maxlength="50" value="" class="form-control" type="text">
+							<input name="user_name" id="user_name" maxlength="50" value="" class="form-control" type="text" required >
 							<div class="form-validation" id="user_name_validation_length"><?=$this->t('Please enter your login name or e-mail.')?></div>
 						</div>
 					</div>
 					<div id="password_form_group" class="form-group">
 						<label for="password" class="col-sm-4 control-label form-label"><?=$this->t('Password')?></label>
 						<div class="col-sm-8 form-field">
-							<input name="password" id="password" maxlength="50" value="" class="form-control" type="password">
+							<input name="password" id="password" maxlength="50" value="" class="form-control" type="password" required >
 							<div class="form-validation" id="password_validation_length"><?=$this->t('Please enter your password.')?></div>
 						</div>
 					</div>

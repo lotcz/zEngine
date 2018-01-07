@@ -337,7 +337,8 @@ class formsModule extends zModule {
 		?>
 
 			<script>
-				function validateForm_<?=$form->id ?>() {
+				function validateForm_<?=$form->id ?>(e) {
+					e.preventDefault();
 					var frm = new formValidation('form_<?=$form->id ?>');
 						<?php
 							foreach ($form->fields as $field) {
