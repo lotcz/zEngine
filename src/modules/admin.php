@@ -62,8 +62,7 @@ class adminModule extends zModule {
 
 	// returns basic admin menu including users, languages etc. based on enabled modules
 	private function initializeAdminMenu() {
-		$menu = new zMenu(null, $this->z->core->getConfigValue('site_title', 'Home'));
-		$menu->addItem('', 'Go to website &raquo;');
+		$menu = new zMenu($this->getAdminAreaURL(''), $this->z->core->getConfigValue('site_title', 'Home'));
 		
 		if ($this->z->auth->isAuth()) {
 
