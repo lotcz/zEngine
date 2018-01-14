@@ -186,7 +186,7 @@ class formsModule extends zModule {
 				if (z::parseInt($param) > 1) {
 					return $this->z->core->t('Value must be at least %s characters long.', $param);
 				} else {
-					return $this->z->core->t('This field cannot be empty.');
+					return $this->z->core->t('This field is required. Cannot be left empty.');
 				}
 			break;
 			case 'maxlen' :
@@ -260,7 +260,8 @@ class formsModule extends zModule {
 
 		foreach ($form->fields as $field) {
 			$disabled = (isset($field->disabled)) ? $field->disabled : '';
-
+			$required = (isset($field->required) && ($field->required)) ? 'required' : '';
+			
 			if ($field->type == 'hidden') {
 				?>
 					<input type="hidden" name="<?=$field->name ?>" id="field_<?=$field->name ?>" value="<?=$field->value ?>" />
@@ -292,7 +293,7 @@ class formsModule extends zModule {
 									);
 								} else {
 									?>
-										<input class="<?=isset($button['css']) ? $button['css'] : '' ?> form-button" value="<?=$button['label'] ?>" type="<?=$button['type'] ?>" <?=isset($button['onclick']) ? 'onclick="javascript:' . $button['onclick'] . '"' : ''; ?> />
+										<input class="<?=isset($button['css']) ? $button['css'] : '' ?> form-button" value="<?=$this->z->core->t($button['label']) ?>" type="<?=$button['type'] ?>" <?=isset($button['onclick']) ? 'onclick="javascript:' . $button['onclick'] . '"' : ''; ?> />
 									<?php
 								}
 							}
@@ -303,106 +304,119 @@ class formsModule extends zModule {
 				?>
 					<div id="<?=$field->name ?>_form_group" class="form-group">
 						<label for="<?=$field->name ?>" class="<?=$label_css ?> control-label form-label"><?=$this->z->core->t($field->label) ?>:</label>
-						<div class="<?=$value_css ?> form-field">
+						<div class="<?=$value_css ?>">
+							<div class="input-group form-field">
+								<?php
+
+									switch ($field->type) {
+
+										case 'text' :
+										?>
+											<input type="text" id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> <?=$required ?> value="<?=$field->value ?>" class="form-control" />
+										<?php
+										break;
+
+										case 'textarea' :
+										?>
+											<textarea id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> class="form-control"><?=$field->value ?></textarea>
+										<?php
+										break;
+
+										case 'html' :
+										?>
+											<textarea id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> class="htmlarea"><?=$field->value ?></textarea>
+										<?php
+										break;
+
+										case 'password' :
+										?>
+											<input type="password" id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> value="<?=$field->value ?>" class="form-control" />
+										<?php
+										break;
+
+										case 'bool' :
+										?>
+											<input type="checkbox" id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> value="1" <?=($field->value) ? 'checked' : '' ?> class="form-control form-control-checkbox" />
+										<?php
+										break;
+
+										case 'date' :
+										?>
+											<input type="datetime" id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> value="<?=$field->value ?>" class="form-control" />
+										<?php
+										break;
+
+										case 'file' :
+										?>
+											<input type="file" id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> class="form-control-file" />
+										<?php
+										break;
+
+										case 'image' :
+											if (isset($field->value)) {
+												$this->z->images->renderImage($field->value, 'mini-thumb');
+											}
+										?>
+											<input type="hidden" name="<?=$field->name ?>" id="field_<?=$field->name ?>" value="<?=$field->value ?>" />
+											<input type="file" name="<?=$field->name ?>_image_file" <?=$disabled ?> class="form-control-file" />
+										<?php
+										break;
+
+										case 'select' :
+											$this->renderSelect(
+												$field->name,
+												$field->select_data,
+												$field->select_id_field,
+												$field->select_label_field,
+												$field->select_label_localized,
+												$field->value
+											);
+										break;
+
+										case 'foreign_key_link' :
+											?>
+												<p class="form-control-static">
+													<?php
+														$this->z->core->renderLink(
+															$field->link_url,
+															$field->link_label
+														);
+													?>
+												</p>
+											<?php
+										break;
+
+										case 'static' :
+											?>
+												<p class="form-control-static"><?=$field->value ?></p>
+											<?php
+										break;
+
+										case 'staticdate' :
+											?>
+												<p class="form-control-static"><?=$this->z->i18n->formatDatetime(strtotime($field->value));?></p>
+											<?php
+										break;
+
+										case 'staticlocalized' :
+											?>
+												<p class="form-control-static"><?=$this->z->core->t($field->value);?></p>
+											<?php
+										break;
+									}
+
+									if (isset($field->required) && $field->required) {
+										?>									
+											<span class="input-group-addon addon-required" data-toggle="tooltip" data-placement="top" title="<?=$this->z->core->t('This field is required. Cannot be left empty.') ?>">*</span>										
+										<?php
+									}
+									
+								?>
+								
+							</div>
+							
 							<?php
-
-								switch ($field->type) {
-
-									case 'text' :
-									?>
-										<input type="text" id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> value="<?=$field->value ?>" class="form-control" />
-									<?php
-									break;
-
-									case 'textarea' :
-									?>
-										<textarea id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> class="form-control"><?=$field->value ?></textarea>
-									<?php
-									break;
-
-									case 'html' :
-									?>
-										<textarea id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> class="htmlarea"><?=$field->value ?></textarea>
-									<?php
-									break;
-
-									case 'password' :
-									?>
-										<input type="password" id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> value="<?=$field->value ?>" class="form-control" />
-									<?php
-									break;
-
-									case 'bool' :
-									?>
-										<input type="checkbox" id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> value="1" <?=($field->value) ? 'checked' : '' ?> class="form-control form-control-checkbox" />
-									<?php
-									break;
-
-									case 'date' :
-									?>
-										<input type="datetime" id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> value="<?=$field->value ?>" class="form-control" />
-									<?php
-									break;
-
-									case 'file' :
-									?>
-										<input type="file" id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> class="form-control-file" />
-									<?php
-									break;
-
-									case 'image' :
-										if (isset($field->value)) {
-											$this->z->images->renderImage($field->value, 'mini-thumb');
-										}
-									?>
-										<input type="hidden" name="<?=$field->name ?>" id="field_<?=$field->name ?>" value="<?=$field->value ?>" />
-										<input type="file" name="<?=$field->name ?>_image_file" <?=$disabled ?> class="form-control-file" />
-									<?php
-									break;
-
-									case 'select' :
-										$this->renderSelect(
-											$field->name,
-											$field->select_data,
-											$field->select_id_field,
-											$field->select_label_field,
-											$field->select_label_localized,
-											$field->value
-										);
-									break;
-
-									case 'foreign_key_link' :
-										?>
-											<p class="form-control-static">
-												<?php
-													$this->z->core->renderLink(
-														$field->link_url,
-														$field->link_label
-													);
-												?>
-											</p>
-										<?php
-									break;
-
-									case 'static' :
-										?>
-											<p class="form-control-static"><?=$field->value ?></p>
-										<?php
-									break;
-
-									case 'staticdate' :
-										?>
-											<p class="form-control-static"><?=$this->z->i18n->formatDatetime(strtotime($field->value));?></p>
-										<?php
-									break;
-
-									case 'staticlocalized' :
-										?>
-											<p class="form-control-static"><?=$this->z->core->t($field->value);?></p>
-										<?php
-									break;
-								}
-
+							
 								if (isset($field->validations)) {
 									foreach ($field->validations as $validation) {
 										?>
@@ -416,8 +430,8 @@ class formsModule extends zModule {
 										<small class="text-muted"><?=$this->z->core->t($field->hint) ?></small>
 									<?php
 								}
-							?>
-
+							?>							
+							
 						</div>
 
 					</div>
