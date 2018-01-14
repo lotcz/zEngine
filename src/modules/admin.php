@@ -147,7 +147,7 @@ class adminModule extends zModule {
 			$buttons[] = ['type' => 'button', 'label' => 'Delete', 'onclick' => 'deleteItemConfirm(\'' . $delete_question . '\',' . '\'' . $delete_url . '\');', 'css' => 'btn btn-error' ];
 		}
 
-		$buttons[] = ['type' => 'submit', 'label' => 'Save', 'onclick' => 'validateForm_' . $form->id . '();', 'css' => 'btn btn-success' ];
+		$buttons[] = ['type' => 'submit', 'label' => 'Save', 'onclick' => 'validateForm_' . $form->id . '(event);', 'css' => 'btn btn-success' ];
 		return $buttons;
 	}
 

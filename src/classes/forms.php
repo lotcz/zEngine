@@ -122,5 +122,73 @@ class zForm {
 			<form id="form_<?=$this->id ?>" action="<?=$this->action ?>" method="<?=$this->method ?>" class="<?=$this->css ?>" enctype="multipart/form-data">
 		<?php
 	}
+	
+	/*
+		VALIDATIONS
+	*/
+		
+	static function validate_length($value, $param) {
+		return (isset($value) && (strlen($value) >= z::parseInt($param)));
+	}
+
+	static function validate_maxlen($value, $param) {
+		return (strlen($value) <= z::parseInt($param));
+	}
+
+	static function validate_match($value, $param) {
+		return ($value == $param);
+	}
+
+	static function validate_password($value, $param) {
+		return Self::validate_length($value, $param);
+	}
+
+	static function validate_ip($value) {
+		return Self::validate_length($value, 5);
+	}
+
+	static function validate_date($value, $param) {
+		return Self::validate_length($value, 5);
+	}
+
+	static function validate_html($value, $param) {
+		return true;
+	}
+
+	static function validate_email($value) {
+		return filter_var($value, FILTER_VALIDATE_EMAIL);
+	}
+
+	// integer - param => allow empty
+	static function validate_integer($value, $param) {		
+		return ($param && ($value == '')) || (is_int($value) || ctype_digit($value));
+	}
+
+	static function validate_min($value, $param) {
+		return (z::parseFloat($value) >= z::parseFloat($param));
+	}
+
+	static function validate_max($value, $param) {
+		return (z::parseFloat($value) <= z::parseFloat($param));
+	}
+	
+	static function validate_decimal($value) {
+		return is_numeric($value);
+	}
+
+	static function validate_price($value) {
+		return Self::validate_decimal($value);
+	}
+
+	static function validate_name($value) {
+		return Self::validate_length($value, 1);
+	}
+
+	static function validate_zip($value) {
+		return Self::validate_length($value, 4) 
+			&& Self::validate_integer($value, false)
+			&& Self::validate_min($value, 10000)
+			&& Self::validate_max($max, 99999);
+	}
 
 }

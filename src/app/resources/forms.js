@@ -41,7 +41,7 @@ function validate_integer(n, param) {
 }
 
 function validate_min(n, param) {
-	return  (parseFloat(n) > parseFloat(param));
+	return  (parseFloat(n) >= parseFloat(param));
 }
 
 function validate_decimal(n) {

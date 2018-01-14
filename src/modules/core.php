@@ -8,6 +8,8 @@ class coreModule extends zModule {
 	//path to default zEngine application directory
 	public $default_app_dir = '';
 
+	public $default_encoding = 'UTF-8';
+	
 	public $base_url = '';
 	public $debug_mode = false;
 	public $error_page = 'error.html';
@@ -230,6 +232,10 @@ class coreModule extends zModule {
 		}
 	}
 
+	public function xssafe($data) {
+	   return z::xssafe($data, $this->default_encoding);
+	}
+	
 	/*
 		ADMIN HELPERS
 	*/

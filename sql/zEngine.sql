@@ -270,6 +270,30 @@ CREATE TABLE IF NOT EXISTS `customer_sessions` (
     ON DELETE CASCADE
 ) ENGINE = InnoDB;
 
+CREATE TABLE IF NOT EXISTS `form_xsrf_tokens` (
+  `form_xsrf_token_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `form_xsrf_token_user_session_id` INT UNSIGNED NULL,
+  `form_xsrf_token_customer_session_id` INT UNSIGNED NULL,
+  `form_xsrf_token_hash` VARCHAR(255) NOT NULL,  
+  `form_xsrf_token_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `form_xsrf_token_expires` DATETIME NOT NULL,
+  `form_xsrf_token_ip` VARCHAR(15) NOT NULL,
+  `form_xsrf_token_form_name` VARCHAR(50),
+  
+  PRIMARY KEY (`form_xsrf_token_id`),
+  
+  CONSTRAINT `form_xsrf_token_user_session_user_fk`
+    FOREIGN KEY (`form_xsrf_token_user_session_id`)
+    REFERENCES `user_sessions` (`user_session_id`)
+    ON DELETE CASCADE,
+  
+  CONSTRAINT `form_xsrf_token_customer_session_customer_fk`
+    FOREIGN KEY (`form_xsrf_token_customer_session_id`)
+    REFERENCES `customer_sessions` (`customer_session_id`)
+    ON DELETE CASCADE
+
+) ENGINE = InnoDB;
+
 CREATE TABLE IF NOT EXISTS `categories` (
   `category_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `category_ext_id` INT UNSIGNED,

@@ -1,9 +1,12 @@
 <?php
 
 require_once __DIR__ . '/../classes/forms.php';
+require_once __DIR__ . '/../app/models/xsrf.m.php';
 
 class formsModule extends zModule {
 
+	private $form_token_expires = 60*60;
+	
 	public function onEnabled() {
 		$this->requireModule('mysql');
 		$this->requireModule('messages');
@@ -22,32 +25,118 @@ class formsModule extends zModule {
 		return $this->z->core->get($name, $def);
 	}
 
+	public function validateForm($form, $data) {
+		$is_valid = true;
+		foreach ($form->fields as $field) {
+			$is_valid = $is_valid && $this->validateField($field, $data[$field->name]);
+		}
+		return $is_valid;	
+	}
+		
+	public function validateField($field, $value) {
+		$is_valid = true;		
+		if (isset($field->validations) && count($field->validations) > 0) {
+			foreach ($field->validations as $validation) {
+				$method = 'zForm::validate_' . $validation['type'];
+				if (!$method($value, $validation['param'])) {
+					$this->z->messages->error($this->z->core->t('Value of field %s is not valid: %s', $field->name, $this->getValidationMessage($validation)));
+					$is_valid = false;
+				}				
+			}
+		}
+		return $is_valid;
+	}
+	
+	public function createXSRFTokenHash($form_name) {
+		$token_value = z::generateRandomToken(50);
+		$token_hash = z::createHash($token_value);
+		$expires = time() + $this->form_token_expires;
+		if ($this->z->core->isAuth()) {
+			$customer_session_id = null;
+			$user_session_id = $this->z->auth->session->ival('user_session_id');
+			$ip = $this->z->auth->session->val('user_session_ip');
+		} elseif ($this->z->core->isCustAuth()){
+			$user_session_id = null;
+			$customer_session_id = $this->z->custauth->session-ival('customer_session_id');
+			$ip = $this->z->custauth->session->val('customer_session_ip');
+		} else {
+			throw new Exception('There is neither customer or admin session! Cannot create form token.');
+		}		
+		$token = FormXSRFTokenModel::createToken($this->z->core->db, $customer_session_id, $user_session_id, $ip, $form_name, $token_hash, $expires);				
+		return sprintf('%d-%s', $token->ival('form_xsrf_token_id'), $token_value);
+	}
+	
+	public function verifyXSRFTokenHash($form_name, $token_raw_value) {
+		if ($this->z->core->isAuth()) {
+			$customer_session_id = null;
+			$user_session_id = $this->z->auth->session->ival('user_session_id');
+			$ip = $this->z->auth->session->val('user_session_ip');
+		} elseif ($this->z->core->isCustAuth()){
+			$user_session_id = null;
+			$customer_session_id = $this->z->custauth->session-ival('customer_session_id');
+			$ip = $this->z->custauth->session->val('customer_session_ip');
+		} else {
+			return false;
+		}
+		
+		$arr = explode('-', $token_raw_value);		
+		if (count($arr) == 2) {
+			$token_id = intval($arr[0]);
+			$token_value = $arr[1];
+			return FormXSRFTokenModel::verifyToken($this->z->core->db, $token_id, $customer_session_id, $user_session_id, $ip, $form_name, $token_value);				
+		} else {
+			return false;
+		}
+	}
+	
 	public function processForm($form, $model_class_name) {
 		$model = new $model_class_name($this->z->core->db);
-		if (z::isPost()) {
+		if (z::isPost()) {			
+				
 			if ($this->z->moduleEnabled('images')) {
 				$form->images_module = $this->z->images;
 			}
+			
 			if ($form->processInput($_POST)) {
-				if (z::parseInt($_POST[$model->id_name]) > 0) {
-					$model->loadById($_POST[$model->id_name]);
-				}
-				$model->setData($form->processed_input);
-				if ($form->onBeforeUpdate !== null) {
-					$onBeforeUpdate = $form->onBeforeUpdate;
-					$onBeforeUpdate($this->z, $form, $model);
-				}
-				if ($model->save()) {
-					if ($form->onAfterUpdate !== null) {
-						$onAfterUpdate = $form->onAfterUpdate;
-						$onAfterUpdate($this->z, $form, $model);
+			
+				if ($this->verifyXSRFTokenHash($form->id, z::get('form_token'))) {
+		
+					//XSS protection
+					foreach ($form->processed_input as $key => $value) {
+						$form->processed_input[$key] = $this->z->core->xssafe($value);
 					}
-					$this->z->core->redirectBack();
+					
+					//VALIDATION
+					if ($this->validateForm($form, $form->processed_input)) {
+						if (z::parseInt($_POST[$model->id_name]) > 0) {
+							$model->loadById($_POST[$model->id_name]);
+						}
+						$model->setData($form->processed_input);
+						if ($form->onBeforeUpdate !== null) {
+							$onBeforeUpdate = $form->onBeforeUpdate;
+							$onBeforeUpdate($this->z, $form, $model);
+						}
+						if ($model->save()) {
+							if ($form->onAfterUpdate !== null) {
+								$onAfterUpdate = $form->onAfterUpdate;
+								$onAfterUpdate($this->z, $form, $model);
+							}
+							$this->z->core->redirectBack();
+						}
+					} else {
+						$this->z->messages->error('Some fields in the form don\'t validate! Form cannot be saved.');
+						$model->setData($form->processed_input);
+					}
+				} else {
+					$this->z->messages->error('Byl detekován pokus o opakované odeslání formuláře! Data nelze uložit.');
+					$model->setData($form->processed_input);
 				}
+				
 			} else {
 				$this->z->messages->error('Input does not validate.');
 				$model->setData($form->processed_input);
-			}
+			}				
+			
 		} elseif ($this->pathAction() == 'edit') {
 			$model->loadById($this->pathParam());
 			$this->z->core->setPageTitle($this->z->core->t($form->entity_title) . ': ' . $this->z->core->t('Editing'));
@@ -69,7 +158,15 @@ class formsModule extends zModule {
 		} else {
 			$this->z->core->setPageTitle($this->z->core->t($form->entity_title) . ': ' . $this->z->core->t('New'));
 		}
+		
 		$form->prepare($this->z->core->db, $model);
+		
+		// add XSRF token
+		$form->addField([
+			'name' => 'form_token', 
+			'type' => 'hidden',
+			'value' => $this->createXSRFTokenHash($form->id)
+		]);
 	}
 
 	public function getValidationMessage($validation) {

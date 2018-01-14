@@ -120,52 +120,19 @@ class authModule extends zModule {
 	}
 
 	public function generatePasswordToken() {
-		return $this->generateRandomToken(50);
+		return z::generateRandomToken(50);
 	}
 
 	public function generateResetPasswordToken() {
-		return $this->generateRandomToken(100);
+		return z::generateRandomToken(100);
 	}
 
 	static function hashPassword($pass) {
-		return password_hash($pass, PASSWORD_DEFAULT);
+		return z::createHash($pass);
 	}
 
 	static function verifyPassword($pass, $hash) {
-		return password_verify($pass, $hash);
-	}
-
-	/*
-		TOKEN GENERATOR
-
-		example: $token = generateRandomToken(10);
-		-- now $token is something like '9HuE48ErZ1'
-	*/
-	static function getRandomNumber() {
-		return rand(0,9);
-	}
-
-	static function getRandomLowercase() {
-		return chr(rand(97,122));
-	}
-
-	static function getRandomUppercase() {
-		return strtoupper(Self::getRandomLowercase());
-	}
-
-	static function generateRandomToken($len) {
-		$s = '';
-		for ($i = 0; $i < $len; $i++) {
-			$case = rand(0,2);
-			if ($case == 0) {
-				$s .= Self::getRandomNumber();
-			} elseif ($case == 1) {
-				$s .= Self::getRandomUppercase();
-			} else {
-				$s .= Self::getRandomLowercase();
-			}
-		}
-		return $s;
+		return z::verifyHash($pass, $hash);
 	}
 
 }

@@ -63,6 +63,10 @@ class z {
 		return str_replace('\'', '\\\'', $str);
 	}
 
+	static function xssafe($data, $encoding = 'UTF-8') {
+	   return htmlspecialchars($data, ENT_QUOTES | ENT_HTML401, $encoding);
+	}
+	
 	static function debug($var) {
 		var_dump($var);
 		die();
@@ -70,5 +74,46 @@ class z {
 	
 	static function formatForJS($value) {
 		return json_encode($value);		
+	}
+	
+	static function createHash($value) {
+		return password_hash($value, PASSWORD_DEFAULT);
+	}
+
+	static function verifyHash($value, $hash) {
+		return password_verify($value, $hash);
+	}
+	
+	/*
+		TOKEN GENERATOR
+
+		example: $token = generateRandomToken(10);
+		-- now $token is something like '9HuE48ErZ1'
+	*/
+	static function getRandomNumber() {
+		return rand(0,9);
+	}
+
+	static function getRandomLowercase() {
+		return chr(rand(97,122));
+	}
+
+	static function getRandomUppercase() {
+		return strtoupper(Self::getRandomLowercase());
+	}
+
+	static function generateRandomToken($len) {
+		$s = '';
+		for ($i = 0; $i < $len; $i++) {
+			$case = rand(0,2);
+			if ($case == 0) {
+				$s .= Self::getRandomNumber();
+			} elseif ($case == 1) {
+				$s .= Self::getRandomUppercase();
+			} else {
+				$s .= Self::getRandomLowercase();
+			}
+		}
+		return $s;
 	}
 }

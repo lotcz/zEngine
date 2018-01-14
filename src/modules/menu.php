@@ -32,7 +32,7 @@ class menuModule extends zModule {
 	
 	public function renderSeparator() {
 		?>
-			<li role="separator" class="divider"></li>
+			<li role="separator" class="divider">&nbsp;</li>
 		<?php
 	}
 	
@@ -45,7 +45,7 @@ class menuModule extends zModule {
 	public function renderSubMenu($submenu) {
 		?>
 			<li class="dropdown">
-				<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?=$this->z->core->t($submenu->label) ?><span class="caret"></span></a>
+				<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?=$this->z->core->t($submenu->label) ?><span class="caret">&nbsp;</span></a>
 				<ul class="dropdown-menu">
 					<?php
 						foreach ($submenu->items as $item) {
@@ -65,9 +65,9 @@ class menuModule extends zModule {
 					<div class="navbar-header">
 						<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
 							<span class="sr-only">Toggle navigation</span>
-							<span class="icon-bar"></span>
-							<span class="icon-bar"></span>
-							<span class="icon-bar"></span>
+							<span class="icon-bar">&nbsp;</span>
+							<span class="icon-bar">&nbsp;</span>
+							<span class="icon-bar">&nbsp;</span>
 						 </button>
 
 						 <?php
