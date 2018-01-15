@@ -161,23 +161,23 @@ class custauthModule extends zModule {
 	}
 
 	public function generateResetPasswordToken() {
-		return authModule::generateRandomToken(100);
+		return z::generateRandomToken(100);
 	}
 
 	private function generatePasswordToken() {
-		return authModule::generateRandomToken(50);
+		return z::generateRandomToken(50);
 	}
 
 	private function generateSessionToken() {
-		return authModule::generateRandomToken(50);
+		return z::generateRandomToken(50);
 	}
 
 	static function hashPassword($pass) {
-		return authModule::hashPassword($pass);
+		return z::createHash($pass);
 	}
 
 	static function verifyPassword($pass, $hash) {
-		return authModule::verifyPassword($pass, $hash);
+		return z::verifyHash($pass, $hash);
 	}
 
 	/* EMAILS */
