@@ -73,7 +73,7 @@ class formsModule extends zModule {
 			$ip = $this->z->auth->session->val('user_session_ip');
 		} elseif ($this->z->core->isCustAuth()){
 			$user_session_id = null;
-			$customer_session_id = $this->z->custauth->session-ival('customer_session_id');
+			$customer_session_id = $this->z->custauth->session->ival('customer_session_id');
 			$ip = $this->z->custauth->session->val('customer_session_ip');
 		} else {
 			return false;
