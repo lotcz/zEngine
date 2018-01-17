@@ -1,7 +1,3 @@
-<?php
-	$this->renderMessages();
-?>
-
 <form method="POST" class="form-horizontal" id="form_login">
 
 	<div class="row">
@@ -27,7 +23,7 @@
 					</div>
 					<div id="password_form_group" class="form-group">
 						<div class="col-sm-8 col-sm-offset-4 form-field">
-							<button onclick="javascript:validateLoginForm();return false;" class="form-control btn btn-success" ><?=$this->t('Log in') ?></button>
+							<button onclick="javascript:validateLoginForm();return false;" class="form-control btn btn-success" ><?=$this->t('Sign In') ?></button>
 							<a class="form-button" href="<?=$this->url('admin-forgot', $this->raw_path)?><?=(isset($_POST['email']) && strlen($_POST['email']) > 0) ? '&email=' . $_POST['email'] : '' ?>"><?= $this->t('Forgotten Password') ?></a>
 						</div>
 					</div>

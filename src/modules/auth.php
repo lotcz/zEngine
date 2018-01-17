@@ -68,8 +68,9 @@ class authModule extends zModule {
 				return false;
 			}
 
+		} else {
+			return false;
 		}
-
 	}
 
 	public function checkAuthentication() {

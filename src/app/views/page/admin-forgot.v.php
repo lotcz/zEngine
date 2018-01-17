@@ -5,17 +5,18 @@
 			<div class="col-sm-4"><input type="text" name="email" class="form-control" value="<?=(isset($_GET['email'])) ? $_GET['email'] : '' ?>" /></div>
 			<div class="col-sm-4 form-validation" id="email_validation_email"><?=$this->t('Required.') ?></div>
 		</div>
-		<div class="form-buttons">
+		<div class="form-buttons">			
+			<input type="submit" onclick="javascript:admin_forgot_validate(event);" class="btn btn-success form-button" value="<?=$this->t('Reset Password') ?>" />
 			<a class="form-button" href="<?=$this->url('admin') ?>"><?=$this->t('Sign In') ?></a>
-			<input type="button" onclick="javascript:admin_forgot_validate();return false;" class="btn btn-success form-button" value="<?=$this->t('Reset Password') ?>">
 		</div>
 	</form>
 </div>
 
 <script>
-function admin_forgot_validate() {
+function admin_forgot_validate(e) {
+		e.preventDefault();
 		var frm = new formValidation('admin_forgot_form');
-		frm.add('email', 'email');
+		frm.add('email', 'length', 1);
 		frm.submit();
 	}
 </script>

@@ -177,7 +177,7 @@ class coreModule extends zModule {
 	}
 
 	public function message($text, $type = 'info') {
-		$this->z->messages->add($text, $type);
+		$this->z->messages->add($this->t($text), $type);
 	}
 
 	public function formatMoney($price) {

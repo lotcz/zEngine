@@ -133,7 +133,7 @@ class custauthModule extends zModule {
 		if ($this->isAuth()) {
 			$customer = new CustomerModel($this->db);
 			$customer->data['customer_id'] = $this->customer->val('customer_id');
-			$customer->data['customer_last_access'] = zSqlQuery::mysqlDatetime();
+			$customer->data['customer_last_access'] = zSqlQuery::mysqlDatetime(time());
 			$customer->save();
 		}
 	}

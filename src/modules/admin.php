@@ -70,24 +70,26 @@ class adminModule extends zModule {
 			$menu->loadItemsFromArray($this->getConfigValue('menu'));
 
 			//standard admin menu
-			$submenu = $menu->addSubmenu('Admin');
-			$submenu->addItem('admin/static_pages', 'Static pages');
-			$submenu->addHeader('Customers');
-			$submenu->addItem('admin/customers', 'Customers');	
-			$submenu->addHeader('Administrators');
-			$submenu->addItem('admin/users', 'Administrators');
-			$submenu->addItem('admin/roles', 'Roles');
-			$submenu->addItem('admin/permissions', 'Permissions');
-			$submenu->addSeparator();
-			$submenu->addHeader('Advanced');
-			$submenu->addItem('admin/aliases', 'Aliases');
-			$submenu->addItem('admin/languages', 'Languages');
-			$submenu->addItem('admin/translations', 'Translations');
-			$submenu->addItem('admin/ip_failed_attempts', 'Failed login attempts');
-			$submenu->addItem('admin/info', 'Server Info');
-			$submenu->addItem('admin/about', 'About');
-
-			$menu->addRightItem('admin/logout', 'Log out');
+			if ($this->getConfigValue('show_default_menu', false)) {
+				$submenu = $menu->addSubmenu('Administration');
+				$submenu->addItem('admin/static_pages', 'Static pages');
+				$submenu->addHeader('Customers');
+				$submenu->addItem('admin/customers', 'Customers');	
+				$submenu->addHeader('Administrators');
+				$submenu->addItem('admin/users', 'Administrators');
+				$submenu->addItem('admin/roles', 'Roles');
+				$submenu->addItem('admin/permissions', 'Permissions');
+				$submenu->addSeparator();
+				$submenu->addHeader('Advanced');
+				$submenu->addItem('admin/aliases', 'Aliases');
+				$submenu->addItem('admin/languages', 'Languages');
+				$submenu->addItem('admin/translations', 'Translations');
+				$submenu->addItem('admin/ip_failed_attempts', 'Failed login attempts');
+				$submenu->addItem('admin/info', 'Server Info');
+				$submenu->addItem('admin/about', 'About');
+			}
+			
+			$menu->addRightItem('admin/logout', 'Log Out');
 		} else if (!$this->is_login_page) {
 			//$menu->addRightItem($this->getAdminAreaURL($this->login_url), 'Log in');
 		}
@@ -107,7 +109,7 @@ class adminModule extends zModule {
 			'name' => 'form_buttons',
 			'type' => 'buttons',
 			'buttons' => [
-				['type' => 'link', 'label' => 'New', 'css' => 'btn btn-success' , 'link_url' => $this->base_url . '/' . $entity_name . '?r=' . $this->z->core->raw_path]
+				['type' => 'link', 'label' => '+ Add', 'css' => 'btn btn-success' , 'link_url' => $this->base_url . '/' . $entity_name . '?r=' . $this->z->core->raw_path]
 			]
 		]);
 		if (isset($filter_fields)) {
