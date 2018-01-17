@@ -1,5 +1,8 @@
 <?php
 
+/**
+* Module that handles administration area.
+*/
 class adminModule extends zModule {
 
 	private $db = null;
@@ -60,7 +63,9 @@ class adminModule extends zModule {
 		return $this->base_url . '/' . $page;
 	}
 
-	// returns basic admin menu including users, languages etc. based on enabled modules
+	/**
+	* Returns basic admin menu including users, languages etc. based on enabled modules 
+	*/
 	private function initializeAdminMenu() {
 		$menu = new zMenu($this->getAdminAreaURL(''), $this->z->core->getConfigValue('site_title', 'Home'));
 		
@@ -101,6 +106,9 @@ class adminModule extends zModule {
 		$this->z->menu->renderMenu($this->menu);
 	}
 
+	/**
+	* Render default table for administration area.
+	*/
 	public function renderAdminTable($table_name, $entity_name, $fields, $filter_fields = null) {
 		$form = new zForm($entity_name, '', 'POST', 'form-inline');
 		$form->type = 'inline';
@@ -153,6 +161,9 @@ class adminModule extends zModule {
 		return $buttons;
 	}
 
+	/**
+	* Render default form for administration area.
+	*/
 	public function renderAdminForm($entity_name, $model_class_name, $fields, $onBeforeUpdate = null, $onAfterUpdate = null, $onBeforeDelete = null, $onAfterDelete = null) {
 		$form = new zForm($entity_name);
 		$form->entity_title = ucwords(str_replace('_', ' ', $entity_name));

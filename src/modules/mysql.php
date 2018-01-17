@@ -4,6 +4,9 @@ require_once __DIR__ . '/../classes/query.php';
 require_once __DIR__ . '/../classes/paging.php';
 require_once __DIR__ . '/../classes/model.php';
 
+/**
+* Module that handles connecting to mysql databases.
+*/
 class mysqlModule extends zModule {
 
 	public $connection = null;

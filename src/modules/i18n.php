@@ -3,6 +3,10 @@
 require_once __DIR__ . '/../app/models/language.m.php';
 require_once __DIR__ . '/../app/models/currency.m.php';
 
+/**
+* Module that handles application internationalization
+* Things like string translation and number and date formatting are handled by this module.
+*/
 class i18nModule extends zModule {
 
 	private $db = null;

@@ -4,6 +4,9 @@ require_once __DIR__ . '/../app/models/user.m.php';
 require_once __DIR__ . '/../app/models/session.m.php';
 require_once __DIR__ . '/../app/models/ip_failed.m.php';
 
+/**
+* Module that handles authentication for administration area.
+*/
 class authModule extends zModule {
 
 	private $db = null;

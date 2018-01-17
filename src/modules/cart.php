@@ -5,6 +5,9 @@ require_once __DIR__ . '/../app/models/product.m.php';
 require_once __DIR__ . '/../app/models/product_variant.m.php';
 require_once __DIR__ . '/../app/models/cart.m.php';
 
+/**
+* Module that handles shopping cart.
+*/
 class cartModule extends zModule {
 
 	private $db = null;

@@ -1,5 +1,10 @@
 <?php
 
+/**
+* This is the beating heart of zEngine. 
+  Core is the only module that is required to run zEngine application.
+  It handles basic page processing and rendering according to MVC principles.
+*/
 class coreModule extends zModule {
 
 	//path to application directory
@@ -72,6 +77,9 @@ class coreModule extends zModule {
 		$this->raw_path = implode('/', $this->path);
 	}
 
+	/**
+	* Analyzes $path and choose correct master, main and page controllers.
+	*/
 	public function chooseControllers() {
 		$path_items = count($this->path);
 		if ($path_items > 0) {
@@ -88,14 +96,23 @@ class coreModule extends zModule {
 		}
 	}
 
+	/**
+	* Send data to view.
+	*/	
 	public function setData($name, $value) {
 		$this->data[$name] = $value;
 	}
 
+	/**
+	* Retrieve data sent to view.
+	*/	
 	public function getData($name) {
 		return $this->data[$name];
 	}
 
+	/**
+	* Check if data of given key were sent to view.
+	*/	
 	public function dataExists($name) {
 		return isset($this->data[$name]);
 	}
@@ -131,6 +148,9 @@ class coreModule extends zModule {
 		}
 	}
 
+	/**
+	* Generate fully qualified URL for a page.
+	*/	
 	public function url($link = '', $ret = null) {
 		$url = $this->base_url . '/' . $link;
 		if (isset($ret) && strlen($ret) > 0) {
@@ -139,6 +159,9 @@ class coreModule extends zModule {
 		return $url;
 	}
 
+	/**
+	* Generate link HTML wih fully qualified URL for a page.
+	*/
 	public function getLink($path, $title, $css = '', $ret = null) {
 		if ($this->raw_path == $path) {
 			$css .= ' active';
@@ -146,6 +169,9 @@ class coreModule extends zModule {
 		return sprintf('<a href="%s" class="%s">%s</a>', $this->url($path, $ret), $css, $this->t($title));
 	}
 
+	/**
+	* Translate string into current application language.
+	*/
 	public function t($s) {
 		if ($this->z->moduleEnabled('i18n')) {
 			$t = $this->z->i18n->translate($s);
@@ -162,26 +188,44 @@ class coreModule extends zModule {
 		}
 	}
 
+	/**
+	* return true if there is administrator user authenticated.
+	*/
 	public function isAuth() {
 		return $this->z->auth->isAuth();
 	}
 
+	/**
+	* return authenticated administrator user .
+	*/
 	public function getUser() {
 		return $this->z->auth->user;
 	}
 
+	/**
+	* return true if there is customer user authenticated.
+	*/
 	public function isCustAuth() {
 		return $this->z->custauth->isAuth();
 	}
 
+	/**
+	* return authenticated customer user .
+	*/
 	public function getCustomer() {
 		return $this->z->custauth->customer;
 	}
 
+	/**
+	* send new message into messages queue.
+	*/
 	public function message($text, $type = 'info') {
 		$this->z->messages->add($this->t($text), $type);
 	}
 
+	/**
+	* format money according to selected language and currency.
+	*/
 	public function formatMoney($price) {
 		if ($this->z->moduleEnabled('i18n')) {
 			return $this->z->i18n->formatMoney($price);
@@ -190,6 +234,9 @@ class coreModule extends zModule {
 		}
 	}
 
+	/**
+	* convert money into selected currency (from application's default currency with unit value of 1).
+	*/
 	public function convertMoney($price) {
 		if ($this->z->moduleEnabled('i18n')) {
 			return $this->z->i18n->convertMoney($price);
@@ -198,6 +245,9 @@ class coreModule extends zModule {
 		}
 	}
 
+	/**
+	* both convert and format money according to selected language and currency.
+	*/
 	public function convertAndFormatMoney($price) {
 		return $this->formatMoney($this->convertMoney($price));
 	}

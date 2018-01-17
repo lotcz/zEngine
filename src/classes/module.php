@@ -1,5 +1,8 @@
 <?php
 
+/**
+* Base class for all zEngine modules.
+*/
 class zModule {
 	
 	public $z = null;

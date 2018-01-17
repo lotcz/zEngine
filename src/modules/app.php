@@ -1,5 +1,8 @@
 <?php
 
+/**
+* Module that simplifies application versioning and automatic module loading.
+*/
 class appModule extends zModule {
 
 	public $version = 0;

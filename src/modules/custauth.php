@@ -3,6 +3,9 @@
 require_once __DIR__ . '/../app/models/customer.m.php';
 require_once __DIR__ . '/../app/models/custsess.m.php';
 
+/**
+* Module that handles authentication for public/customer area.
+*/
 class custauthModule extends zModule {
 
 	private $db = null;

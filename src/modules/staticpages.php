@@ -2,6 +2,9 @@
 
 require_once __DIR__ . '/../app/models/static_page.m.php';
 
+/**
+* Module that handles static pages feature.
+*/
 class staticpagesModule extends zModule {
 
 	public function activateEditor() {

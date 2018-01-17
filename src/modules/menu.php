@@ -2,6 +2,9 @@
 
 require_once __DIR__ . '/../classes/menu.php';
 
+/**
+* Module that handles rendering of html menus.
+*/
 class menuModule extends zModule {	
 	
 	public function renderMenuLink($href, $title) {

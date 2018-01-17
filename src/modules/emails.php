@@ -1,5 +1,8 @@
 <?php
 
+/**
+* Module that handles sending of emails.
+*/
 class emailsModule extends zModule {
 
 	public function renderAndSend($to, $subject, $template_name, $data, $from = null) {

@@ -1,5 +1,8 @@
 <?php
 
+/**
+* Module that handles writing into error log file.
+*/
 class errorlogModule extends zModule {
 
 	public $path = '/var/log/zengine.log';

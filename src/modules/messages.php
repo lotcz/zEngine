@@ -1,5 +1,8 @@
 <?php
 
+/**
+* Class that represents a single message in message queue.
+*/
 class zMessage {
 	
 	public $type = 'info';	
@@ -12,6 +15,9 @@ class zMessage {
 	
 }
 
+/**
+* Module that handles queuing and displaying of messages.
+*/
 class messagesModule extends zModule{
 
 	public $messages = [];

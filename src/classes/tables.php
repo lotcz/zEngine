@@ -1,5 +1,8 @@
 <?php
 
+/**
+* This class simplifies generation of paged html tables.
+*/
 class zTable {
 
 	public $name;

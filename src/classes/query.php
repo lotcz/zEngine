@@ -1,5 +1,8 @@
 <?php
 
+/**
+* This class simplifies creating of mysql queries.
+*/
 class zSqlQuery {
 	
 	public $db = null;

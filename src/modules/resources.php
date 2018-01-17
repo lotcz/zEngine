@@ -1,5 +1,8 @@
 <?php
 
+/**
+* Module that handles static zEngine resources like CSS and javascript.
+*/
 class resourcesModule extends zModule {
 
 	//url base for all resources

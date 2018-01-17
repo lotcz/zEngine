@@ -2,6 +2,9 @@
 
 require_once __DIR__ . '/query.php';
 
+/**
+* Base class for all zEngine models.
+*/
 class zModel {
 
 	protected $db = null;

@@ -1,5 +1,8 @@
 <?php
 
+/**
+* This class simplifies generation of html forms.
+*/
 class zForm {
 
 	public $id;

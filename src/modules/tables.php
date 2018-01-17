@@ -3,6 +3,9 @@
 require_once __DIR__ . '/../classes/paging.php';
 require_once __DIR__ . '/../classes/tables.php';
 
+/**
+* Module that handles rendering of paged html tables.
+*/
 class tablesModule extends zModule {
 
 	public function onEnabled() {

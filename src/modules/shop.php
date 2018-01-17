@@ -6,6 +6,9 @@ require_once __DIR__ . '/../app/models/order_state.m.php';
 require_once __DIR__ . '/../app/models/payment_type.m.php';
 require_once __DIR__ . '/../app/models/delivery_type.m.php';
 
+/**
+* Module that handles e-shops.
+*/
 class shopModule extends zModule {
 
 	public function onEnabled() {

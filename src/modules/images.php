@@ -1,5 +1,8 @@
 <?php 
 
+/**
+* Module that handles images. Mostly image uploading and resizing.
+*/
 class imagesModule extends zModule {
 
 	public $formats = '';

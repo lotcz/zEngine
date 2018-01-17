@@ -1,5 +1,8 @@
 <?php
 
+/**
+* Module that handles running of cron jobs.
+*/
 class jobsModule extends zModule {
 
 	//url base for running jobs

@@ -2,6 +2,9 @@
 
 require_once __DIR__ . '/../app/models/alias.m.php';
 
+/**
+* Module that handles page aliases.
+*/
 class aliasModule extends zModule {
 	
 	public function onEnabled() {

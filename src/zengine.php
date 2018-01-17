@@ -18,6 +18,9 @@ class zEngine {
 		$this->enableModule('core');
 	}
 
+	/**
+	* Enables zEngine module. This will also call module's onEnabled method if defined.
+	*/
 	public function enableModule($module_name) {
 		try {
 			if (!$this->moduleEnabled($module_name)) {
@@ -43,14 +46,23 @@ class zEngine {
 		}
 	}
 
+	/**
+	* Returns true if module is enabled.
+	*/
 	public function moduleEnabled($module_name) {
 		return isset($this->modules[$module_name]);
 	}
 
+	/**
+	* Returns true if application is in debug mode.
+	*/
 	public function isDebugMode() {
 		return $this->core->debug_mode;
 	}
 
+	/**
+	* This is the entry point for zEngine application. Call this from index.php.
+	*/
 	public function run() {
 		try {
 
@@ -94,6 +106,9 @@ class zEngine {
 		}
 	}
 
+	/**
+	* Handles unrecoverable application error. This is called automatically if there is unhandled exception raised anywhere in the application.
+	*/
 	public function fatalError($error_message) {
 		if ($this->isDebugMode()) {
 			http_response_code(500);

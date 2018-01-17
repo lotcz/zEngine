@@ -1,5 +1,8 @@
 <?php
 
+/**
+* This class simplifies paging in mysql recordsets.
+*/
 class zPaging {
 	
 	static $default_size = 12;

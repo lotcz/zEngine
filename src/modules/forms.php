@@ -3,6 +3,9 @@
 require_once __DIR__ . '/../classes/forms.php';
 require_once __DIR__ . '/../app/models/xsrf.m.php';
 
+/**
+* Module that simplifies rendering and processing of forms.
+*/
 class formsModule extends zModule {
 
 	private $form_token_expires = 60*60;
