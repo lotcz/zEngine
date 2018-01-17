@@ -14,6 +14,7 @@ class coreModule extends zModule {
 	public $debug_mode = false;
 	public $error_page = 'error.html';
 	public $error_view = 'error';
+	public $not_found_path = 'notfound';
 	
 	public $return_path = false;
 
@@ -38,6 +39,7 @@ class coreModule extends zModule {
 		$this->base_url = $this->getConfigValue('base_url', $this->base_url);
 		$this->debug_mode = $this->getConfigValue('debug_mode', $this->debug_mode);
 		$this->error_page = $this->getConfigValue('error_page', $this->error_page);
+		$this->not_found_path = $this->getConfigValue('not_found_path', $this->not_found_path);
 		$this->setData('site_title', $this->getConfigValue('site_title', 'Site Name'));
 		$this->return_path = z::get('r', false);		
 	}
@@ -363,7 +365,11 @@ class coreModule extends zModule {
 			if (file_exists($default_template_path)) {
 				include $default_template_path;
 			} else {
-				echo "Template for $type view not found: $default_template_path!";
+				if ($this->debug_mode) {
+					echo "Template for $type view not found: $default_template_path!";
+				} else {
+					$this->redirect($this->not_found_path);
+				}
 			}
 		}
 	}

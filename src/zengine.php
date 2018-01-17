@@ -3,6 +3,10 @@
 require_once __DIR__ . '/classes/z.php';
 require_once __DIR__ . '/classes/module.php';
 
+/**
+* zEngine himself - this is the main class of zEngine.
+* All you have to do is create instance of this class and call method run().
+*/
 class zEngine {
 
 	public $app_dir = '';
