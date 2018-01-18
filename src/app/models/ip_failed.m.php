@@ -17,7 +17,7 @@ class IpFailedAttemptModel extends zModel {
 				$attempt->set('ip_failed_attempt_ip', $ip);
 		}
 		$attempt->set('ip_failed_attempt_count', $attempt->ival('ip_failed_attempt_count',0)+1);
-		$attempt->set('ip_failed_attempt_last', time());
+		$attempt->set('ip_failed_attempt_last', zSqlQuery::mySqlDatetime(time()));
 		$attempt->save();
 	}
 

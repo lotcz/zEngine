@@ -67,7 +67,7 @@ class authModule extends zModule {
 			} else {
 				$user->data['user_failed_attempts'] += 1;
 				$user->save();
-				IpFailedAttemptModel::saveFailedAttempt($db);
+				IpFailedAttemptModel::saveFailedAttempt($this->db);
 				return false;
 			}
 
