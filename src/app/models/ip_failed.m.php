@@ -1,5 +1,8 @@
 <?php
 
+/**
+* Model representing failed login attempt for specific IP address.
+*/
 class IpFailedAttemptModel extends zModel {
 
 	public $table_name = 'ip_failed_attempts';

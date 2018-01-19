@@ -56,14 +56,23 @@ class custauthModule extends zModule {
 		$this->session = $session;
 	}
 
+	/**
+	* Return true if customer is authenticated.
+	*/
 	public function isAuth() {
 		return isset($this->customer) && isset($this->session);
 	}
 
+	/**
+	* Return true if authenticated customer is anonymous.
+	*/
 	public function isAnonymous() {
 		return $this->isAuth() && $this->val('customer_anonymous');
 	}
 
+	/**
+	* Perform login for given username/email and password by creating a session. Return true if successful.
+	*/
 	public function login($email, $password) {
 
 		if (!$this->isAnonymous()) {
@@ -99,6 +108,11 @@ class custauthModule extends zModule {
 		return false;
 	}
 
+	/**
+	* Verifies if there is customer logged in. 
+	* Call this only once in the beginning of request processing and then call to isAuth() method
+	to check whether customer is authenticated.
+	*/
 	public function checkAuthentication() {
 		$this->customer = null;
 
@@ -132,6 +146,9 @@ class custauthModule extends zModule {
 		}
 	}
 
+	/**
+	* Save last access date and time for logged in customer.
+	*/
 	public function updateLastAccess() {
 		if ($this->isAuth()) {
 			$customer = new CustomerModel($this->db);
@@ -141,6 +158,9 @@ class custauthModule extends zModule {
 		}
 	}
 
+	/**
+	* Perform logout operation by deleting current customer's session.
+	*/
 	public function logout() {
 		$this->customer = null;
 

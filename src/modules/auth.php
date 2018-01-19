@@ -25,14 +25,23 @@ class authModule extends zModule {
 		$this->checkAuthentication();
 	}
 
+	/**
+	* Return true if administrator is authenticated.
+	*/
 	public function isAuth() {
 		return isset($this->user) && isset($this->session);
 	}
 
+	/**
+	* Return true if authenticated admin has give permission.
+	*/
 	public function can($perm_name) {
 		return $this->isAuth() && ($this->user->val('user_is_superuser') || $this->user->hasPermission($perm_name));
 	}
 
+	/**
+	* Perform login for given username/email and password by creating a session. Return true if successful.
+	*/
 	public function login($loginoremail, $password) {
 		$ip = $_SERVER['REMOTE_ADDR'];
 
@@ -76,6 +85,11 @@ class authModule extends zModule {
 		}
 	}
 
+	/**
+	* Verifies if there is admin logged in. 
+	* Call this only once in the beginning of request processing and then call to isAuth() method
+	to check whether admin is authenticated.
+	*/
 	public function checkAuthentication() {
 		$this->user = null;
 
@@ -100,6 +114,9 @@ class authModule extends zModule {
 		}
 	}
 
+	/**
+	* Save last access date and time for logged in admin.
+	*/
 	public function updateLastAccess() {
 		if ($this->isAuth()) {
 			$user = new UserModel($this->db);
@@ -109,6 +126,9 @@ class authModule extends zModule {
 		}
 	}
 
+	/**
+	* Perform logout operation by deleting current admin's session.
+	*/
 	public function logout() {
 		$this->user = null;
 
