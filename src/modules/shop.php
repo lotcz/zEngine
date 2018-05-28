@@ -18,8 +18,8 @@ class shopModule extends zModule {
 	public function createOrder() {
 		$db = $this->z->core->db;
 		$customer = $this->z->core->getCustomer();
-		$delivery_type = new DeliveryTypeModel($db, $customer->val('customer_delivery_type_id'));
-		$payment_type = new PaymentTypeModel($db, $customer->val('customer_payment_type_id'));
+		$delivery_type = new DeliveryTypeModel($db, $customer->ival('customer_delivery_type_id'));
+		$payment_type = new PaymentTypeModel($db, $customer->ival('customer_payment_type_id'));
 		$currency = $this->z->i18n->selected_currency;
 
 		$order = new OrderModel($db);

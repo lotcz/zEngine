@@ -7,7 +7,7 @@ class ProductModel extends zModel {
 	
 	public function loadByExtId($id) {
 		$filter = 'product_ext_id = ?';
-		$this->loadSingleFiltered($filter, [$id]);		
+		$this->loadSingleFiltered($filter, [$id]);
 	}
 	
 	public function loadVariants() {
@@ -26,8 +26,8 @@ class ProductModel extends zModel {
 		);		
 	}
 	
-	public function getAliasUrl() {		
-		return $this->val('product_name');		
+	public function getAliasUrl() {
+		return $this->val('product_name');
 	}
 	
 	public function getViewPath() {
@@ -40,7 +40,7 @@ class ProductModel extends zModel {
 			'sortby_Alphabet' => 'product_name ASC',
 			'sortby_Alphabet_DESC' => 'product_name DESC',
 			'sortby_Price' => 'product_price ASC',
-			'sortby_Price_DESC' => 'product_price DESC'					
+			'sortby_Price_DESC' => 'product_price DESC'
 		];
 	}
 	
