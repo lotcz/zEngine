@@ -90,7 +90,7 @@ class custauthModule extends zModule {
 			} else {
 				$customer->data['customer_failed_attempts'] += 1;
 				$customer->save();
-				IpFailedAttemptModel::saveFailedAttempt($db);
+				IpFailedAttemptModel::saveFailedAttempt($this->db);
 			}
 		}
 		return false;
