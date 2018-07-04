@@ -57,8 +57,8 @@ class custauthModule extends zModule {
 		return isset($this->customer) && isset($this->session);
 	}
 
-	public function isAnonymous() {
-		return $this->isAuth() && $this->val('customer_anonymous');
+	public function isAnonymous() {		
+		return (!$this->isAuth()) || $this->val('customer_anonymous');
 	}
 
 	public function login($email, $password) {
