@@ -67,7 +67,7 @@ class custauthModule extends zModule {
 	* Return true if authenticated customer is anonymous.
 	*/
 	public function isAnonymous() {
-		return $this->isAuth() && $this->val('customer_anonymous');
+		return (!$this->isAuth()) || $this->val('customer_anonymous');
 	}
 
 	/**
