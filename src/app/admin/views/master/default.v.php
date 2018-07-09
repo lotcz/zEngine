@@ -29,7 +29,7 @@
 		
 		<footer class="container-fluid spaced">
 			<hr>
-			<p>&copy; Karel Zavadil 2018. Z-engine v. <strong><?=$this->z->version ?></strong>. Application version <strong><?=$this->z->app->version ?></strong>.</p>
+			<p>&copy; Karel Zavadil 2018. zEngine v. <strong><?=$this->z->version ?></strong>. Application version <strong><?=$this->z->app->version ?></strong>.</p>
 		</footer>
 		
 		<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>

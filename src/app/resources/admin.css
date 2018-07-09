@@ -1,20 +1,26 @@
+:root {
+    --default-padding: 10px;
+    --top-menu-height: 50px;
+    --default-margin-top: 60px; /* sum of default padding and height of top menu */
+}
+
 body {
-  margin-top: 60px;
+  margin-top: var(--default-margin-top);
 }
 
 .spaced {
-  padding-top: 10px;
+  padding-top: var(--default-padding);
 }
 
 .form-validation {
   display: none;
   color: red;
-  margin-top: 10px;
+  margin-top: var(--default-padding);
 }
 
 .form-button {
-  margin-left: 10px;
-  margin-right: 10px;
+  margin-left: var(--default-padding);
+  margin-right: var(--default-padding);
 }
 
 .form-buttons {
@@ -31,7 +37,7 @@ body {
 
 .form-inline .form-field {
   display: inline-block;
-  margin-left: 10px;
+  margin-left: var(--default-padding);
 }
 
 .form-inline .form-buttons {
@@ -41,7 +47,7 @@ body {
 
 .form-inline .control-label {
   display: inline-block;
-  margin-left: 10px;
+  margin-left: var(--default-padding);
 }
 
 .form-field {
@@ -61,7 +67,7 @@ body {
   opacity: 0;
   display: inline-block;
   margin: auto;
-  background-image: url('/resources/ajax-loader.gif');
+  background-image: url('ajax-loader.gif');
   width: 31px;
   height: 31px;
 }

@@ -1,4 +1,0 @@
-git pull
-git checkout $1
-chown -R www-data:www-data ../zEngine
-../zEngine/update

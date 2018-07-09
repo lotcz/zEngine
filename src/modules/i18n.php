@@ -113,10 +113,20 @@ class i18nModule extends zModule {
 	}
 
 	public function loadLanguageData($lang_code) {
-		$file_path = $this->getLanguageFilePath($lang_code);
+        
+        $z_lang_data = [];        
+		$file_path = __DIR__ . '/../lang/' . $lang_code . '.php';
 		if (file_exists($file_path)) {
-			return include $file_path;
+			$z_lang_data = include $file_path;
 		}
+        
+        $app_lang_data = [];
+        $file_path = $this->getLanguageFilePath($lang_code);
+		if (file_exists($file_path)) {
+			$app_lang_data = include $file_path;
+		}
+        
+        return array_merge($z_lang_data, $app_lang_data);
 	}
 
 	public function loadLanguage($lang_code) {
@@ -124,7 +134,7 @@ class i18nModule extends zModule {
 	}
 
 	// directly translates string if translation exists
-	// if you want to process tokens inside, use t function of core module instead
+	// if you want to process tokens use 'core->t()' function instead
 	public function translate($s) {
 		if (isset($this->language_data) and isset($this->language_data[$s])) {
 			$t = $this->language_data[$s];

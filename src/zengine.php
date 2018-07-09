@@ -9,9 +9,9 @@ require_once __DIR__ . '/classes/module.php';
 */
 class zEngine {
 
-	public $app_dir = '';
-	public $modules = [];
-	public $version = 1.3;
+	public $version = 2.0;
+    public $app_dir = '';
+	public $modules = [];	
 
 	function __construct($app_dir = 'app/') {
 		$this->app_dir = $app_dir;
