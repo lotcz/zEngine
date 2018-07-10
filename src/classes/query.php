@@ -63,8 +63,8 @@ class zSqlQuery {
 		}		
 	}
 	
-	static function getExceptionMessage($operation, $query, $message = '') {
-		return sprintf("zSqlQuery class issued an error during $operation operation of query ($query): $message.");
+	static function getExceptionMessage($operation, $query, $message) {
+		return "zSqlQuery class issued an error during $operation operation of query ($query): $message.";
 	}
 	
 	static function executeSQL($db, $sql, $bindings = null, $types = null) {
