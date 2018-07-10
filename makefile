@@ -6,9 +6,9 @@ pull:
 
 checkout:
     git checkout $1
-        
+
 update: pull perms
-    	
+
 upgrade: pull checkout perms
 
 init:
