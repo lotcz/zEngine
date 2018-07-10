@@ -10,6 +10,3 @@ checkout:
 update: pull perms
 
 upgrade: pull checkout perms
-
-init:
-	php src/init.php
