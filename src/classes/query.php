@@ -64,6 +64,9 @@ class zSqlQuery {
 	}
 	
 	static function getExceptionMessage($operation, $query, $message) {
+		if (strlen($query) > 100) {
+			$query = substr($query, 0, 100) . '...';
+		}
 		return "zSqlQuery class issued an error during $operation operation of query ($query): $message.";
 	}
 	
