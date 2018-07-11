@@ -1,24 +1,28 @@
-<div class="inner cover">
-	<form method="post" class="form-horizontal" id="admin_forgot_form" >
-		<div class="form-group">
-			<label for="email" class="col-sm-4 control-label"><?=$this->t('Login or E-mail') ?>:</label>
-			<div class="col-sm-4"><input type="text" name="email" class="form-control" value="<?=(isset($_GET['email'])) ? $_GET['email'] : '' ?>" /></div>
-			<div class="col-sm-4 form-validation" id="email_validation_length"><?=$this->t('Required.') ?></div>
-			<div class="col-sm-4 form-validation" id="email_validation_email"><?=$this->t('E-mail address is not in correct form! Please enter valid e-mail address.') ?></div>
-		</div>
-		<div class="form-buttons">			
+<form method="POST" id="admin_forgot_form" >
+	<div class="form-group row">
+		<label for="email" class="col-sm-1 col-form-label"><?=$this->t('E-mail') ?></label>
+		<div class="col-sm-3">
+			<input type="text" id="email" name="email" class="form-control" value="<?=z::get('email','') ?>" />
+			<div class="form-validation" id="email_validation_email"><?=$this->t('E-mail address is not in correct form! Please enter valid e-mail address.') ?></div>
+		</div>		
+	</div>
+	<div class="form-group row">
+		<div class="col-sm-3 offset-sm-1 form-field">
 			<input type="submit" onclick="javascript:admin_forgot_validate(event);" class="btn btn-success form-button" value="<?=$this->t('Reset Password') ?>" />
+		</div>
+	</div>
+	<div class="form-group row">
+		<div class="col-sm-3 offset-sm-1 form-field">
 			<a class="form-button" href="<?=$this->url('admin') ?>"><?=$this->t('Sign In') ?></a>
 		</div>
-	</form>
-</div>
+	</div>
+</form>
 
 <script>
 	function admin_forgot_validate(e) {
-			e.preventDefault();
-			var frm = new formValidation('admin_forgot_form');
-			frm.add('email', 'length', 1);
-			frm.add('email', 'email', 1);
-			frm.submit();
-		}
+		e.preventDefault();
+		var frm = new formValidation('admin_forgot_form');
+		frm.add('email', 'email');
+		frm.submit();
+	}
 </script>

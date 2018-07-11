@@ -14,6 +14,7 @@ class formsModule extends zModule {
 		$this->requireModule('mysql');
 		$this->requireModule('messages');
 		$this->z->core->includeJS('resources/forms.js');
+		$this->z->core->includeCSS('resources/forms.css');
 	}
 
 	public function pathParam() {

@@ -7,19 +7,21 @@ require_once __DIR__ . '/../classes/menu.php';
 */
 class menuModule extends zModule {	
 	
-	public function renderMenuLink($href, $title) {
-		if ($this->z->core->raw_path == $href) {
-			$css = 'active';
-		} else {
-			$css = '';
-		}
-		echo sprintf('<li class="%s"><a href="%s" >%s</a></li>', $css, $this->z->core->url($href), $this->z->core->t($title));
-	}
-	
-	public function renderItem($item) {
+	public function renderMenuItem($item) {
 		switch ($item->type) {
-			case 'item':
+			case 'link':
 				$this->renderMenuLink($item->href, $item->label);
+			break;			
+			case 'submenu':
+				$this->renderSubMenu($item);
+			break;
+		}
+	}
+
+	public function renderSubmenuItem($item) {
+		switch ($item->type) {
+			case 'link':
+				$this->renderSubmenuLink($item->href, $item->label);
 			break;
 			case 'header':
 				$this->renderHeader($item->label);
@@ -33,9 +35,27 @@ class menuModule extends zModule {
 		}
 	}
 	
+	public function renderMenuLink($href, $title) {
+		if ($this->z->core->raw_path == $href) {
+			$css = 'active';
+		} else {
+			$css = '';
+		}
+		echo sprintf('<li class="nav-item %s"><a class="nav-link" href="%s" >%s</a></li>', $css, $this->z->core->url($href), $this->z->core->t($title));
+	}
+	
+	public function renderSubmenuLink($href, $title) {
+		if ($this->z->core->raw_path == $href) {
+			$css = 'active';
+		} else {
+			$css = '';
+		}
+		echo sprintf('<a class="dropdown-item %s" href="%s" >%s</a>', $css, $this->z->core->url($href), $this->z->core->t($title));
+	}
+	
 	public function renderSeparator() {
 		?>
-			<li role="separator" class="divider">&nbsp;</li>
+			<div class="dropdown-divider"></div>
 		<?php
 	}
 	
@@ -47,12 +67,12 @@ class menuModule extends zModule {
 	
 	public function renderSubMenu($submenu) {
 		?>
-			<li class="dropdown">
-				<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?=$this->z->core->t($submenu->label) ?><span class="caret">&nbsp;</span></a>
+			<li class="nav-item dropdown">
+				<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?=$this->z->core->t($submenu->label) ?><span class="caret">&nbsp;</span></a>
 				<ul class="dropdown-menu">
 					<?php
 						foreach ($submenu->items as $item) {
-							$this->renderItem($item);
+							$this->renderSubmenuItem($item);
 						}
 					?>
 			  </ul>
@@ -62,47 +82,40 @@ class menuModule extends zModule {
 	
 	public function renderMenu($menu) {
 		?>
-			<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-				<div class="not-a-container">
-					<!-- grouped for better mobile display -->
-					<div class="navbar-header">
-						<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-							<span class="sr-only">Toggle navigation</span>
-							<span class="icon-bar">&nbsp;</span>
-							<span class="icon-bar">&nbsp;</span>
-							<span class="icon-bar">&nbsp;</span>
-						 </button>
+			<nav class="navbar navbar-dark bg-dark navbar-expand sticky-top">				
+				<div class="navbar-header">
+					<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+						<span class="navbar-toggler-icon"></span>
+					</button>
 
-						 <?php
-							if (isset($menu->href)) {
-								?>
-									<a class="navbar-brand" href="<?=$this->z->core->url($menu->href) ?>"><?=$this->z->core->t($menu->label) ?></a>								
-								<?php
-							} else {
-								?>
-									<span class="navbar-brand"><?=$this->z->core->t($menu->label) ?></span>								
-								<?php
+					 <?php
+						if (isset($menu->href)) {
+							?>
+								<a class="navbar-brand" href="<?=$this->z->core->url($menu->href) ?>"><?=$this->z->core->t($menu->label) ?></a>								
+							<?php
+						} else {
+							?>
+								<span class="navbar-brand"><?=$this->z->core->t($menu->label) ?></span>								
+							<?php
+						}
+					?>
+				</div>
+
+				<div class="collapse navbar-collapse" id="navbar">		
+					<ul class="navbar-nav mr-auto">
+						<?php
+							foreach ($menu->items as $item) {
+								$this->renderMenuItem($item);
 							}
 						?>
-					</div>
-
-					<div class="collapse navbar-collapse" id="navbar">		
-						<ul class="nav navbar-nav navbar-left">
-							<?php
-								foreach ($menu->items as $item) {
-									$this->renderItem($item);
-								}
-							?>
-						</ul>
-						<ul class="nav navbar-nav navbar-right">
-							<?php
-								foreach ($menu->right_items as $item) {
-									$this->renderItem($item);
-								}
-							?>
-						</ul>
-					</div>
-							
+					</ul>
+					<ul class="navbar-nav">
+						<?php
+							foreach ($menu->right_items as $item) {
+								$this->renderMenuItem($item);
+							}
+						?>
+					</ul>
 				</div>
 			</nav>
 		<?php

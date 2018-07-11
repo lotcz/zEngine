@@ -36,10 +36,15 @@ $language_data['This email is already used!'] = 'Tento email je již obsazen!';
 $language_data['E-mail address is not in correct form! Please enter valid e-mail address.'] = 'Emailová adresa není ve správném formátu! Zadejte prosím platnou emailovou adresu.';
 $language_data['If you forget your password, you can reset it <a href="%s">here</a>.'] = 'Pokud zapomenete Vaše heslo, můžete jej resetovat <a href="%s">zde</a>.';
 $language_data['Login unsuccessful!'] = 'Přihlášení bylo neúspěšné!';
+$language_data['E-mail address not found!'] = 'E-mailová adresa nenalezena!';
+$language_data['An e-mail was sent to your address with reset password instructions.'] = 'Na Vaši emailovou adresu jsme odeslali email s instrukcemi pro obnovení hesla.';
+$language_data['Enter your new password.'] = 'Vložte Vaše nové heslo.';
+$language_data['New Password'] = 'Nové heslo';
+$language_data['Confirm New Password'] = 'Potvrdit nové heslo';
+$language_data['Your password was successfully changed.'] = 'Vaše heslo bylo úspěšně změněno.';
 
 /* ADMIN SECTION */
 $language_data['Administration'] = 'Administrace';
-$language_data['Administrator Sign In'] = 'Vstup pro správce';
 $language_data['Dashboard'] = 'Ovládací panel';
 $language_data['Administrators'] = 'Správci';
 $language_data['Editing Administrator'] = 'Editace správce';
@@ -75,5 +80,8 @@ $language_data['Continue'] = 'Pokračovat';
 $language_data['Please enter your whole name.'] = 'Prosím vložte Vaše celé jméno.';
 $language_data['Required.'] = 'Vyžadováno.';
 $language_data['Please enter valid ZIP code.'] = 'Prosím vložte platné PSČ.';
+$language_data['Some fields in the form don\'t validate! Form cannot be saved.'] = 'Některá pole formuláře neprošla ověřením! Formulář nelze uložit.';
+$language_data['This field is required. Cannot be left empty.'] = 'Toto pole je povinné. Nesmí zůstat prázdné.';
+$language_data['Please enter whole number.'] = 'Vložte prosím celé číslo';
 
 return $language_data;

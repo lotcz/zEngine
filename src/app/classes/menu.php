@@ -7,11 +7,11 @@ class zMenu {
 		
 	public $href = '';
 	public $label = '';
-	public $type = 'item';
+	public $type = 'link';
 	public $items = [];
 	public $right_items = [];
 	
-	public function __construct($href = null, $label = '', $type = 'item') {
+	public function __construct($href = null, $label = '', $type = 'link') {
 		$this->href = $href;
 		$this->label = $label;
 		$this->type = $type;

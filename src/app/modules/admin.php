@@ -16,7 +16,7 @@ class adminModule extends zModule {
 	public $is_admin_area = false;
 
 	// page of admin area that is accessible for public
-	public $public_pages = ['login', 'forgotten-password', 'password-reset'];
+	public $public_pages = ['login', 'forgotten-password', 'reset-password'];
 	
 	public $is_public_page = false;
 	
@@ -52,7 +52,7 @@ class adminModule extends zModule {
 			} else if ($this->is_login_page && $this->z->auth->isAuth()) {
 				$this->z->core->path = [$this->base_url];
 			}
-            $this->z->core->includeCSS('resources/admin.css');
+            //$this->z->core->includeCSS('resources/admin.css');
 		}
 
 		$this->initializeAdminMenu();
@@ -67,7 +67,7 @@ class adminModule extends zModule {
 	* Returns basic admin menu including users, languages etc. based on enabled modules 
 	*/
 	private function initializeAdminMenu() {
-		$menu = new zMenu($this->getAdminAreaURL(''), $this->z->core->getConfigValue('site_title', 'Home'));
+		$menu = new zMenu($this->getAdminAreaURL(''), $this->z->core->getData('site_title'));
 		
 		if ($this->z->auth->isAuth()) {
 
@@ -91,7 +91,8 @@ class adminModule extends zModule {
 				$submenu->addItem('admin/info', 'Server Info');
 				$submenu->addItem('admin/about', 'About');
 			}
-			
+			$user = $this->z->auth->user;
+			$menu->addRightItem('admin/default/default/user/edit/' . $user->val('user_id'), $user->val('user_email'));
 			$menu->addRightItem('admin/logout', 'Log Out');
 		} else if (!$this->is_login_page) {
 			//$menu->addRightItem($this->getAdminAreaURL($this->login_url), 'Log in');
