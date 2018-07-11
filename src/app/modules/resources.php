@@ -9,7 +9,7 @@ class resourcesModule extends zModule {
 	public $base_url = 'resources';
 	
 	//base dir for all resources relative to this file
-	public $base_dir = '/../app/resources/';
+	public $base_dir = '/../resources/';
 	
 	static function getContentType($ext) {
 		switch ($ext) {

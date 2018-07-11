@@ -15,8 +15,12 @@ class adminModule extends zModule {
 
 	public $is_admin_area = false;
 
-	// the only page of admin area that is accessible for public
-	// also when authentication fails, user is redirected here
+	// page of admin area that is accessible for public
+	public $public_pages = ['login', 'forgotten-password', 'password-reset'];
+	
+	public $is_public_page = false;
+	
+	// when authentication fails, user is redirected here
 	public $login_url = 'login';
 
 	public $is_login_page = false;
@@ -42,12 +46,13 @@ class adminModule extends zModule {
 			$this->requireModule('forms');
 			$this->requireModule('tables');
 			$this->is_login_page = (count($this->z->core->path) == 1 && ($this->z->core->path[0] == $this->login_url));
-			if (!$this->is_login_page && !$this->z->auth->isAuth()) {
+			$this->is_public_page = (count($this->z->core->path) == 1 && (in_array($this->z->core->path[0], $this->public_pages)));
+			if (!$this->is_public_page && !$this->z->auth->isAuth()) {
 				$this->z->core->path = [$this->login_url];
 			} else if ($this->is_login_page && $this->z->auth->isAuth()) {
 				$this->z->core->path = [$this->base_url];
 			}
-            $this->z->core->includeCSS('resources/admin.min.css');
+            $this->z->core->includeCSS('resources/admin.css');
 		}
 
 		$this->initializeAdminMenu();
@@ -67,15 +72,13 @@ class adminModule extends zModule {
 		if ($this->z->auth->isAuth()) {
 
 			//custom menu from app's admin config
-			$menu->loadItemsFromArray($this->getConfigValue('menu'));
+			$menu->loadItemsFromArray($this->getConfigValue('custom_menu'));
 
 			//standard admin menu
 			if ($this->getConfigValue('show_default_menu', false)) {
 				$submenu = $menu->addSubmenu('Administration');
-				$submenu->addItem('admin/static_pages', 'Static pages');
-				$submenu->addHeader('Customers');
-				$submenu->addItem('admin/customers', 'Customers');	
-				$submenu->addHeader('Administrators');
+				$submenu->addItem('admin/static_pages', 'Static pages');				
+				$submenu->addItem('admin/customers', 'Customers');				
 				$submenu->addItem('admin/users', 'Administrators');
 				$submenu->addItem('admin/roles', 'Roles');
 				$submenu->addItem('admin/permissions', 'Permissions');

@@ -1,7 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../classes/forms.php';
-require_once __DIR__ . '/../app/models/xsrf.m.php';
+require_once __DIR__ . '/../models/xsrf.m.php';
 
 /**
 * Module that simplifies rendering and processing of forms.
@@ -41,7 +41,11 @@ class formsModule extends zModule {
 		if (isset($field->validations) && count($field->validations) > 0) {
 			foreach ($field->validations as $validation) {
 				$method = 'zForm::validate_' . $validation['type'];
-				if (!$method($value, $validation['param'])) {
+				$validation_param = null;
+				if (isset($validation['param'])) {
+					$validation_param = $validation['param'];
+				}
+				if (!$method($value, $validation_param)) {
 					$this->z->messages->error($this->z->core->t('Value of field %s is not valid: %s', $field->name, $this->getValidationMessage($validation)));
 					$is_valid = false;
 				}				

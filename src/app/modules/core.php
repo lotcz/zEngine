@@ -37,7 +37,7 @@ class coreModule extends zModule {
 	public $raw_path = '';
 
 	public function onEnabled() {
-		$this->default_app_dir = __DIR__ . '/../app/';
+		$this->default_app_dir = __DIR__ . '/../';
 		$this->requireModule('errorlog');
 		$this->requireConfig('base_url');
 		$this->app_dir = $this->z->app_dir;
@@ -130,10 +130,6 @@ class coreModule extends zModule {
 		}
 	}
 	
-	public function requireClass($class_name) {
-		require_once __DIR__ . "/../classes/$class_name.php";
-	}
-
 	public function redirect($url = '', $statusCode = 303) {
 		z::redirect(z::trimSlashes($this->base_url) . '/' . z::trimSlashes($url), $statusCode);
 	}

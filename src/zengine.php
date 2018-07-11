@@ -1,7 +1,7 @@
 <?php
 
-require_once __DIR__ . '/classes/z.php';
-require_once __DIR__ . '/classes/module.php';
+require_once __DIR__ . '/app/classes/z.php';
+require_once __DIR__ . '/app/classes/module.php';
 
 /**
 * zEngine himself - this is the main class of zEngine.
@@ -24,7 +24,7 @@ class zEngine {
 	public function enableModule($module_name) {
 		try {
 			if (!$this->moduleEnabled($module_name)) {
-				require_once __DIR__ . "/modules/$module_name.php";
+				require_once __DIR__ . "/app/modules/$module_name.php";
 				$module_class = $module_name . 'Module';
 				$module = new $module_class($this);
 				$module->name = $module_name;

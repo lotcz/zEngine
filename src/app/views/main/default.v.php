@@ -1,3 +1,5 @@
-<?php	
-	$this->renderPageView();
-?>
+<div class="container">
+	<?php	
+		$this->renderPageView();
+	?>
+</div>

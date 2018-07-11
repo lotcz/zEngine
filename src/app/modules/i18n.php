@@ -1,7 +1,7 @@
 <?php
 
-require_once __DIR__ . '/../app/models/language.m.php';
-require_once __DIR__ . '/../app/models/currency.m.php';
+require_once __DIR__ . '/../models/language.m.php';
+require_once __DIR__ . '/../models/currency.m.php';
 
 /**
 * Module that handles application internationalization
@@ -19,6 +19,7 @@ class i18nModule extends zModule {
 	public $selected_currency = null;
 
 	public function onEnabled() {
+		$this->requireModule('cookies');
 		$this->requireModule('mysql');
 		$this->db = $this->z->core->db;
 
@@ -79,6 +80,19 @@ class i18nModule extends zModule {
 		if (!isset($this->selected_language)) {
 			$this->selectLanguageByCode($this->getConfigValue('default_language'));
 		}
+		
+		// include necessary JS
+		$this->z->core->includeJS('resources/i18n.js');
+		$this->z->core->insertJS(
+			[
+				'z_i18n' => [
+					'language_cookie_name' => $this->language_cookie_name,
+					'currency_cookie_name' => $this->currency_cookie_name,
+					'selected_language' => $this->selected_language->data,
+					'selected_currency' => $this->selected_currency->data
+				]
+			]
+		);
 
 	}
 
@@ -108,20 +122,18 @@ class i18nModule extends zModule {
 		$this->selectCurrency(zModel::find($this->available_currencies, 'currency_id', $currency_id));
 	}
 
-	public function getLanguageFilePath($lang_code) {
-		return $this->getConfigValue('localization_dir') . $lang_code . '.php';
-	}
-
 	public function loadLanguageData($lang_code) {
-        
-        $z_lang_data = [];        
+                
+		// zEngine localization
+		$z_lang_data = [];
 		$file_path = __DIR__ . '/../lang/' . $lang_code . '.php';
 		if (file_exists($file_path)) {
 			$z_lang_data = include $file_path;
 		}
         
+		// app localization
         $app_lang_data = [];
-        $file_path = $this->getLanguageFilePath($lang_code);
+        $file_path = $this->z->app_dir . 'lang/' . $lang_code . '.php';
 		if (file_exists($file_path)) {
 			$app_lang_data = include $file_path;
 		}
