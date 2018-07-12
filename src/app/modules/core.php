@@ -188,28 +188,32 @@ class coreModule extends zModule {
 	* return true if there is administrator user authenticated.
 	*/
 	public function isAuth() {
-		return $this->z->auth->isAuth();
+		return ($this->z->moduleEnabled('auth') && $this->z->auth->isAuth());
 	}
 
 	/**
 	* return authenticated administrator user .
 	*/
 	public function getUser() {
-		return $this->z->auth->user;
+		if ($this->isAuth()) {
+			return $this->z->auth->user;
+		}
 	}
 
 	/**
 	* return true if there is customer user authenticated.
 	*/
 	public function isCustAuth() {
-		return $this->z->custauth->isAuth();
+		return ($this->z->moduleEnabled('custauth') && $this->z->custauth->isAuth());
 	}
 
 	/**
 	* return authenticated customer user .
 	*/
 	public function getCustomer() {
-		return $this->z->custauth->customer;
+		if ($this->isCustAuth()) {
+			return $this->z->custauth->customer;
+		}
 	}
 
 	/**
