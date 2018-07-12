@@ -43,6 +43,7 @@ class resourcesModule extends zModule {
 				readfile($resource_path);
 				exit;
 			} else {
+				http_response_code(404);
 				die("Resource file $resource_path not found!");
 			}
 		}
