@@ -20,6 +20,7 @@ class i18nModule extends zModule {
 
 	public function onEnabled() {
 		$this->requireModule('cookies');
+		$this->requireModule('resources');
 		$this->requireModule('mysql');
 		$this->db = $this->z->core->db;
 

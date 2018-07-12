@@ -29,7 +29,6 @@ class adminModule extends zModule {
 
 	public function onEnabled() {
 		$this->requireModule('auth');
-		$this->requireModule('resources');
 		$this->requireModule('menu');
 		$this->db = $this->z->core->db;
 		$this->base_url = $this->getConfigValue('admin_area_base_url', $this->base_url);
