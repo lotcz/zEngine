@@ -102,7 +102,7 @@ class zAdminTable extends zTable {
 			$entity_name . '_id',
 			sprintf('admin/default/default/%s/edit/', $entity_name) . '%d',
 			sprintf('admin/default/default/%s', $entity_name),
-			'table-striped table-hover'
+			'table-striped table-hover mt-2'
 		);
 	}
 

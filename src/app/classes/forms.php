@@ -23,7 +23,7 @@ class zForm {
 	public $onBeforeDelete = null;
 	public $onAfterDelete = null;
 
-	function __construct($id = 'entity_name', $action = '', $method = 'POST', $css = 'form-horizontal admin-form') {
+	function __construct($id = 'entity_name', $action = '', $method = 'POST', $css = '') {
 		$this->id = $id;
 		$this->action = $action;
 		$this->method = $method;
@@ -72,7 +72,7 @@ class zForm {
 							$is_valid = false;
 						}
 					}
-				} elseif (isset($data[$field->name]) && !isset($field->disabled)) {
+				} elseif (isset($data[$field->name]) && !isset($field->disabled) && !(z::startsWith($field->type, 'static'))) {
 					$result[$field->name] = $data[$field->name];
 				}
 			}

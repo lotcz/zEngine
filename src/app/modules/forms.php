@@ -249,10 +249,7 @@ class formsModule extends zModule {
 		$label_css = '';
 		$value_css = '';
 
-		if ($form->type == 'inline') {
-			$label_css = '';
-			$value_css = '';
-		} else {
+		if ($form->type == 'horizontal') {		
 			$label_css = 'col-sm-4';
 			$value_css = 'col-sm-8';
 		}
@@ -274,6 +271,31 @@ class formsModule extends zModule {
 			if ($field->type == 'hidden') {
 				?>
 					<input type="hidden" name="<?=$field->name ?>" id="field_<?=$field->name ?>" value="<?=$field->value ?>" />
+				<?php
+			} elseif (z::startsWith($field->type, 'static')) {
+				$render_value = $field->value;
+				switch ($field->type) {
+					case 'staticdate' :
+						$render_value = $this->z->i18n->formatDatetime(strtotime($field->value));						
+					break;
+					case 'staticlocalized' :
+						$render_value = $this->z->core->t($field->value);
+					break;
+				}
+				?>
+					<div id="<?=$field->name ?>_form_group" class="form-group">
+						<label for="<?=$field->name ?>" class="<?=$label_css ?> form-label"><?=$this->z->core->t($field->label) ?>:</label>
+						<span><?=$render_value ?></span>
+					</div>
+				<?php
+			} elseif ($field->type == 'bool') {
+				?>
+					<div id="<?=$field->name ?>_form_group" class="form-group">
+						<div class="form-check">
+							<input type="checkbox" id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> value="1" <?=($field->value) ? 'checked' : '' ?> class="form-check-input" />
+							<label for="<?=$field->name ?>" class="<?=$label_css ?> form-check-label"><?=$this->z->core->t($field->label) ?></label>
+						</div>
+					</div>
 				<?php
 			} elseif ($field->type == 'begin_group') {
 				?>
@@ -312,7 +334,7 @@ class formsModule extends zModule {
 			} else {
 				?>
 					<div id="<?=$field->name ?>_form_group" class="form-group">
-						<label for="<?=$field->name ?>" class="<?=$label_css ?> control-label form-label"><?=$this->z->core->t($field->label) ?>:</label>
+						<label for="<?=$field->name ?>" class="<?=$label_css ?> control-label form-label"><?=$this->z->core->t($field->label) ?></label>
 						<div class="<?=$value_css ?>">
 							<div class="input-group form-field">
 								<?php
@@ -340,12 +362,6 @@ class formsModule extends zModule {
 										case 'password' :
 										?>
 											<input type="password" id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> value="<?=$field->value ?>" class="form-control" />
-										<?php
-										break;
-
-										case 'bool' :
-										?>
-											<input type="checkbox" id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> value="1" <?=($field->value) ? 'checked' : '' ?> class="form-control form-control-checkbox" />
 										<?php
 										break;
 
@@ -394,29 +410,14 @@ class formsModule extends zModule {
 												</p>
 											<?php
 										break;
-
-										case 'static' :
-											?>
-												<p class="form-control-static"><?=$field->value ?></p>
-											<?php
-										break;
-
-										case 'staticdate' :
-											?>
-												<p class="form-control-static"><?=$this->z->i18n->formatDatetime(strtotime($field->value));?></p>
-											<?php
-										break;
-
-										case 'staticlocalized' :
-											?>
-												<p class="form-control-static"><?=$this->z->core->t($field->value);?></p>
-											<?php
-										break;
+										
 									}
 
 									if (isset($field->required) && $field->required) {
 										?>									
-											<span class="input-group-addon addon-required" data-toggle="tooltip" data-placement="top" title="<?=$this->z->core->t('This field is required. Cannot be left empty.') ?>">*</span>										
+											<div class="input-group-append" data-toggle="tooltip" data-placement="top" title="<?=$this->z->core->t('This field is required. Cannot be left empty.') ?>">
+												 <span class="input-group-text">*</span>
+											</div>										
 										<?php
 									}
 									

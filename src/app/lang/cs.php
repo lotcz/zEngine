@@ -38,6 +38,7 @@ $language_data['If you forget your password, you can reset it <a href="%s">here<
 $language_data['Login unsuccessful!'] = 'Přihlášení bylo neúspěšné!';
 $language_data['E-mail address not found!'] = 'E-mailová adresa nenalezena!';
 $language_data['An e-mail was sent to your address with reset password instructions.'] = 'Na Vaši emailovou adresu jsme odeslali email s instrukcemi pro obnovení hesla.';
+$language_data['An e-mail was already sent to your address with reset password instructions.'] = 'Na Vaši emailovou adresu jsme již odeslali email s instrukcemi pro obnovení hesla.';
 $language_data['Enter your new password.'] = 'Vložte Vaše nové heslo.';
 $language_data['New Password'] = 'Nové heslo';
 $language_data['Confirm New Password'] = 'Potvrdit nové heslo';
@@ -60,6 +61,7 @@ $language_data['Delivery Type'] = 'Způsob dopravy';
 $language_data['Delivery Types'] = 'Způsoby dopravy';
 $language_data['Payment Type'] = 'Způsob platby';
 $language_data['Payment Types'] = 'Způsoby platby';
+$language_data['User Deactivated'] = 'Deaktivovaný uživatel';
 
 /* FORMS */
 $language_data['Back'] = 'Zpět';

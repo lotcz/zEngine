@@ -9,7 +9,7 @@
 		$user = new UserModel($this->db);
 		$user->loadByLoginOrEmail($user_email);
 
-		$token_not_expired = ($user->val('user_reset_password_expires') > zSqlQuery::mysqlTimestamp(time()));
+		$token_not_expired = ($user->dtval('user_reset_password_expires') > zSqlQuery::mysqlDatetime(time()));
 		$token_valid = authModule::verifyPassword($reset_token, $user->val('user_reset_password_hash'));
 
 		if ($user->is_loaded && $token_not_expired && $token_valid) {

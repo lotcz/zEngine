@@ -91,6 +91,15 @@ class z {
 	   return htmlspecialchars($data, ENT_QUOTES | ENT_HTML401, $encoding);
 	}
 	
+	function startsWith($haystack, $needle)	{
+		 return (substr($haystack, 0, strlen($needle)) === $needle);
+	}
+
+	function endsWith($haystack, $needle) {
+		$length = strlen($needle);
+		return $length === 0 || (substr($haystack, -$length) === $needle);
+	}
+	
 	static function debug($var) {
 		var_dump($var);
 		die();
