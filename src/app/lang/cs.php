@@ -32,6 +32,8 @@ $language_data['Passwords don\'t match.'] = 'Hesla se neshodují.';
 $language_data['Please enter your password.'] = 'Prosím vložte Vaše heslo.';
 $language_data['Register'] = 'Registrovat';
 $language_data['Registration'] = 'Registrace';
+$language_data['An e-mail was sent to your address with account activation instructions.'] = 'Na Vaši emailovou adresu jsme odeslali email s instrukcemi pro aktivaci účtu.';
+$language_data['User Profile'] = 'Uživatelský profil';
 $language_data['Thank you for your registration'] = 'Děkujeme za Vaši registraci';
 $language_data['This email is already used!'] = 'Tento email je již obsazen!';
 $language_data['E-mail address is not in correct form! Please enter valid e-mail address.'] = 'Emailová adresa není ve správném formátu! Zadejte prosím platnou emailovou adresu.';
@@ -45,7 +47,8 @@ $language_data['New Password'] = 'Nové heslo';
 $language_data['Confirm New Password'] = 'Potvrdit nové heslo';
 $language_data['Your password was successfully changed.'] = 'Vaše heslo bylo úspěšně změněno.';
 $language_data['Password must be at least %d characters long.'] = 'Heslo musí být alespoň %d znaků dlouhé.';
-
+$language_data['--account-not-active--'] = 'Účet není aktivní! Nemůžeme Vás přihlásit. Pokud jste se nedávno registrovali nebo požádali o nové heslo, podívejte se prosím do Vaší e-mailové schránky, zda tam není zpráva s odkazem pro aktivaci. Jinak požádejte o nové heslo.';
+	
 /* ADMIN SECTION */
 $language_data['Administration'] = 'Administrace';
 $language_data['Dashboard'] = 'Ovládací panel';

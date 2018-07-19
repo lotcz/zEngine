@@ -76,7 +76,7 @@ class adminModule extends zModule {
 			//standard admin menu
 			if ($this->getConfigValue('show_default_menu', false)) {
 				$submenu = $menu->addSubmenu('Administration');
-				$submenu->addItem('admin/static_pages', 'Static pages');				
+				$submenu->addItem('admin/static-pages', 'Static pages');				
 				$submenu->addItem('admin/customers', 'Customers');				
 				$submenu->addItem('admin/users', 'Administrators');
 				$submenu->addItem('admin/roles', 'Roles');
@@ -85,8 +85,9 @@ class adminModule extends zModule {
 				$submenu->addHeader('Advanced');
 				$submenu->addItem('admin/aliases', 'Aliases');
 				$submenu->addItem('admin/languages', 'Languages');
+				$submenu->addItem('admin/currencies', 'Currencies');
 				$submenu->addItem('admin/translations', 'Translations');
-				$submenu->addItem('admin/ip_failed_attempts', 'Failed login attempts');
+				$submenu->addItem('admin/ip-failed-attempts', 'Failed login attempts');
 				$submenu->addItem('admin/info', 'Server Info');
 				$submenu->addItem('admin/about', 'About');
 			}

@@ -29,7 +29,13 @@ class emailsModule extends zModule {
 
 	public function renderEmailBody($template_name, $email_data) {
 		$master_template_path = $this->z->core->app_dir . 'views/email/master.v.php';
+		if (!file_exists($master_template_path)) {
+			$master_template_path = __DIR__ . '/../views/email/master.v.php';
+		}
 		$template_path = $this->z->core->app_dir . 'views/email/' .  $template_name . '.v.php';
+		if (!file_exists($template_path)) {
+			$template_path = __DIR__ . '/../views/email/' .  $template_name . '.v.php';
+		}
 		$data = $email_data;
 		ob_start();
 		include $template_path;
@@ -37,5 +43,6 @@ class emailsModule extends zModule {
 		include $master_template_path;
 		$master = ob_get_clean();
 		return $master;
+		
 	}
 }

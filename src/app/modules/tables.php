@@ -39,7 +39,7 @@ class tablesModule extends zModule {
 						foreach ($table->data as $row) {
 							$item_url = $this->z->core->url(sprintf($table->edit_link, $row->val($table->id_field)), $this->z->core->raw_path);
 							?>
-								<tr onclick="javascript:document.location = '<?=$item_url ?>';">
+								<tr onclick="javascript:document.location = '<?=$item_url ?>';" class="">
 									<?php
 										foreach ($table->fields as $field) {
 											?>
@@ -53,13 +53,15 @@ class tablesModule extends zModule {
 															echo $this->z->i18n->formatDatetime($row->dtval($field->name));
 														} elseif ($field->type == 'localized') {
 															echo $this->z->core->t($row->val($field->name));
-														}
+														} elseif ($field->type == 'custom') {
+															$fn = $field->custom_function;
+															echo $fn($row->val($field->name));
+														}											
 													?>
 												</td>
 											<?php
 										}
-									?>
-									<td><a href="<?=$item_url ?>"><?=$this->z->core->t('Edit') ?></a></td>
+									?>									
 								</tr>
 							<?php
 						}

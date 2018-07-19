@@ -1,6 +1,7 @@
 <?php
 	$this->setPageTitle('Sign In');
-	
+	$this->requireModule('forms');
+
 	if (z::isPost()) {
 		$email = $this->xssafe(z::get('email'));
 		$password = z::get('password');

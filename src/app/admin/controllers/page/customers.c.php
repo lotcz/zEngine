@@ -5,8 +5,14 @@
 		'customer',
 		[
 			[
+				'name' => 'customer_state',
+				'label' => 'State',
+				'type' => 'custom',
+				'custom_function' => 'CustomerModel::getCustomerStatusLabel'
+			],
+			[
 				'name' => 'customer_name',
-				'label' => 'Name'
+				'label' => 'Full Name'
 			],
 			[
 				'name' => 'customer_email',

@@ -28,10 +28,10 @@ class custauthModule extends zModule {
 
 	public function createAnonymousSession() {
 		$this->customer = new CustomerModel($this->db);
-		$this->customer->data['customer_anonymous'] = 1;
+		$this->customer->data['customer_state'] = CustomerModel::$customer_state_anonymous;
 		$this->customer->data['customer_name'] = $this->z->core->t('Anonymous');
-		$this->customer->data['customer_currency_id'] = $this->z->i18n->selected_currency->val('currency_id');
-		$this->customer->data['customer_language_id'] = 1;
+		$this->customer->data['customer_language_id'] = $this->z->i18n->selected_language->val('language_id');
+		$this->customer->data['customer_currency_id'] = $this->z->i18n->selected_currency->val('currency_id');		
 		$this->customer->save();
 		$this->createSession();
 	}
@@ -64,45 +64,52 @@ class custauthModule extends zModule {
 	}
 
 	/**
-	* Return true if authenticated customer is anonymous.
+	* Return true if the is no authenticated customer or authenticated customer is anonymous.
 	*/
 	public function isAnonymous() {
-		return (!$this->isAuth()) || $this->val('customer_anonymous');
+		return ((!$this->isAuth()) || $this->customer->isAnonymous());
 	}
 
 	/**
 	* Perform login for given username/email and password by creating a session. Return true if successful.
 	*/
 	public function login($email, $password) {
-
-		if (!$this->isAnonymous()) {
-			$this->logout();
+	
+		$old_customer_id = null;
+		if ($this->isAuth()) {
+			$old_customer_id = $this->customer->ival('customer_id');
 		}
+		
+		$this->logout();		
 
 		$customer = new CustomerModel($this->db);
 		$customer->loadByEmail($email);
 
 		if (isset($customer) && $customer->is_loaded) {
-			if ($customer->val('customer_failed_attempts') > $this->config['max_attempts']) {
-				$this->z->messages->error($this->z->core->t('Max. number of login attempts exceeded. Please ask for new password.'));
-			}
-			if (Self::verifyPassword($password, $customer->val('customer_password_hash'))) {
-				if ($this->isAuth()) {
-					$old_customer_id = $this->customer->ival('customer_id');
+			if ($customer->val('customer_failed_attempts') < $this->config['max_attempts']) {				
+				if ($customer->isActive()) {
+					if (Self::verifyPassword($password, $customer->val('customer_password_hash'))) {
+
+						// success - create new session
+						$this->customer = $customer;
+						$this->createSession();
+						$this->updateLastAccess();
+
+						//if user put any products into cart before logging in, copy cart products
+						if ($this->z->moduleEnabled('cart') && isset($old_customer_id)) {
+							$this->z->cart->transferCart($old_customer_id, $this->customer->ival('customer_id'));
+						}
+						return true;
+					} else {
+						$customer->data['customer_failed_attempts'] += 1;
+						$customer->save();
+						IpFailedAttemptModel::saveFailedAttempt($this->db);					
+					}
+				} else {
+					$this->z->messages->warning($this->z->core->t('--account-not-active--'));
 				}
-				// success - create new session
-				$this->customer = $customer;
-				$this->createSession();
-				$this->updateLastAccess();
-				//if user put any products into cart before logging in, copy cart products
-				if ($this->z->moduleEnabled('cart') && isset($old_customer_id)) {
-					$this->z->cart->transferCart($old_customer_id, $this->customer->ival('customer_id'));
-				}
-				return true;
 			} else {
-				$customer->data['customer_failed_attempts'] += 1;
-				$customer->save();
-				IpFailedAttemptModel::saveFailedAttempt($this->db);
+				$this->z->messages->error($this->z->core->t('Max. number of login attempts exceeded. Please ask for new password.'));				
 			}
 		}
 		return false;
@@ -203,15 +210,26 @@ class custauthModule extends zModule {
 		return z::verifyHash($pass, $hash);
 	}
 
+	public function registerCustomer($email, $password, $full_name) {
+		$customer = new CustomerModel($this->db);
+		$customer->data['customer_name'] = $full_name;
+		$customer->data['customer_email'] = $email;
+		$customer->data['customer_state'] = CustomerModel::customer_state_waiting_for_activation;
+		$customer->data['customer_language_id'] = $this->z->i18n->selected_language->val('language_id');
+		$customer->data['customer_currency_id'] = $this->z->i18n->selected_currency->val('currency_id');
+		$customer->data['customer_password_hash'] = $this->z->custauth->hashPassword($password);
+		$customer->save();
+
+		$subject = $this->getEmailSubject($this->z->core->t('Thank you for your registration'));
+		$this->z->emails->renderAndSend($email, $subject, 'registration', $customer);
+		$this->z->messages->success($this->z->core->t('Thank you for your registration'));
+		$this->z->messages->warning($this->z->core->t('An e-mail was sent to your address with account activation instructions.'));
+	}
+	
 	/* EMAILS */
 
 	public function getEmailSubject($text) {
 		return sprintf('%s: %s', $this->z->core->getConfigValue('site_title'), $text);
 	}
-
-	public function sendRegistrationEmail() {
-		$customer_email = $this->customer->val('customer_email');
-		$subject = $this->getEmailSubject($this->z->core->t('Thank you for your registration'));
-		$this->z->emails->renderAndSend($customer_email, $subject, 'registration', $this->customer);
-	}
+	
 }

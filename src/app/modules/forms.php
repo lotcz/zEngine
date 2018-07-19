@@ -111,9 +111,9 @@ class formsModule extends zModule {
 				if ($this->verifyXSRFTokenHash($form->id, z::get('form_token'))) {
 		
 					//XSS protection
-					//foreach ($form->processed_input as $key => $value) {
-					//	$form->processed_input[$key] = $this->z->core->xssafe($value);
-					//}
+					foreach ($form->processed_input as $key => $value) {
+						$form->processed_input[$key] = $this->z->core->xssafe($value);
+					}
 					
 					//VALIDATION
 					if ($this->validateForm($form, $form->processed_input)) {
@@ -160,9 +160,7 @@ class formsModule extends zModule {
 					$onAfterDelete = $form->onAfterDelete;
 					$onAfterDelete($this->z, $form, $model_id);
 				}
-				if (isset($form->ret)) {
-					$this->z->core->redirect($form->ret);
-				}
+				$this->z->core->redirectBack($form->ret);
 			}
 		} else {
 			$this->z->core->setPageTitle($this->z->core->t($form->entity_title) . ': ' . $this->z->core->t('New'));
@@ -276,10 +274,16 @@ class formsModule extends zModule {
 				$render_value = $field->value;
 				switch ($field->type) {
 					case 'staticdate' :
+					case 'static_date' :
 						$render_value = $this->z->i18n->formatDatetime(strtotime($field->value));						
 					break;
 					case 'staticlocalized' :
+					case 'static_localized' :
 						$render_value = $this->z->core->t($field->value);
+					break;
+					case 'static_custom' :
+						$fn = $field->custom_function;
+						$render_value = $fn($field->value);
 					break;
 				}
 				?>

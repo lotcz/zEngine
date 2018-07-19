@@ -201,8 +201,8 @@ DROP TABLE IF EXISTS `customers`;
 
 CREATE TABLE `customers` (
   `customer_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `customer_deleted` BOOL NOT NULL DEFAULT FALSE,
-  `customer_anonymous` BOOL NOT NULL DEFAULT TRUE,
+  `customer_state` TINYINT UNSIGNED NOT null default 0,  
+  `customer_name` NVARCHAR(50),
   `customer_email` VARCHAR(100),
   `customer_password_hash` VARCHAR(255) ,
   `customer_failed_attempts` INT UNSIGNED NOT NULL DEFAULT 0,
@@ -302,14 +302,14 @@ CREATE VIEW viewSessionsStats AS
 	SELECT 'Anonymous' as n, COUNT(*) as c
     FROM customer_sessions cs
     LEFT OUTER JOIN customers c ON (c.customer_id = cs.customer_session_customer_id)
-    WHERE c.customer_anonymous = 1
+    WHERE c.customer_state = 0
     
     UNION
     
     SELECT 'Customers' as n, COUNT(*) as c
     FROM customer_sessions cs
     LEFT OUTER JOIN customers c ON (c.customer_id = cs.customer_session_customer_id)
-    WHERE c.customer_anonymous = 0
+    WHERE c.customer_state > 0
     
     UNION
     

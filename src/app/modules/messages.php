@@ -34,6 +34,18 @@ class messagesModule extends zModule{
 		$this->add($text, 'error');
 	}
 	
+	public function warning($text) {
+		$this->add($text, 'warning');
+	}
+	
+	public function success($text) {
+		$this->add($text, 'success');
+	}
+	
+	public function info($text) {
+		$this->add($text, 'info');
+	}
+	
 	public function render() {
 		if (count($this->messages) > 0) {
 			?>
