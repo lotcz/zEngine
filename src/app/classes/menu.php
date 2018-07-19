@@ -10,7 +10,8 @@ class zMenu {
 	public $type = 'link';
 	public $items = [];
 	public $right_items = [];
-	
+	public $css = '';
+		
 	public function __construct($href = null, $label = '', $type = 'link') {
 		$this->href = $href;
 		$this->label = $label;
@@ -33,9 +34,16 @@ class zMenu {
 		$this->items[] = new zMenu(null, $label, 'header');
 	}
 	
-	public function addSubMenu($label) {
+	public function addSubmenu($label) {
 		$submenu = new zMenu(null, $label, 'submenu');
 		$this->items[] = $submenu;
+		return $submenu;
+	}	
+	
+	public function addRightSubmenu($label) {
+		$submenu = new zMenu(null, $label, 'submenu');
+		$submenu->css = 'dropdown-menu-right';
+		$this->right_items[] = $submenu;
 		return $submenu;
 	}	
 		

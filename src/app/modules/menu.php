@@ -30,7 +30,7 @@ class menuModule extends zModule {
 				$this->renderSeparator();
 			break;
 			case 'submenu':
-				$this->renderSubMenu($item);
+				$this->renderSubmenu($item);
 			break;
 		}
 	}
@@ -65,18 +65,18 @@ class menuModule extends zModule {
 		<?php
 	}
 	
-	public function renderSubMenu($submenu) {
+	public function renderSubmenu($submenu) {
 		?>
-			<li class="nav-item dropdown">
+			<div class="nav-item dropdown ">
 				<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><?=$this->z->core->t($submenu->label) ?><span class="caret">&nbsp;</span></a>
-				<ul class="dropdown-menu">
+				<div class="dropdown-menu <?=$submenu->css ?>">
 					<?php
 						foreach ($submenu->items as $item) {
 							$this->renderSubmenuItem($item);
 						}
 					?>
-			  </ul>
-			</li>
+			  	</div>
+			</div>
 		<?php
 	}
 	

@@ -91,8 +91,10 @@ class adminModule extends zModule {
 				$submenu->addItem('admin/about', 'About');
 			}
 			$user = $this->z->auth->user;
-			$menu->addRightItem('admin/default/default/user/edit/' . $user->val('user_id'), $user->val('user_email'));
-			$menu->addRightItem('admin/logout', 'Log Out');
+			$usermenu = $menu->addRightSubmenu($user->getLabel());
+			$usermenu->addItem('admin/default/default/user/edit/' . $user->val('user_id'), 'Account');
+			$usermenu->addItem('admin/change-password', 'Change Password');
+			$usermenu->addItem('admin/logout', 'Log Out');
 		} else if (!$this->is_login_page) {
 			//$menu->addRightItem($this->getAdminAreaURL($this->login_url), 'Log in');
 		}
@@ -146,16 +148,16 @@ class adminModule extends zModule {
 
 	public function getAdminFormButtons($form) {
 		$buttons = [];
-		$buttons[] = ['type' => 'link', 'label' => 'Back', 'link_url' => $this->z->core->return_path];
+		$buttons[] = ['type' => 'link', 'label' => 'Back', 'link_url' => $this->z->core->return_path, 'css' => 'm-2'];
 
 		$model_id = $form->data->ival($form->data->id_name);
 		if ($model_id > 0) {
 			$delete_question = $this->z->core->t('Are you sure to delete this item?');
 			$delete_url = $this->z->core->url(sprintf($this->base_url . '/default/default/' . $form->id . '/delete/%d', $model_id), $this->z->core->return_path);
-			$buttons[] = ['type' => 'button', 'label' => 'Delete', 'onclick' => 'deleteItemConfirm(\'' . $delete_question . '\',' . '\'' . $delete_url . '\');', 'css' => 'btn btn-danger' ];
+			$buttons[] = ['type' => 'button', 'label' => 'Delete', 'onclick' => 'deleteItemConfirm(\'' . $delete_question . '\',' . '\'' . $delete_url . '\');', 'css' => 'btn btn-danger m-2' ];
 		}
 
-		$buttons[] = ['type' => 'submit', 'label' => 'Save', 'onclick' => 'validateForm_' . $form->id . '(event);', 'css' => 'btn btn-success' ];
+		$buttons[] = ['type' => 'submit', 'label' => 'Save', 'onclick' => 'validateForm_' . $form->id . '(event);', 'css' => 'btn btn-success m-2' ];
 		return $buttons;
 	}
 
@@ -181,6 +183,12 @@ class adminModule extends zModule {
 		$form->add($fields);
 		$this->z->forms->processForm($form, $model_class_name);
 
+		if ($this->z->forms->pathAction() == 'edit') {
+			$this->z->core->setPageTitle($this->z->core->t($form->entity_title) . ': ' . $this->z->core->t('Edit'));
+		} else {
+			$this->z->core->setPageTitle($this->z->core->t($form->entity_title) . ': ' . $this->z->core->t('New'));
+		}
+		
 		$form->addField(
 			[
 				'name' => 'form_buttons',

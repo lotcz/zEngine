@@ -111,9 +111,9 @@ class formsModule extends zModule {
 				if ($this->verifyXSRFTokenHash($form->id, z::get('form_token'))) {
 		
 					//XSS protection
-					foreach ($form->processed_input as $key => $value) {
-						$form->processed_input[$key] = $this->z->core->xssafe($value);
-					}
+					//foreach ($form->processed_input as $key => $value) {
+					//	$form->processed_input[$key] = $this->z->core->xssafe($value);
+					//}
 					
 					//VALIDATION
 					if ($this->validateForm($form, $form->processed_input)) {

@@ -143,6 +143,10 @@ class authModule extends zModule {
 		}
 	}
 
+	public function isValidPassword($password) {
+		return (strlen($password) >= $this->getConfigValue('min_password_length', 5));
+	}
+	
 	public function generatePasswordToken() {
 		return z::generateRandomToken(50);
 	}

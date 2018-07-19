@@ -28,4 +28,7 @@ class UserModel extends zModel {
 		return in_array($perm_name, $this->permissions);
 	}
 
+	public function getLabel() {
+		return $this->val('user_login', $this->val('user_email'));
+	}
 }

@@ -55,25 +55,34 @@ class zForm {
 		$result = [];
 		$is_valid = true;
 		foreach ($this->fields as $field) {
-			if (isset($field->name)) {
-				if ($field->type == 'bool') {
-					$result[$field->name] = isset($data[$field->name]) ? 1 : 0;
-				} elseif ($field->type == 'image') {
-					/* upload image */
-					if (!isset($this->images_module)){
-						throw new Exception('Images module is not enabled, cannot upload image!');
-					}
-					$name = $field->name . '_image_file';
-					if (isset($_FILES[$name]) && strlen($_FILES[$name]['name'])) {
-						$image = $this->images_module->uploadImage($name);
-						if (isset($image) && strlen($image) > 0) {
-							$result[$field->name] = $image;
-						} else {
-							$is_valid = false;
+			if (isset($field->name) && isset($data[$field->name]) && !isset($field->disabled) && !(z::startsWith($field->type, 'static'))) {
+				switch ($field->type) {
+					case 'bool':
+						$result[$field->name] = isset($data[$field->name]) ? 1 : 0;
+					break;
+					
+					case 'integer':
+					case 'select':
+						$result[$field->name] = z::parseInt($data[$field->name]);
+					break;
+					
+					case 'image': /* upload image */
+						if (!isset($this->images_module)) {
+							throw new Exception('Images module is not enabled, cannot upload image!');
 						}
-					}
-				} elseif (isset($data[$field->name]) && !isset($field->disabled) && !(z::startsWith($field->type, 'static'))) {
-					$result[$field->name] = $data[$field->name];
+						$name = $field->name . '_image_file';
+						if (isset($_FILES[$name]) && strlen($_FILES[$name]['name'])) {
+							$image = $this->images_module->uploadImage($name);
+							if (isset($image) && strlen($image) > 0) {
+								$result[$field->name] = $image;
+							} else {
+								$is_valid = false;
+							}
+						}
+					break;
+					
+					default:
+						$result[$field->name] = $data[$field->name];
 				}
 			}
 		}

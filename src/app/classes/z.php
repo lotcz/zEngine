@@ -88,7 +88,11 @@ class z {
 	* Remove dangerous characters from string. Crucial for XSS protection.
 	*/
 	static function xssafe($data, $encoding = 'UTF-8') {
-	   return htmlspecialchars($data, ENT_QUOTES | ENT_HTML401, $encoding);
+		if (is_string($data)) {
+	   		return htmlspecialchars($data, ENT_QUOTES | ENT_HTML401, $encoding);
+		} else {
+			return $data;
+		}
 	}
 	
 	function startsWith($haystack, $needle)	{

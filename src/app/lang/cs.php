@@ -24,6 +24,7 @@ $language_data['Password'] = 'Heslo';
 $language_data['Anonymous'] = 'Anonym';
 $language_data['Sign In'] = 'Přihlásit';
 $language_data['Log Out'] = 'Odhlásit se';
+$language_data['Change Password'] = 'Změnit heslo';
 $language_data['Forgotten Password'] = 'Zapomenuté heslo';
 $language_data['Reset Password'] = 'Resetovat heslo';
 $language_data['Confirm Password'] = 'Potvrdit heslo';
@@ -43,6 +44,7 @@ $language_data['Enter your new password.'] = 'Vložte Vaše nové heslo.';
 $language_data['New Password'] = 'Nové heslo';
 $language_data['Confirm New Password'] = 'Potvrdit nové heslo';
 $language_data['Your password was successfully changed.'] = 'Vaše heslo bylo úspěšně změněno.';
+$language_data['Password must be at least %d characters long.'] = 'Heslo musí být alespoň %d znaků dlouhé.';
 
 /* ADMIN SECTION */
 $language_data['Administration'] = 'Administrace';
