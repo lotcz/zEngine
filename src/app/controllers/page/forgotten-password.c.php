@@ -1,7 +1,6 @@
 <?php
-
-	$this->setPageTitle('Forgotten Password');
-	$this->z->core->includeJS('resources/forms.js');
+	$this->requireModule('forms');
+	$this->setPageTitle('Forgotten Password');	
 
 	if (z::isPost()) {
 		$customer = new CustomerModel($this->db);
