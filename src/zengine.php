@@ -10,8 +10,8 @@ require_once __DIR__ . '/app/classes/module.php';
 class zEngine {
 
 	public $version = 2.0;
-    public $app_dir = '';
-	public $modules = [];	
+  public $app_dir = '';
+	public $modules = [];
 
 	function __construct($app_dir = 'app/') {
 		$this->app_dir = $app_dir;

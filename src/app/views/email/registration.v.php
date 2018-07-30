@@ -1,13 +1,17 @@
 <h1><?=$this->z->core->t('Thank you for your registration') ?></h1>
 
 <p>
-<?=$this->z->core->t('Dear customer') ?>,
-<br/>
-<?=$this->z->core->t('Thank you for your registration') ?>.
+<?=$this->z->core->t('Thank you for your registration on our website.') ?>.
 </p>
 
 <p>
-<?=$this->z->core->t('E-mail') ?>: <strong><?=$data->val('customer_email') ?></strong>
+<?=$this->z->core->t('Full name') ?>: <strong><?=$data['customer']->val('customer_name') ?></strong>
+<br/>
+<?=$this->z->core->t('E-mail') ?>: <strong><?=$data['customer']->val('customer_email') ?></strong>
+</p>
+
+<p>
+<?=$this->z->core->t('To activate your account, click this <a href="%s">link</a>.', $data['activation_link']) ?>
 </p>
 
 <p>

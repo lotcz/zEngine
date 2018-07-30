@@ -10,6 +10,7 @@ class zForm {
 	public $action;
 	public $method;
 	public $css;
+	public $ret;
 	public $entity_title;
 	public $fields = [];
 	public $data = [];
@@ -60,12 +61,12 @@ class zForm {
 					case 'bool':
 						$result[$field->name] = isset($data[$field->name]) ? 1 : 0;
 					break;
-					
+
 					case 'integer':
 					case 'select':
 						$result[$field->name] = z::parseInt($data[$field->name]);
 					break;
-					
+
 					case 'image': /* upload image */
 						if (!isset($this->images_module)) {
 							throw new Exception('Images module is not enabled, cannot upload image!');
@@ -80,7 +81,7 @@ class zForm {
 							}
 						}
 					break;
-					
+
 					default:
 						$result[$field->name] = $data[$field->name];
 				}
@@ -134,11 +135,11 @@ class zForm {
 			<form id="form_<?=$this->id ?>" action="<?=$this->action ?>" method="<?=$this->method ?>" class="<?=$this->css ?>" enctype="multipart/form-data">
 		<?php
 	}
-	
+
 	/*
 		VALIDATIONS
 	*/
-		
+
 	static function validate_length($value, $param) {
 		return (isset($value) && (strlen($value) >= z::parseInt($param)));
 	}
@@ -172,7 +173,7 @@ class zForm {
 	}
 
 	// integer - param => allow empty
-	static function validate_integer($value, $param) {		
+	static function validate_integer($value, $param) {
 		return ($param && ($value == '')) || (is_int($value) || ctype_digit($value));
 	}
 
@@ -183,7 +184,7 @@ class zForm {
 	static function validate_max($value, $param) {
 		return (z::parseFloat($value) <= z::parseFloat($param));
 	}
-	
+
 	static function validate_decimal($value) {
 		return is_numeric($value);
 	}
@@ -197,7 +198,7 @@ class zForm {
 	}
 
 	static function validate_zip($value) {
-		return Self::validate_length($value, 4) 
+		return Self::validate_length($value, 4)
 			&& Self::validate_integer($value, false)
 			&& Self::validate_min($value, 10000)
 			&& Self::validate_max($max, 99999);

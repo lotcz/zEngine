@@ -1,6 +1,6 @@
 <?php
 	$this->requireModule('forms');
-	$this->setPageTitle('Forgotten Password');	
+	$this->setPageTitle('Forgotten Password');
 
 	if (z::isPost()) {
 		$customer = new CustomerModel($this->db);

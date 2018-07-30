@@ -31,7 +31,7 @@ class custauthModule extends zModule {
 		$this->customer->data['customer_state'] = CustomerModel::$customer_state_anonymous;
 		$this->customer->data['customer_name'] = $this->z->core->t('Anonymous');
 		$this->customer->data['customer_language_id'] = $this->z->i18n->selected_language->val('language_id');
-		$this->customer->data['customer_currency_id'] = $this->z->i18n->selected_currency->val('currency_id');		
+		$this->customer->data['customer_currency_id'] = $this->z->i18n->selected_currency->val('currency_id');
 		$this->customer->save();
 		$this->createSession();
 	}
@@ -74,19 +74,19 @@ class custauthModule extends zModule {
 	* Perform login for given username/email and password by creating a session. Return true if successful.
 	*/
 	public function login($email, $password) {
-	
+
 		$old_customer_id = null;
 		if ($this->isAuth()) {
 			$old_customer_id = $this->customer->ival('customer_id');
 		}
-		
-		$this->logout();		
+
+		$this->logout();
 
 		$customer = new CustomerModel($this->db);
 		$customer->loadByEmail($email);
 
 		if (isset($customer) && $customer->is_loaded) {
-			if ($customer->val('customer_failed_attempts') < $this->config['max_attempts']) {				
+			if ($customer->val('customer_failed_attempts') < $this->config['max_attempts']) {
 				if ($customer->isActive()) {
 					if (Self::verifyPassword($password, $customer->val('customer_password_hash'))) {
 
@@ -103,20 +103,20 @@ class custauthModule extends zModule {
 					} else {
 						$customer->data['customer_failed_attempts'] += 1;
 						$customer->save();
-						IpFailedAttemptModel::saveFailedAttempt($this->db);					
+						IpFailedAttemptModel::saveFailedAttempt($this->db);
 					}
 				} else {
 					$this->z->messages->warning($this->z->core->t('--account-not-active--'));
 				}
 			} else {
-				$this->z->messages->error($this->z->core->t('Max. number of login attempts exceeded. Please ask for new password.'));				
+				$this->z->messages->error($this->z->core->t('Max. number of login attempts exceeded. Please ask for new password.'));
 			}
 		}
 		return false;
 	}
 
 	/**
-	* Verifies if there is customer logged in. 
+	* Verifies if there is customer logged in.
 	* Call this only once in the beginning of request processing and then call to isAuth() method
 	to check whether customer is authenticated.
 	*/
@@ -194,8 +194,8 @@ class custauthModule extends zModule {
 		return z::generateRandomToken(100);
 	}
 
-	private function generatePasswordToken() {
-		return z::generateRandomToken(50);
+	public function generateAccountActivationToken() {
+		return z::generateRandomToken(100);
 	}
 
 	private function generateSessionToken() {
@@ -218,18 +218,23 @@ class custauthModule extends zModule {
 		$customer->data['customer_language_id'] = $this->z->i18n->selected_language->val('language_id');
 		$customer->data['customer_currency_id'] = $this->z->i18n->selected_currency->val('currency_id');
 		$customer->data['customer_password_hash'] = $this->z->custauth->hashPassword($password);
+		$activation_token = $this->z->custauth->generateAccountActivationToken();
+		$customer->data['customer_reset_password_hash'] = $this->z->custauth->hashPassword($activation_token);
+		$expires = time() + $this->z->custauth->getConfigValue('reset_password_expires');
+		$customer->date['customer_reset_password_expires'] = zSqlQuery::mysqlTimestamp($expires);
 		$customer->save();
 
 		$subject = $this->getEmailSubject($this->z->core->t('Thank you for your registration'));
-		$this->z->emails->renderAndSend($email, $subject, 'registration', $customer);
+		$activation_link = sprintf('%s?email=%s&reset_token=%s', $this->z->core->url('activate'), $customer->val('customer_email'), $activation_token);
+		$this->z->emails->renderAndSend($email, $subject, 'registration', ['customer' => $customer, 'activation_link' => $activation_link]);
 		$this->z->messages->success($this->z->core->t('Thank you for your registration'));
 		$this->z->messages->warning($this->z->core->t('An e-mail was sent to your address with account activation instructions.'));
 	}
-	
+
 	/* EMAILS */
 
 	public function getEmailSubject($text) {
 		return sprintf('%s: %s', $this->z->core->getConfigValue('site_title'), $text);
 	}
-	
+
 }
