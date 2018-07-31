@@ -9,7 +9,7 @@ require_once __DIR__ . '/../models/xsrf.m.php';
 class formsModule extends zModule {
 
 	private $form_token_expires = 60*60;
-	
+
 	public function onEnabled() {
 		$this->requireModule('mysql');
 		$this->requireModule('messages');
@@ -35,11 +35,11 @@ class formsModule extends zModule {
 		foreach ($form->fields as $field) {
 			$is_valid = $is_valid && $this->validateField($field, $data[$field->name]);
 		}
-		return $is_valid;	
+		return $is_valid;
 	}
-		
+
 	public function validateField($field, $value) {
-		$is_valid = true;		
+		$is_valid = true;
 		if (isset($field->validations) && count($field->validations) > 0) {
 			foreach ($field->validations as $validation) {
 				$method = 'zForm::validate_' . $validation['type'];
@@ -50,12 +50,12 @@ class formsModule extends zModule {
 				if (!$method($value, $validation_param)) {
 					$this->z->messages->error($this->z->core->t('Value of field %s is not valid: %s', $field->name, $this->getValidationMessage($validation)));
 					$is_valid = false;
-				}				
+				}
 			}
 		}
 		return $is_valid;
 	}
-	
+
 	public function createXSRFTokenHash($form_name) {
 		$token_value = z::generateRandomToken(50);
 		$token_hash = z::createHash($token_value);
@@ -70,11 +70,11 @@ class formsModule extends zModule {
 			$ip = $this->z->custauth->session->val('customer_session_ip');
 		} else {
 			throw new Exception('There is neither customer or admin session! Cannot create form token.');
-		}		
-		$token = FormXSRFTokenModel::createToken($this->z->core->db, $customer_session_id, $user_session_id, $ip, $form_name, $token_hash, $expires);				
+		}
+		$token = FormXSRFTokenModel::createToken($this->z->core->db, $customer_session_id, $user_session_id, $ip, $form_name, $token_hash, $expires);
 		return sprintf('%d-%s', $token->ival('form_xsrf_token_id'), $token_value);
 	}
-	
+
 	public function verifyXSRFTokenHash($form_name, $token_raw_value) {
 		if ($this->z->core->isAuth()) {
 			$customer_session_id = null;
@@ -87,34 +87,34 @@ class formsModule extends zModule {
 		} else {
 			return false;
 		}
-		
-		$arr = explode('-', $token_raw_value);		
+
+		$arr = explode('-', $token_raw_value);
 		if (count($arr) == 2) {
 			$token_id = intval($arr[0]);
 			$token_value = $arr[1];
-			return FormXSRFTokenModel::verifyToken($this->z->core->db, $token_id, $customer_session_id, $user_session_id, $ip, $form_name, $token_value);				
+			return FormXSRFTokenModel::verifyToken($this->z->core->db, $token_id, $customer_session_id, $user_session_id, $ip, $form_name, $token_value);
 		} else {
 			return false;
 		}
 	}
-	
+
 	public function processForm($form, $model_class_name) {
 		$model = new $model_class_name($this->z->core->db);
-		if (z::isPost()) {			
-				
+		if (z::isPost()) {
+
 			if ($this->z->moduleEnabled('images')) {
 				$form->images_module = $this->z->images;
 			}
-			
+
 			if ($form->processInput($_POST)) {
-			
+
 				if ($this->verifyXSRFTokenHash($form->id, z::get('form_token'))) {
-		
+
 					//XSS protection
 					foreach ($form->processed_input as $key => $value) {
 						$form->processed_input[$key] = $this->z->core->xssafe($value);
 					}
-					
+
 					//VALIDATION
 					if ($this->validateForm($form, $form->processed_input)) {
 						if (z::parseInt($_POST[$model->id_name]) > 0) {
@@ -140,12 +140,12 @@ class formsModule extends zModule {
 					$this->z->messages->error('Byl detekován pokus o opakované odeslání formuláře! Data nelze uložit.');
 					$model->setData($form->processed_input);
 				}
-				
+
 			} else {
 				$this->z->messages->error('Input does not validate.');
 				$model->setData($form->processed_input);
-			}				
-			
+			}
+
 		} elseif ($this->pathAction() == 'edit') {
 			$model->loadById($this->pathParam());
 			$this->z->core->setPageTitle($this->z->core->t($form->entity_title) . ': ' . $this->z->core->t('Editing'));
@@ -165,12 +165,12 @@ class formsModule extends zModule {
 		} else {
 			$this->z->core->setPageTitle($this->z->core->t($form->entity_title) . ': ' . $this->z->core->t('New'));
 		}
-		
+
 		$form->prepare($this->z->core->db, $model);
-		
+
 		// add XSRF token
 		$form->addField([
-			'name' => 'form_token', 
+			'name' => 'form_token',
 			'type' => 'hidden',
 			'value' => $this->createXSRFTokenHash($form->id)
 		]);
@@ -200,7 +200,7 @@ class formsModule extends zModule {
 				return $this->z->core->t('Maximum length is %s characters.', $param);
 			break;
 			case 'email' :
-				return $this->z->core->t('Please enter valid e-mail address.');
+				return $this->z->core->t('E-mail address is not in correct form! Please enter valid e-mail address.');
 			break;
 			case 'date' :
 				return $this->z->core->t('Please enter valid date.');
@@ -225,7 +225,7 @@ class formsModule extends zModule {
 			<select name="<?=$name ?>" class="form-control">
 				<?php
 					for ($i = 0, $max = count($items); $i < $max; $i++) {
-						$value = $items[$i]->ival($id_name);						
+						$value = $items[$i]->ival($id_name);
 						$selected = '';
 						if ($value == $selected_value) {
 							$selected = 'selected';
@@ -247,7 +247,7 @@ class formsModule extends zModule {
 		$label_css = '';
 		$value_css = '';
 
-		if ($form->type == 'horizontal') {		
+		if ($form->type == 'horizontal') {
 			$label_css = 'col-sm-4';
 			$value_css = 'col-sm-8';
 		}
@@ -265,7 +265,7 @@ class formsModule extends zModule {
 		foreach ($form->fields as $field) {
 			$disabled = (isset($field->disabled)) ? $field->disabled : '';
 			$required = (isset($field->required) && ($field->required)) ? 'required' : '';
-			
+
 			if ($field->type == 'hidden') {
 				?>
 					<input type="hidden" name="<?=$field->name ?>" id="field_<?=$field->name ?>" value="<?=$field->value ?>" />
@@ -275,7 +275,7 @@ class formsModule extends zModule {
 				switch ($field->type) {
 					case 'staticdate' :
 					case 'static_date' :
-						$render_value = $this->z->i18n->formatDatetime(strtotime($field->value));						
+						$render_value = $this->z->i18n->formatDatetime(strtotime($field->value));
 					break;
 					case 'staticlocalized' :
 					case 'static_localized' :
@@ -297,7 +297,7 @@ class formsModule extends zModule {
 					<div id="<?=$field->name ?>_form_group" class="form-group">
 						<div class="form-check">
 							<input type="checkbox" id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> value="1" <?=($field->value) ? 'checked' : '' ?> class="form-check-input" />
-							<label for="<?=$field->name ?>" class="<?=$label_css ?> form-check-label"><?=$this->z->core->t($field->label) ?></label>
+							<label for="<?=$field->name ?>" class="<?=$label_css ?> form-check-label"><?=$this->z->core->t($field->label) ?>:</label>
 						</div>
 					</div>
 				<?php
@@ -337,8 +337,8 @@ class formsModule extends zModule {
 				<?php
 			} else {
 				?>
-					<div id="<?=$field->name ?>_form_group" class="form-group">
-						<label for="<?=$field->name ?>" class="<?=$label_css ?> control-label form-label"><?=$this->z->core->t($field->label) ?></label>
+					<div id="<?=$field->name ?>_form_group" class="form-group <?=($form->type) == 'horizontal' ? 'row' : '' ?>">
+						<label for="<?=$field->name ?>" class="<?=$label_css ?> control-label form-label"><?=$this->z->core->t($field->label) ?>:</label>
 						<div class="<?=$value_css ?>">
 							<div class="input-group form-field">
 								<?php
@@ -414,23 +414,23 @@ class formsModule extends zModule {
 												</p>
 											<?php
 										break;
-										
+
 									}
 
 									if (isset($field->required) && $field->required) {
-										?>									
+										?>
 											<div class="input-group-append" data-toggle="tooltip" data-placement="top" title="<?=$this->z->core->t('This field is required. Cannot be left empty.') ?>">
 												 <span class="input-group-text">*</span>
-											</div>										
+											</div>
 										<?php
 									}
-									
+
 								?>
-								
+
 							</div>
-							
+
 							<?php
-							
+
 								if (isset($field->validations)) {
 									foreach ($field->validations as $validation) {
 										?>
@@ -444,8 +444,8 @@ class formsModule extends zModule {
 										<small class="text-muted"><?=$this->z->core->t($field->hint) ?></small>
 									<?php
 								}
-							?>							
-							
+							?>
+
 						</div>
 
 					</div>

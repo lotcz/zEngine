@@ -27,18 +27,20 @@ class custauthModule extends zModule {
 	}
 
 	public function createAnonymousSession() {
-		$this->customer = new CustomerModel($this->db);
-		$this->customer->data['customer_state'] = CustomerModel::$customer_state_anonymous;
-		$this->customer->data['customer_name'] = $this->z->core->t('Anonymous');
-		$this->customer->data['customer_language_id'] = $this->z->i18n->selected_language->val('language_id');
-		$this->customer->data['customer_currency_id'] = $this->z->i18n->selected_currency->val('currency_id');
-		$this->customer->save();
-		$this->createSession();
+		$customer = new CustomerModel($this->db);
+		$customer->data['customer_state'] = CustomerModel::$customer_state_anonymous;
+		$customer->data['customer_name'] = $this->z->core->t('Anonymous');
+		$customer->data['customer_language_id'] = $this->z->i18n->selected_language->val('language_id');
+		$customer->data['customer_currency_id'] = $this->z->i18n->selected_currency->val('currency_id');
+		$customer->save();
+		$this->createSession($customer);
 	}
 
-	private function createSession($token = null) {
+	public function createSession($customer, $token = null) {
 		$ip = $_SERVER['REMOTE_ADDR'];
 		// TODO: check if IP address has too many sessions already
+
+		$this->customer = $customer;
 
 		if (!(isset($token))) {
 			$token = $this->generateSessionToken();
@@ -54,6 +56,8 @@ class custauthModule extends zModule {
 		$session->save();
 		setcookie($this->config['cookie_name'], $session->val('customer_session_id') . "-" . $token, $expires, '/', false, false);
 		$this->session = $session;
+
+		$this->updateLastAccess();
 	}
 
 	/**
@@ -91,9 +95,7 @@ class custauthModule extends zModule {
 					if (Self::verifyPassword($password, $customer->val('customer_password_hash'))) {
 
 						// success - create new session
-						$this->customer = $customer;
-						$this->createSession();
-						$this->updateLastAccess();
+						$this->createSession($customer);
 
 						//if user put any products into cart before logging in, copy cart products
 						if ($this->z->moduleEnabled('cart') && isset($old_customer_id)) {
@@ -118,7 +120,7 @@ class custauthModule extends zModule {
 	/**
 	* Verifies if there is customer logged in.
 	* Call this only once in the beginning of request processing and then call to isAuth() method
-	to check whether customer is authenticated.
+	* to check whether customer is authenticated.
 	*/
 	public function checkAuthentication() {
 		$this->customer = null;
@@ -221,13 +223,13 @@ class custauthModule extends zModule {
 		$activation_token = $this->z->custauth->generateAccountActivationToken();
 		$customer->data['customer_reset_password_hash'] = $this->z->custauth->hashPassword($activation_token);
 		$expires = time() + $this->z->custauth->getConfigValue('reset_password_expires');
-		$customer->date['customer_reset_password_expires'] = zSqlQuery::mysqlTimestamp($expires);
+		$customer->data['customer_reset_password_expires'] = zSqlQuery::mysqlTimestamp($expires);
 		$customer->save();
 
-		$subject = $this->getEmailSubject($this->z->core->t('Thank you for your registration'));
-		$activation_link = sprintf('%s?email=%s&reset_token=%s', $this->z->core->url('activate'), $customer->val('customer_email'), $activation_token);
+		$subject = $this->getEmailSubject($this->z->core->t('Registration'));
+		$activation_link = sprintf('%s?email=%s&activation_token=%s', $this->z->core->url('activate'), $customer->val('customer_email'), $activation_token);
 		$this->z->emails->renderAndSend($email, $subject, 'registration', ['customer' => $customer, 'activation_link' => $activation_link]);
-		$this->z->messages->success($this->z->core->t('Thank you for your registration'));
+		$this->z->messages->success($this->z->core->t('Thank you for your registration on our website.'));
 		$this->z->messages->warning($this->z->core->t('An e-mail was sent to your address with account activation instructions.'));
 	}
 

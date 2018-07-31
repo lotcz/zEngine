@@ -1,7 +1,7 @@
-<h1><?=$this->z->core->t('Thank you for your registration') ?></h1>
+<h1><?=$this->z->core->t('Registration') ?></h1>
 
 <p>
-<?=$this->z->core->t('Thank you for your registration on our website.') ?>.
+<?=$this->z->core->t('Thank you for your registration on our website.') ?>
 </p>
 
 <p>

@@ -17,60 +17,64 @@ class tablesModule extends zModule {
 			$table->paging->renderLinks();
 		}
 
-		?>
+		if (sizeof($table->data) == 0) {
+			?>
+				<div class="p-2"><?=$this->z->core->t($table->no_data_message) ?></div>
+			<?php
+		} else {
+			?>
+				<div class="table-responsive">
+					<table class="table <?=$table->css ?>">
+						<thead>
+							<tr>
+								<?php
+									foreach ($table->fields as $field) {
+										?>
+											<th><?=$this->z->core->t($field->label) ?></th>
+										<?php
+									}
+								?>
+							</tr>
+						</thead>
 
-			<div class="table-responsive">
-				<table class="table <?=$table->css ?>">
-					<thead>
-						<tr>
+						<tbody>
 							<?php
-								foreach ($table->fields as $field) {
+
+								foreach ($table->data as $row) {
+									$item_url = $this->z->core->url(sprintf($table->edit_link, $row->val($table->id_field)), $this->z->core->raw_path);
 									?>
-										<th><?=$this->z->core->t($field->label) ?></th>
+										<tr onclick="javascript:document.location = '<?=$item_url ?>';" class="">
+											<?php
+												foreach ($table->fields as $field) {
+													?>
+														<td>
+															<?php
+																if (!isset($field->type)) {
+																	echo $row->val($field->name);
+																} elseif ($field->type == 'date') {
+																	echo $this->z->i18n->formatDate($row->dtval($field->name));
+																} elseif ($field->type == 'datetime') {
+																	echo $this->z->i18n->formatDatetime($row->dtval($field->name));
+																} elseif ($field->type == 'localized') {
+																	echo $this->z->core->t($row->val($field->name));
+																} elseif ($field->type == 'custom') {
+																	$fn = $field->custom_function;
+																	echo $fn($row->val($field->name));
+																}
+															?>
+														</td>
+													<?php
+												}
+											?>
+										</tr>
 									<?php
 								}
 							?>
-							<th></th>
-						</tr>
-					</thead>
-					<tbody>
-					<?php
+						</tbody>
+					</table>
+				</div>
 
-						foreach ($table->data as $row) {
-							$item_url = $this->z->core->url(sprintf($table->edit_link, $row->val($table->id_field)), $this->z->core->raw_path);
-							?>
-								<tr onclick="javascript:document.location = '<?=$item_url ?>';" class="">
-									<?php
-										foreach ($table->fields as $field) {
-											?>
-												<td>
-													<?php
-														if (!isset($field->type)) {
-															echo $row->val($field->name);
-														} elseif ($field->type == 'date') {
-															echo $this->z->i18n->formatDate($row->dtval($field->name));
-														} elseif ($field->type == 'datetime') {
-															echo $this->z->i18n->formatDatetime($row->dtval($field->name));
-														} elseif ($field->type == 'localized') {
-															echo $this->z->core->t($row->val($field->name));
-														} elseif ($field->type == 'custom') {
-															$fn = $field->custom_function;
-															echo $fn($row->val($field->name));
-														}											
-													?>
-												</td>
-											<?php
-										}
-									?>									
-								</tr>
-							<?php
-						}
-					?>
-					</tbody>
-				</table>
-			</div>
-
-		<?php
+			<?php
+		}
 	}
-
 }

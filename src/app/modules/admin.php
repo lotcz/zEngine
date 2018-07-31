@@ -17,9 +17,9 @@ class adminModule extends zModule {
 
 	// page of admin area that is accessible for public
 	public $public_pages = ['login', 'forgotten-password', 'reset-password'];
-	
+
 	public $is_public_page = false;
-	
+
 	// when authentication fails, user is redirected here
 	public $login_url = 'login';
 
@@ -51,7 +51,7 @@ class adminModule extends zModule {
 			} else if ($this->is_login_page && $this->z->auth->isAuth()) {
 				$this->z->core->path = [$this->base_url];
 			}
-            //$this->z->core->includeCSS('resources/admin.css');
+      //$this->z->core->includeCSS('resources/admin.css');
 		}
 
 		$this->initializeAdminMenu();
@@ -63,11 +63,11 @@ class adminModule extends zModule {
 	}
 
 	/**
-	* Returns basic admin menu including users, languages etc. based on enabled modules 
+	* Returns basic admin menu including users, languages etc. based on enabled modules
 	*/
 	private function initializeAdminMenu() {
 		$menu = new zMenu($this->getAdminAreaURL(''), $this->z->core->getData('site_title'));
-		
+
 		if ($this->z->auth->isAuth()) {
 
 			//custom menu from app's admin config
@@ -76,8 +76,8 @@ class adminModule extends zModule {
 			//standard admin menu
 			if ($this->getConfigValue('show_default_menu', false)) {
 				$submenu = $menu->addSubmenu('Administration');
-				$submenu->addItem('admin/static-pages', 'Static pages');				
-				$submenu->addItem('admin/customers', 'Customers');				
+				$submenu->addItem('admin/static-pages', 'Static pages');
+				$submenu->addItem('admin/customers', 'Customers');
 				$submenu->addItem('admin/users', 'Administrators');
 				$submenu->addItem('admin/roles', 'Roles');
 				$submenu->addItem('admin/permissions', 'Permissions');
@@ -93,7 +93,7 @@ class adminModule extends zModule {
 			}
 			$user = $this->z->auth->user;
 			$usermenu = $menu->addRightSubmenu($user->getLabel());
-			$usermenu->addItem('admin/default/default/user/edit/' . $user->val('user_id'), 'Account');
+			$usermenu->addItem('admin/default/default/user/edit/' . $user->val('user_id'), 'User Profile');
 			$usermenu->addItem('admin/change-password', 'Change Password');
 			$usermenu->addItem('admin/logout', 'Log Out');
 		} else if (!$this->is_login_page) {
@@ -118,7 +118,7 @@ class adminModule extends zModule {
 			'name' => 'form_buttons',
 			'type' => 'buttons',
 			'buttons' => [
-				['type' => 'link', 'label' => '+ Add', 'css' => 'btn btn-success' , 'link_url' => $this->base_url . '/' . $entity_name . '?r=' . $this->z->core->raw_path]
+				['type' => 'link', 'label' => '+ Add', 'css' => 'btn btn-success' , 'link_url' => $this->base_url . '/' . str_replace('_', '-', $entity_name) . '?r=' . $this->z->core->raw_path]
 			]
 		]);
 		if (isset($filter_fields)) {
@@ -154,7 +154,7 @@ class adminModule extends zModule {
 		$model_id = $form->data->ival($form->data->id_name);
 		if ($model_id > 0) {
 			$delete_question = $this->z->core->t('Are you sure to delete this item?');
-			$delete_url = $this->z->core->url(sprintf($this->base_url . '/default/default/' . $form->id . '/delete/%d', $model_id), $this->z->core->return_path);
+			$delete_url = $this->z->core->url(sprintf($this->base_url . '/default/default/' .  str_replace('_', '-', $form->id) . '/delete/%d', $model_id), $this->z->core->return_path);
 			$buttons[] = ['type' => 'button', 'label' => 'Delete', 'onclick' => 'deleteItemConfirm(\'' . $delete_question . '\',' . '\'' . $delete_url . '\');', 'css' => 'btn btn-danger m-2' ];
 		}
 
@@ -189,7 +189,7 @@ class adminModule extends zModule {
 		} else {
 			$this->z->core->setPageTitle($this->z->core->t($form->entity_title) . ': ' . $this->z->core->t('New'));
 		}
-		
+
 		$form->addField(
 			[
 				'name' => 'form_buttons',

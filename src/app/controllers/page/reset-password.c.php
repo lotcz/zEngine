@@ -1,10 +1,11 @@
 <?php
+	$this->requireModule('forms');
 	$this->setPageTitle('Reset Password');
 
 	$show_form = false;
 	$reset_token = z::get('reset_token');
 	$customer_email = z::get('email');
-	
+
 	if (isset($reset_token) && isset($customer_email)) {
 		$customer = new CustomerModel($this->db);
 		$customer->loadByEmail($customer_email);

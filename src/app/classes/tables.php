@@ -10,7 +10,7 @@ class zTable {
 	public $new_link;
 	public $css;
 	public $id_field;
-
+	public $no_data_message = 'No records were found.';
 	public $filter_form = null;
 
 	public $where = null;
@@ -100,9 +100,9 @@ class zAdminTable extends zTable {
 		parent::__construct(
 			$view_name,
 			$entity_name . '_id',
-			sprintf('admin/default/default/%s/edit/', $entity_name) . '%d',
-			sprintf('admin/default/default/%s', $entity_name),
-			'table-striped table-hover mt-2'
+			sprintf('admin/default/default/%s/edit/',  str_replace('_', '-', $entity_name)) . '%d',
+			sprintf('admin/default/default/%s',  str_replace('_', '-', $entity_name)),
+			'table-striped table-sm table-bordered table-hover mt-2'
 		);
 	}
 

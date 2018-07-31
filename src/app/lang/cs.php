@@ -40,6 +40,9 @@ $language_data['This email is already used!'] = 'Tento email je již obsazen!';
 $language_data['E-mail address is not in correct form! Please enter valid e-mail address.'] = 'Emailová adresa není ve správném formátu! Zadejte prosím platnou emailovou adresu.';
 $language_data['If you forget your password, you can reset it <a href="%s">here</a>.'] = 'Pokud zapomenete Vaše heslo, můžete jej resetovat <a href="%s">zde</a>.';
 $language_data['To activate your account, click this <a href="%s">link</a>.'] = 'Pro aktivaci Vašeho účtu klikněte prosím na tento <a href="%s">odkaz</a>.';
+$language_data['Account Activation'] = 'Aktivace účtu';
+$language_data['Your link seems to be invalid.'] = 'Váš odkaz je neplatný.';
+$language_data['Your account was successfully activated. '] = 'Váš účet byl úspěšně aktivován.';
 $language_data['Login unsuccessful!'] = 'Přihlášení bylo neúspěšné!';
 $language_data['E-mail address not found!'] = 'E-mailová adresa nenalezena!';
 $language_data['An e-mail was sent to your address with reset password instructions.'] = 'Na Vaši emailovou adresu jsme odeslali email s instrukcemi pro obnovení hesla.';
@@ -73,6 +76,8 @@ $language_data['User Deactivated'] = 'Deaktivovaný uživatel';
 /* FORMS */
 $language_data['Back'] = 'Zpět';
 $language_data['Save'] = 'Uložit';
+$language_data['Add'] = 'Přidat';
+$language_data['Cancel'] = 'Storno';
 $language_data['Delete'] = 'Smazat';
 $language_data['Edit'] = 'Editovat';
 $language_data['Max value is %s.'] = 'Maximální hodnota je %s.';
@@ -91,5 +96,8 @@ $language_data['Please enter valid ZIP code.'] = 'Prosím vložte platné PSČ.'
 $language_data['Some fields in the form don\'t validate! Form cannot be saved.'] = 'Některá pole formuláře neprošla ověřením! Formulář nelze uložit.';
 $language_data['This field is required. Cannot be left empty.'] = 'Toto pole je povinné. Nesmí zůstat prázdné.';
 $language_data['Please enter whole number.'] = 'Vložte prosím celé číslo';
+
+/* TABLES */
+$language_data['No records were found.'] = 'Nebyly nalezeny žádné položky.';
 
 return $language_data;
