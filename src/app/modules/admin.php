@@ -118,7 +118,7 @@ class adminModule extends zModule {
 			'name' => 'form_buttons',
 			'type' => 'buttons',
 			'buttons' => [
-				['type' => 'link', 'label' => '+ Add', 'css' => 'btn btn-success' , 'link_url' => $this->base_url . '/' . str_replace('_', '-', $entity_name) . '?r=' . $this->z->core->raw_path]
+				['type' => 'link', 'label' => '+ Add', 'css' => 'btn btn-success mr-2' , 'link_url' => $this->base_url . '/' . str_replace('_', '-', $entity_name) . '?r=' . $this->z->core->raw_path]
 			]
 		]);
 		if (isset($filter_fields)) {
@@ -127,8 +127,8 @@ class adminModule extends zModule {
 				'name' => 'form_filter_button',
 				'type' => 'buttons',
 				'buttons' => [
-					['type' => 'submit', 'label' => 'Search', 'css' => 'btn btn-success'],
-					['type' => 'link', 'label' => 'Reset', 'css' => 'btn btn-default', 'link_url' => $this->z->core->raw_path]
+					['type' => 'submit', 'label' => 'Search', 'css' => 'btn btn-success mr-2'],
+					['type' => 'link', 'label' => 'Reset', 'css' => 'btn btn-default mr-2', 'link_url' => $this->z->core->raw_path]
 				]
 			]);
 		}
