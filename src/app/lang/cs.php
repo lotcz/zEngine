@@ -96,6 +96,7 @@ $language_data['Please enter valid ZIP code.'] = 'Prosím vložte platné PSČ.'
 $language_data['Some fields in the form don\'t validate! Form cannot be saved.'] = 'Některá pole formuláře neprošla ověřením! Formulář nelze uložit.';
 $language_data['This field is required. Cannot be left empty.'] = 'Toto pole je povinné. Nesmí zůstat prázdné.';
 $language_data['Please enter whole number.'] = 'Vložte prosím celé číslo';
+$language_data['Repeated form submit attempt was detected! Cannot process form. Please refresh the page and try to submit form again.'] = 'Byl detekován pokus o opakované odeslání formuláře! Formulář nelze zpracovat. Prosím zkuste obnovit stránku a znovu potvrdit formulář.';
 
 /* TABLES */
 $language_data['No records were found.'] = 'Nebyly nalezeny žádné položky.';

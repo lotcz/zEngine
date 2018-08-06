@@ -8,9 +8,12 @@ require_once __DIR__ . '/../models/xsrf.m.php';
 */
 class formsModule extends zModule {
 
-	private $form_token_expires = 60*60;
+	private $xsrf_enabled = false;
+	private $xsrf_token_expires = 60*60;
 
 	public function onEnabled() {
+		$this->xsrf_enabled = $this->getConfigValue('xsrf_enabled', $this->xsrf_enabled);
+		$this->xsrf_token_expires = $this->getConfigValue('xsrf_token_expires', $this->xsrf_token_expires);
 		$this->requireModule('mysql');
 		$this->requireModule('messages');
 		$this->requireModule('resources');
@@ -59,7 +62,7 @@ class formsModule extends zModule {
 	public function createXSRFTokenHash($form_name) {
 		$token_value = z::generateRandomToken(50);
 		$token_hash = z::createHash($token_value);
-		$expires = time() + $this->form_token_expires;
+		$expires = time() + $this->xsrf_token_expires;
 		if ($this->z->core->isAuth()) {
 			$customer_session_id = null;
 			$user_session_id = $this->z->auth->session->ival('user_session_id');
@@ -108,9 +111,15 @@ class formsModule extends zModule {
 
 			if ($form->processInput($_POST)) {
 
-				if ($this->verifyXSRFTokenHash($form->id, z::get('form_token'))) {
+				//XSS protection
+				$xsrf_ok = true;
 
-					//XSS protection
+				if ($this->xsrf_enabled || $form->xsrf_enabled) {
+					$xsrf_ok = $this->verifyXSRFTokenHash($form->id, z::get('form_token'));
+				}
+
+				if ($xsrf_ok) {
+
 					foreach ($form->processed_input as $key => $value) {
 						$form->processed_input[$key] = $this->z->core->xssafe($value);
 					}
@@ -137,7 +146,7 @@ class formsModule extends zModule {
 						$model->setData($form->processed_input);
 					}
 				} else {
-					$this->z->messages->error('Byl detekován pokus o opakované odeslání formuláře! Data nelze uložit.');
+					$this->z->messages->error('Repeated form submit attempt was detected! Cannot process form. Please refresh the page and try to submit form again.');
 					$model->setData($form->processed_input);
 				}
 
@@ -169,11 +178,14 @@ class formsModule extends zModule {
 		$form->prepare($this->z->core->db, $model);
 
 		// add XSRF token
-		$form->addField([
-			'name' => 'form_token',
-			'type' => 'hidden',
-			'value' => $this->createXSRFTokenHash($form->id)
-		]);
+		if ($this->xsrf_enabled || $form->xsrf_enabled) {
+			$form->addField([
+				'name' => 'form_token',
+				'type' => 'hidden',
+				'value' => $this->createXSRFTokenHash($form->id)
+			]);
+		}
+
 	}
 
 	public function getValidationMessage($validation) {

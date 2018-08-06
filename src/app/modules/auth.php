@@ -8,7 +8,7 @@ require_once __DIR__ . '/../models/ip_failed.m.php';
 * Module that handles authentication for administration area.
 */
 class authModule extends zModule {
-
+	private $authentication_checked = false;
 	private $db = null;
 
 	public $user = null;
@@ -22,6 +22,9 @@ class authModule extends zModule {
 		$this->requireModule('mysql');
 		$this->requireModule('messages');
 		$this->db = $this->z->core->db;
+	}
+
+	function onInit() {
 		$this->checkAuthentication();
 	}
 
@@ -29,6 +32,7 @@ class authModule extends zModule {
 	* Return true if administrator is authenticated.
 	*/
 	public function isAuth() {
+		$this->checkAuthentication();
 		return isset($this->user) && isset($this->session);
 	}
 
@@ -86,39 +90,43 @@ class authModule extends zModule {
 	}
 
 	/**
-	* Verifies if there is admin logged in. 
+	* Verifies if there is admin logged in.
 	* Call this only once in the beginning of request processing and then call to isAuth() method
-	to check whether admin is authenticated.
+	* to check whether admin is authenticated.
 	*/
-	public function checkAuthentication() {
-		$this->user = null;
+	private function checkAuthentication() {
+		if (!$this->authentication_checked) {
+			$this->user = null;
 
-		if (isset($_COOKIE[$this->config['cookie_name']])) {
-			$arr = explode('-', $_COOKIE[$this->config['cookie_name']]);
-			$session_id = intval($arr[0]);
-			$session_token = $arr[1];
-		}
-
-		if (isset($session_id)) {
-			$this->session = new UserSessionModel($this->db, $session_id);
-			if (isset($this->session) && $this->session->is_loaded && Self::verifyPassword($session_token, $this->session->val('user_session_token_hash'))) {
-				$expires = time()+$this->config['session_expire'];
-				$session = new UserSessionModel($this->db);
-				$session->data['user_session_id'] = $session_id;
-				$session->data['user_session_expires'] = zSqlQuery::mysqlTimestamp($expires);
-				$session->save();
-				setcookie($this->cookie_name, $this->session->val('user_session_id') . '-' . $session_token, $expires, '/', false, false);
-				$this->user = new UserModel($this->db, $this->session->val('user_session_user_id'));
-				$this->updateLastAccess();
+			if (isset($_COOKIE[$this->config['cookie_name']])) {
+				$arr = explode('-', $_COOKIE[$this->config['cookie_name']]);
+				$session_id = intval($arr[0]);
+				$session_token = $arr[1];
 			}
+
+			if (isset($session_id)) {
+				$this->session = new UserSessionModel($this->db, $session_id);
+				if (isset($this->session) && $this->session->is_loaded && Self::verifyPassword($session_token, $this->session->val('user_session_token_hash'))) {
+					$expires = time()+$this->config['session_expire'];
+					$session = new UserSessionModel($this->db);
+					$session->data['user_session_id'] = $session_id;
+					$session->data['user_session_expires'] = zSqlQuery::mysqlTimestamp($expires);
+					$session->save();
+					setcookie($this->cookie_name, $this->session->val('user_session_id') . '-' . $session_token, $expires, '/', false, false);
+					$this->user = new UserModel($this->db, $this->session->val('user_session_user_id'));
+					$this->updateLastAccess();
+				}
+			}
+
+			$this->authentication_checked = true;
 		}
 	}
 
 	/**
 	* Save last access date and time for logged in admin.
 	*/
-	public function updateLastAccess() {
-		if ($this->isAuth()) {
+	private function updateLastAccess() {
+		if (isset($this->user)) {
 			$user = new UserModel($this->db);
 			$user->data['user_id'] = $this->user->val('user_id');
 			$user->data['user_last_access'] = zSqlQuery::mysqlTimestamp(time());
@@ -146,7 +154,7 @@ class authModule extends zModule {
 	public function isValidPassword($password) {
 		return (strlen($password) >= $this->getConfigValue('min_password_length', 5));
 	}
-	
+
 	public function generatePasswordToken() {
 		return z::generateRandomToken(50);
 	}

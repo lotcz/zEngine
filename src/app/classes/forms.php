@@ -18,7 +18,8 @@ class zForm {
 	public $is_valid = true;
 	public $render_wrapper = false;
 	public $images_module = null;
-
+	public $xsrf_enabled = false;
+	
 	public $onBeforeUpdate = null;
 	public $onAfterUpdate = null;
 	public $onBeforeDelete = null;

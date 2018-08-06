@@ -65,7 +65,7 @@ final class zClassTest extends TestCase
 			z::verifyHash($password, $hash)
         );
     }
-	
+
 	public function testRandomTokenGenerator(): void
     {
 		$len = 10;
@@ -77,7 +77,7 @@ final class zClassTest extends TestCase
         );
 		
     }
-	
+
 	public function testTrim(): void
     {
 		$str = ' .,-*/1234567890test.,-*/1234567890 ';
