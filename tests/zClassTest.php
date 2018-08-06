@@ -77,5 +77,16 @@ final class zClassTest extends TestCase
         );
 		
     }
+	
+	public function testTrim(): void
+    {
+		$str = ' .,-*/1234567890test.,-*/1234567890 ';
+		
+        $this->assertEquals(			
+			z::trim($str),
+            'test'
+        );
+		
+    }
 
 }
