@@ -1,0 +1,6 @@
+language: php
+php:
+  - '7.1'
+script: phpunit --bootstrap tests/autoload.php --testdox tests
+after_failure:
+  - cat zEngine.log

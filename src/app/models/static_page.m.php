@@ -10,7 +10,7 @@ class StaticPageModel extends zModel {
 	}
 
 	public function getViewPath() {
-		return 'default/default/static_page/' . $this->val('static_page_id');
+		return 'default/default/static-page/' . $this->val('static_page_id');
 	}
 
 	public function getLinkPath() {

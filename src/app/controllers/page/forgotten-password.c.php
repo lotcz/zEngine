@@ -1,7 +1,6 @@
 <?php
-
+	$this->requireModule('forms');
 	$this->setPageTitle('Forgotten Password');
-	$this->z->core->includeJS('resources/forms.js');
 
 	if (z::isPost()) {
 		$customer = new CustomerModel($this->db);
@@ -13,7 +12,7 @@
 			$customer->set('customer_reset_password_expires', zSqlQuery::mysqlTimestamp($expires));
 			$customer->save();
 
-			$link = sprintf('%s?email=%s&reset_token=%s', $this->url('password-reset'), $customer->val('customer_email'), $reset_token);
+			$link = sprintf('%s?email=%s&reset_token=%s', $this->url('reset-password'), $customer->val('customer_email'), $reset_token);
 			$email_text = $this->t("To reset your password, visit this link:\n\n%s\n\nThis link is only valid for %d days.", $link, 7);
 
 			$this->z->emails->sendPlain($customer->val('customer_email'), $this->t('Forgotten Password'), $email_text);

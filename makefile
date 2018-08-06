@@ -1,12 +1,12 @@
 perms:
-    chown -R www-data:www-data ../zEngine
+	chown -R www-data:www-data ../zEngine
 
 pull:
 	git pull    
 
 checkout:
-    git checkout $1
-        
+	git checkout $1
+
 update: pull perms
-    	
+
 upgrade: pull checkout perms

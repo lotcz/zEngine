@@ -1,11 +1,11 @@
 <?php
 	$this->requireModule('forms');
-	$this->setPageTitle('Change password');
+	$this->setPageTitle('Change Password');
 
 	if (!($this->isCustAuth() && !$this->z->custauth->isAnonymous())) {
 		$this->redirect('login');
 	}
-	
+
 	$form = new zForm('changepass_form');
 	$form->add([
 		[
@@ -23,19 +23,19 @@
 	]);
 
 	if (z::isPost()) {
-		
+
 		$password = z::get('password');
 		$password_confirm = z::get('password_confirm');
 
 		if ($this->z->custauth->isValidPassword($password)) {
 
-			if ($password == $password_confirm) {	
-				
-				$customer = $this->getCustomer();				
+			if ($password == $password_confirm) {
+
+				$customer = $this->getCustomer();
 				$customer->data['customer_password_hash'] = $this->z->custauth->hashPassword($password);
-				$customer->save();				
+				$customer->save();
 				$this->message('Your password was successfully changed.', 'success');
-				
+
 			} else {
 				$this->z->messages->error($this->t('Passwords don\'t match.'));
 			}
