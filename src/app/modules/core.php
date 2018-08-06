@@ -1,9 +1,9 @@
 <?php
 
 /**
-* This is the beating heart of zEngine. 
-  Core is the only module that is required to run zEngine application.
-  It handles basic page processing and rendering according to MVC principles.
+* This is the beating heart of zEngine.
+*  Core is the only module that is required to run zEngine application.
+*  It handles basic page processing and rendering according to MVC principles.
 */
 class coreModule extends zModule {
 
@@ -14,13 +14,13 @@ class coreModule extends zModule {
 	public $default_app_dir = '';
 
 	public $default_encoding = 'UTF-8';
-	
+
 	public $base_url = '';
 	public $debug_mode = false;
 	public $error_page = 'error.html';
 	public $error_view = 'error';
 	public $not_found_path = 'notfound';
-	
+
 	public $return_path = false;
 
 	public $data = [
@@ -46,7 +46,7 @@ class coreModule extends zModule {
 		$this->error_page = $this->getConfigValue('error_page', $this->error_page);
 		$this->not_found_path = $this->getConfigValue('not_found_path', $this->not_found_path);
 		$this->setData('site_title', $this->getConfigValue('site_title', 'Site Name'));
-		$this->return_path = z::get('r', false);		
+		$this->return_path = z::get('r', false);
 	}
 
 	public function pathExists($index) {
@@ -98,21 +98,21 @@ class coreModule extends zModule {
 
 	/**
 	* Send data to view.
-	*/	
+	*/
 	public function setData($name, $value) {
 		$this->data[$name] = $value;
 	}
 
 	/**
 	* Retrieve data sent to view.
-	*/	
+	*/
 	public function getData($name) {
 		return $this->data[$name];
 	}
 
 	/**
 	* Check if data of given key were sent to view.
-	*/	
+	*/
 	public function dataExists($name) {
 		return isset($this->data[$name]);
 	}
@@ -129,7 +129,7 @@ class coreModule extends zModule {
 			return $this->getData('site_title');
 		}
 	}
-	
+
 	public function redirect($url = '', $statusCode = 303) {
 		z::redirect(z::trimSlashes($this->base_url) . '/' . z::trimSlashes($url), $statusCode);
 	}
@@ -146,7 +146,7 @@ class coreModule extends zModule {
 
 	/**
 	* Generate fully qualified URL for a page.
-	*/	
+	*/
 	public function url($link = '', $ret = null) {
 		$url = $this->base_url . '/' . $link;
 		if (isset($ret) && strlen($ret) > 0) {
@@ -275,7 +275,7 @@ class coreModule extends zModule {
 			return $date;
 		}
 	}
-	
+
 	public function formatDatetime($date) {
 		if ($this->z->moduleEnabled('i18n')) {
 			return $this->z->i18n->selected_language->formatDatetime($date);
@@ -287,7 +287,7 @@ class coreModule extends zModule {
 	public function xssafe($data) {
 	   return z::xssafe($data, $this->default_encoding);
 	}
-	
+
 	/*
 		ADMIN HELPERS
 	*/
@@ -304,22 +304,22 @@ class coreModule extends zModule {
 		$this->z->admin->renderAdminForm($entity_name, $model_class_name, $fields, $onBeforeUpdate, $onAfterUpdate, $onBeforeDelete, $onAfterDelete);
 	}
 
-	/* 
-	
+	/*
+
 	INCLUDES
-	
-	included JS, CSS files and other content 
-	
+
+	included JS, CSS files and other content
+
 	*/
-	
+
 	public function addToIncludes($content, $type, $placement = 'default') {
 		$this->includes[$placement][] = [$content, $type];
-	}	
-	
+	}
+
 	public function insertJS($js_content, $placement = 'head') {
 		$this->addToIncludes($js_content, 'inline_js', $placement);
 	}
-	
+
 	public function includeJS($js_path, $abs = false, $placement = 'bottom') {
 		if (!$abs) {
 			$js_path = $this->url($js_path);
@@ -332,7 +332,7 @@ class coreModule extends zModule {
 	}
 
 	public function includeCSS($css_path, $abs = false, $placement = 'head') {
-		if (!$abs) {			
+		if (!$abs) {
 			$css_path = $this->url($css_path);
 		}
 		$this->addToIncludes($css_path, 'link_css', $placement);
@@ -344,15 +344,15 @@ class coreModule extends zModule {
 		}
 		$this->addToIncludes($less_path, 'link_less', $placement);
 	}
-	
+
 	public function renderIncludes($placement = 'default') {
 		foreach ($this->includes[$placement] as $incl) {
 			switch ($incl[1]) {
 				case 'inline_js':
 					if (is_object($incl[0]) || is_array($incl[0])) {
 						echo '<script>';
-						foreach ($incl[0] as $key => $value) {							
-							echo sprintf('var %s = %s;', $key, z::formatForJS($value));														
+						foreach ($incl[0] as $key => $value) {
+							echo sprintf('var %s = %s;', $key, z::formatForJS($value));
 						}
 						echo '</script>';
 					} else {
@@ -373,8 +373,8 @@ class coreModule extends zModule {
 				break;
 			}
 		}
-	}	
-	
+	}
+
 	public function showErrorView($message = null) {
 		$this->setPageTemplate($this->error_view);
 		$this->setPageTitle('Error');
@@ -382,7 +382,7 @@ class coreModule extends zModule {
 			$this->message($message, 'error');
 		}
 	}
-	
+
 	/*
 		RENDERING
 	*/
