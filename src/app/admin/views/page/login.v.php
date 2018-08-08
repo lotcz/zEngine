@@ -1,4 +1,4 @@
-<form method="POST" id="form_login">	
+<form method="POST" id="form_login">
 	<div class="form-group row">
 		<label for="user_name" class="col-sm-1 col-form-label"><?=$this->t('Login')?></label>
 		<div class="col-sm-3">
@@ -15,14 +15,14 @@
 	</div>
 	<div class="form-group row">
 		<div class="col-sm-3 offset-sm-1 form-field">
-			<button onclick="javascript:validateLoginForm();return false;" class="btn btn-success" ><?=$this->t('Sign In') ?></button>			
+			<button id="login_button" onclick="javascript:validateLoginForm();return false;" class="btn btn-success" ><?=$this->t('Sign In') ?></button>			
 		</div>
-	</div>			
+	</div>
 	<div class="form-group row">
 		<div class="col-sm-3 offset-sm-1 form-field">
 			<a class="form-button" href="<?=$this->url('admin/forgotten-password', $this->raw_path)?><?=(isset($_POST['email']) && strlen($_POST['email']) > 0) ? '&email=' . $_POST['email'] : '' ?>"><?= $this->t('Forgotten Password') ?></a>
 		</div>
-	</div>			
+	</div>
 </form>
 
 <script>
