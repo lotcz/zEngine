@@ -8,12 +8,12 @@
 	</div>
 	<div class="form-group row">
 		<div class="col-sm-3 offset-sm-1 form-field">
-			<input type="submit" onclick="javascript:admin_forgot_validate(event);" class="btn btn-success form-button" value="<?=$this->t('Reset Password') ?>" />
+			<input id="reset_button" type="submit" onclick="javascript:admin_forgot_validate(event);" class="btn btn-success form-button" value="<?=$this->t('Reset Password') ?>" />
 		</div>
 	</div>
 	<div class="form-group row">
 		<div class="col-sm-3 offset-sm-1 form-field">
-			<a class="form-button" href="<?=$this->url('admin') ?>"><?=$this->t('Sign In') ?></a>
+			<a class="form-button" href="<?=$this->url('login') ?>"><?=$this->t('Sign In') ?></a>
 		</div>
 	</div>
 </form>
