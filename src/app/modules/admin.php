@@ -5,8 +5,6 @@
 */
 class adminModule extends zModule {
 
-	private $db = null;
-
 	// url part defining admin protected area
 	public $base_url = 'admin';
 
@@ -30,13 +28,12 @@ class adminModule extends zModule {
 	public function onEnabled() {
 		$this->requireModule('auth');
 		$this->requireModule('menu');
-		$this->db = $this->z->core->db;
 		$this->base_url = $this->getConfigValue('admin_area_base_url', $this->base_url);
 		$this->base_dir = $this->getConfigValue('admin_area_base_dir', $this->base_dir);
 		$this->login_url = $this->getConfigValue('login_page_url', $this->login_url);
 	}
 
-	public function onInit() {
+	public function OnBeforeInit() {
 		$this->is_admin_area = (count($this->z->core->path) > 0 && ($this->z->core->path[0] == $this->base_url));
 		if ($this->is_admin_area) {
 			array_shift($this->z->core->path);
@@ -142,7 +139,7 @@ class adminModule extends zModule {
 		if (isset($filter_fields)) {
 			$table->filter_form = $form;
 		}
-		$table->prepare($this->z->core->db);
+		$table->prepare($this->z->db);
 		$this->z->core->setData('table', $table);
 		$this->z->core->setPageTemplate('admin');
 	}
@@ -200,6 +197,31 @@ class adminModule extends zModule {
 
 		$this->z->core->setData('form', $form);
 		$this->z->core->setPageTemplate('admin');
+	}
+
+	/**
+	* Create and activates admin account. Used for db initialization.
+	*/
+	public function createAdminAccount($login, $password) {
+		$admin = new CustomerModel($this->z->db);
+		$customer->data['customer_name'] = $full_name;
+		$customer->data['customer_email'] = $email;
+		$customer->data['customer_state'] = CustomerModel::customer_state_waiting_for_activation;
+		$customer->data['customer_language_id'] = $this->z->i18n->selected_language->val('language_id');
+		$customer->data['customer_currency_id'] = $this->z->i18n->selected_currency->val('currency_id');
+		$customer->data['customer_password_hash'] = $this->z->custauth->hashPassword($password);
+		$activation_token = $this->z->custauth->generateAccountActivationToken();
+		$customer->data['customer_reset_password_hash'] = $this->z->custauth->hashPassword($activation_token);
+		$expires = time() + $this->z->custauth->getConfigValue('reset_password_expires');
+		$customer->data['customer_reset_password_expires'] = z::mysqlTimestamp($expires);
+		$customer->save();
+
+		$subject = $this->getEmailSubject($this->z->core->t('Registration'));
+		$activation_link = sprintf('%s?email=%s&activation_token=%s', $this->z->core->url('activate'), $customer->val('customer_email'), $activation_token);
+		$this->z->emails->renderAndSend($email, $subject, 'registration', ['customer' => $customer, 'activation_link' => $activation_link]);
+		$this->z->messages->success($this->z->core->t('Thank you for your registration on our website.'));
+		$this->z->messages->warning($this->z->core->t('An e-mail was sent to your address with account activation instructions.'));
+
 	}
 
 }

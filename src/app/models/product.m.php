@@ -7,11 +7,11 @@ class ProductModel extends zModel {
 	
 	public function loadByExtId($id) {
 		$filter = 'product_ext_id = ?';
-		$this->loadSingleFiltered($filter, [$id]);
+		$this->loadSingle($filter, [$id]);
 	}
 	
 	public function loadVariants() {
-		$this->variants = zModel::select($this->db, 'product_variants', 'product_variant_product_id = ?', [ $this->val('product_id') ]);
+		$this->variants = zModel::select($this->z->db, 'product_variants', 'product_variant_product_id = ?', [ $this->val('product_id') ]);
 	}
 	
 	static function loadCart($db, $customer_id) {

@@ -9,7 +9,7 @@ class IpFailedAttemptModel extends zModel {
 	public $id_name = 'ip_failed_attempt_id';
 
 	public function loadByIp($ip) {
-		$this->loadSingleFiltered('ip_failed_attempt_ip = ?', [$ip], 's');
+		$this->loadSingle('ip_failed_attempt_ip = ?', [$ip], 's');
 	}
 
 	public static function saveFailedAttempt($db) {
@@ -20,7 +20,7 @@ class IpFailedAttemptModel extends zModel {
 				$attempt->set('ip_failed_attempt_ip', $ip);
 		}
 		$attempt->set('ip_failed_attempt_count', $attempt->ival('ip_failed_attempt_count',0)+1);
-		$attempt->set('ip_failed_attempt_last', zSqlQuery::mySqlDatetime(time()));
+		$attempt->set('ip_failed_attempt_last', z::mySqlDatetime(time()));
 		$attempt->save();
 	}
 

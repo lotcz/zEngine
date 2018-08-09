@@ -24,7 +24,7 @@ class resourcesModule extends zModule {
 		}
 	}
 
-	public function onInit() {
+	public function OnBeforeInit() {
 		if ($this->z->core->getPath(0) == $this->base_url) {
 			$resource_file = $this->z->core->getPath(1);
 			if ($this->z->core->pathExists(2)) {

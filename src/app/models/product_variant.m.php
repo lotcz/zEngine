@@ -7,11 +7,11 @@ class ProductVariantModel extends zModel {
 	
 	public function load($product_id, $variant_name) {
 		$filter = 'product_variant_product_id = ? AND product_variant_name = ?';
-		$this->loadSingleFiltered($filter, [intval($product_id), $variant_name]);
+		$this->loadSingle($filter, [intval($product_id), $variant_name]);
 	}
 
 	public function loadByExtId($id) {
 		$filter = 'product_variant_ext_id = ?';
-		$this->loadSingleFiltered($filter, [$id]);		
+		$this->loadSingle($filter, [$id]);		
 	}
 }

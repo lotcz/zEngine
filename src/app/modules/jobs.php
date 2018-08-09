@@ -15,7 +15,7 @@ class jobsModule extends zModule {
 		$this->security_token = $this->getConfigValue('security_token', $this->security_token);
 	}
 
-	public function onInit() {
+	public function OnBeforeInit() {
 		if ($this->z->core->getPath(0) == $this->base_url) {
 			if (z::get('security_token') == $this->security_token) {
 				$job_name = z::get('job');

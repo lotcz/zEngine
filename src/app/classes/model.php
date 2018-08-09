@@ -1,7 +1,5 @@
 <?php
 
-require_once __DIR__ . '/query.php';
-
 /**
 * Base class for all zEngine models.
 */
@@ -16,15 +14,11 @@ class zModel {
 	public $is_loaded = false;
 	public $data = [];
 
-	function __construct($db = null, $id = null) {
+	function __construct(dbModule $db = null, int $id = null) {
 		$this->db = $db;
 		if (isset($id)) {
 			$this->loadById($id);
 		}
-	}
-
-	static function getExceptionMessage($table, $operation, $query, $message) {
-		return sprintf("zModel class for table $table issued an error during $operation query ($query): $message.");
 	}
 
 	public function setData($data, $only_update = false) {
@@ -58,154 +52,87 @@ class zModel {
 	public function bval($key, $default = false) {
 		return boolval($this->ival($key, $default));
 	}
-	
+
 	public function dtval($key, $default = null) {
-		return zSqlQuery::phpDatetime($this->val($key, $default));
+		return z::phpDatetime($this->val($key, $default));
 	}
 
-	public function loadSingleFiltered($where, $bindings = null, $types = null) {
-		$statement = zSqlQuery::select($this->db, $this->table_name, $where, $bindings, $types);
-		if ($statement) {
-			$result = $statement->get_result();
-			if ($row = $result->fetch_array(MYSQLI_ASSOC)) {
-				$this->is_loaded = true;
-				$this->setData($row);
-			} else {
-				$this->is_loaded = false;
-				$this->data = [];
-			}
-			$statement->close();
+	public function loadSingle($where, $bindings = null, $types = null) {
+		$sql = sprintf('SELECT * FROM %s WHERE %s', $this->table_name, $where);
+		$statement = $this->db->executeQuery($sql, $bindings, $types);
+		if ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
+			$this->is_loaded = true;
+			$this->setData($row);
+		} else {
+			$this->is_loaded = false;
+			$this->data = [];
 		}
+		$statement->closeCursor();
 	}
 
-	public function loadById($id) {
-		$id = z::parseInt($id);
-		if (isset($id)) {
-			$where = sprintf('%s = ?', $this->id_name);
-			$bindings = [$id];
-			$this->loadSingleFiltered($where, $bindings);
-		}
+	public function loadById(int $id) {
+		$where = sprintf('%s = ?', $this->id_name);
+		$bindings = [$id];
+		$types = [PDO::PARAM_INT];
+		$this->loadSingle($where, $bindings, $types);
 	}
 
-	static function select($db, $table_name, $where = null, $bindings = null, $types = null, $paging = null, $orderby = null) {
+	static function select($db, $table_name, $where = null, $orderby = null, $limit = null, $bindings = null, $types = null) {
+		$statement = $db->executeSelectQuery($table_name, '*', $where, $orderby, $limit, $bindings, $types);
 		$list = [];
-		$stmt = zSqlQuery::select($db, $table_name, $where, $bindings, $types, $paging, $orderby);
-		if ($stmt) {
-			$result = $stmt->get_result();
-			$class = get_called_class();
-			while ($row = $result->fetch_assoc()) {
-				$model = new $class($db);
-				$model->setData($row);
-				$model->is_loaded = true;
-				$list[] = $model;
-			}
-			$stmt->close();
+		$class = get_called_class();
+		while ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
+			$model = new $class($db);
+			$model->setData($row);
+			$model->is_loaded = true;
+			$list[] = $model;
 		}
+		$statement->closeCursor();
 		return $list;
 	}
 
-	public function fetch() {
-		return $this->result->fetch_assoc();
-	}
-
-	public function close() {
-		return $this->stmt->close();
-	}
-
 	public function save() {
-		$result = false;
 		$id = $this->ival($this->id_name);
 
+		$columns = [];
+		$bindings = [];
+		$types = [];
+
+		foreach ($this->data as $key => $value) {
+			if ($key != $this->id_name) {
+				$columns[] = $key;
+				$bindings[] = $value;
+				$types[] = z::getDbType($value);
+			}
+		}
+
 		if (isset($id) && $id > 0) {
-			$columns = [];
-			$bindings = [];
-			$types = '';
+			$bindings[] = $id;
+			$types[] = PDO::PARAM_INT;
 
-			foreach ($this->data as $key => $value) {
-				if ($key != $this->id_name) {
-					$columns[] = zSqlQuery::validateColumn($key) . ' = ?';
-					$bindings[] = & $this->data[$key];
-					$types .= zSqlQuery::getTypeChar($value);
-				}
-			}
-			$bindings[] = & $this->data[$this->id_name];
-			$types .= 'i';
-			array_unshift($bindings, $types);
-			$sql = sprintf('UPDATE %s SET %s WHERE %s = ?', $this->table_name, implode(',', $columns), $this->id_name);
-
-			if ($st = $this->db->prepare($sql)) {
-				call_user_func_array(array($st, 'bind_param'), $bindings);
-				if ($st->execute()) {
-					$result = true;
-				} else {
-					throw new Exception(Self::getExceptionMessage($this->table_name, 'execute', $sql, $this->db->error));
-				}
-				$st->close();
-			} else {
-				throw new Exception(Self::getExceptionMessage($this->table_name, 'prepare', $sql, $this->db->error));
-			}
+			$this->db->executeUpdateQuery($this->table_name, $columns, sprintf('%s = ?', $this->id_name), $bindings, $types);
 		} else {
-			$columns = [];
-			$values = [];
-			$bindings = [];
-			$types = '';
-
-			foreach ($this->data as $key => $value) {
-				if ($key != $this->id_name) {
-					$columns[] = zSqlQuery::validateColumn($key);
-					$values[] = '?';
-					$bindings[] = & $this->data[$key];
-					$types .= zSqlQuery::getTypeChar($value);
-				}
-			}
-			array_unshift($bindings, $types);
-			$sql = sprintf('INSERT INTO %s (%s) VALUES (%s)', $this->table_name, implode(',', $columns), implode(',', $values));
-					
-			if ($st = $this->db->prepare($sql)) {
-				//echo $sql;
-				call_user_func_array(array($st, 'bind_param'), $bindings);
-				if ($st->execute()) {
-					$this->is_loaded = true;
-					$result = true;
-					$this->data[$this->id_name] = $this->db->insert_id;
-				} else {
-					throw new Exception(Self::getExceptionMessage($this->table_name, 'execute', $sql, $this->db->error));
-				}
-				$st->close();
-			} else {
-				throw new Exception(Self::getExceptionMessage($this->table_name, 'prepare', $sql, $this->db->error));
-			}
+			$statement = $this->db->executeInsertQuery($this->table_name, $columns, $bindings, $types);
+			$this->set($this->id_name, $this->db->lastInsertId());
 		}
-		return $result;
+
+		return true;
 	}
 
-	public function deleteById($id = null) {
+	public function delete(int $id = null) {
 		if (!isset($id)) {
-			$id = $this->val($this->id_name);
+			$id = $this->ival($this->id_name);
 		}
-		$sql = sprintf('DELETE FROM %s WHERE %s = ?', $this->table_name, $this->id_name);
-		if ($statement = $this->db->prepare($sql)) {
-			$statement->bind_param('i', $id);
-			if ($statement->execute()) {
-				$statement->close();
-				$this->is_loaded = false;
-				$this->data = [];
-				return true;
-			} else {
-				throw new Exception(Self::getExceptionMessage($this->table_name, 'execute', $sql, $this->db->error));
-			}
-		} else {
-			throw new Exception(Self::getExceptionMessage($this->table_name, 'prepare', $sql, $this->db->error));
-		}
+		$this->db->executeDeleteQuery($this->table_name, sprintf('%s = ?', $this->id_name), [$id], [PDO::PARAM_INT]);
 	}
 
-	static function del($db, $id) {
+	static function deleteById(dbModule $db, int $id) {
 		$class = get_called_class();
 		$m = new $class($db);
-		return $m->deleteById($id);
+		return $m->delete($id);
 	}
 
-	public function getAll($class) {
+	public function loadAll($class) {
 		if (isset(Self::$cache[$class])) {
 			return Self::$cache[$class];
 		} else {
@@ -215,10 +142,10 @@ class zModel {
 		return Self::$cache[$class];
 	}
 
-	static function all($db) {
+	static function all(dbModule $db) {
 		$class = get_called_class();
 		$m = new $class($db);
-		return $m->getAll($class);
+		return $m->loadAll($class);
 	}
 
 	/* static methods for working with arrays of models */
@@ -243,7 +170,11 @@ class zModel {
 		}
 		return $sum;
 	}
-	
+
+	/**
+	* Will accept array of models, column name and type.
+	* Returns array of values of selected column.
+	*/
 	static function columnAsArray($arr, $field, $type = 's') {
 		$result = [];
 		foreach ($arr as $model) {

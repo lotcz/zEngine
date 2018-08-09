@@ -44,12 +44,12 @@ class z {
 				return 0;
 			} else {
 				return $a / $b;
-			}			
+			}
 		} else {
 			return null;
 		}
 	}
-	
+
 	/**
 	* Return true if current http request is POST which in most cases means that a form was submitted.
 	*/
@@ -85,6 +85,47 @@ class z {
 	}
 
 	/**
+	* Convert mysql Datetime to php Datetime
+	*/
+	static function phpDatetime($mysqldate) {
+		if (isset($mysqldate) && (strlen($mysqldate) > 0)) {
+			return strtotime($mysqldate);
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	* Convert php Datetime to mysql Datetime
+	*/
+	static function mysqlDatetime($time = null) {
+		if (!isset($time)) {
+			return null;
+		} else {
+			return date('Y-m-d H:i:s', $time);
+		}
+	}
+
+	/**
+	* Convert php time to mysql Datetime
+	*/
+	static function mysqlTimestamp($time = null) {
+		if (!isset($time)) {
+			return null;
+		} else {
+			return date('Y-m-d H:i:s', $time);
+		}
+	}
+
+	static function getDbType($val) {
+		if (is_int($val)) {
+			return PDO::PARAM_INT;
+		} else {
+			return PDO::PARAM_STR;
+		}
+	}
+
+	/**
 	* Remove dangerous characters from string. Crucial for XSS protection.
 	*/
 	static function xssafe($data, $encoding = 'UTF-8') {
@@ -94,7 +135,7 @@ class z {
 			return $data;
 		}
 	}
-	
+
 	function startsWith($haystack, $needle)	{
 		 return (substr($haystack, 0, strlen($needle)) === $needle);
 	}
@@ -103,16 +144,16 @@ class z {
 		$length = strlen($needle);
 		return $length === 0 || (substr($haystack, -$length) === $needle);
 	}
-	
+
 	static function debug($var) {
 		var_dump($var);
 		die();
 	}
-	
+
 	static function formatForJS($value) {
-		return json_encode($value);		
+		return json_encode($value);
 	}
-	
+
 	static function createHash($value) {
 		return password_hash($value, PASSWORD_DEFAULT);
 	}
@@ -120,38 +161,38 @@ class z {
 	static function verifyHash($value, $hash) {
 		return password_verify($value, $hash);
 	}
-	
+
 	/*
 		TOKEN GENERATOR
 
 		example: $token = generateRandomToken(10);
 		-- now $token is something like '9HuE48ErZ1'
 	*/
-	
+
 	/**
 	* Return random number between 0 and 9.
-	*/	
+	*/
 	static function getRandomNumber() {
 		return rand(0,9);
 	}
 
 	/**
 	* Return random lowercase character.
-	*/	
+	*/
 	static function getRandomLowercase() {
 		return chr(rand(97,122));
 	}
 
 	/**
 	* Return random uppercase character.
-	*/	
+	*/
 	static function getRandomUppercase() {
 		return strtoupper(Self::getRandomLowercase());
 	}
 
 	/**
 	* Return string of random numbers, uppercase and lowercase characters.
-	*/	
+	*/
 	static function generateRandomToken($len) {
 		$s = '';
 		for ($i = 0; $i < $len; $i++) {

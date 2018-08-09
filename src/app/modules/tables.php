@@ -9,7 +9,7 @@ require_once __DIR__ . '/../classes/tables.php';
 class tablesModule extends zModule {
 
 	public function onEnabled() {
-		$this->requireModule('mysql');
+		$this->requireModule('db');
 	}
 
 	public function renderTable($table) {

@@ -7,7 +7,7 @@ class TranslationModel extends zModel {
 
 	public function load($language_id, $name) {
 		$filter = 'translation_language_id = ? and translation_name = ?';
-		$this->loadSingleFiltered($filter, [$language_id, $name]);
+		$this->loadSingle($filter, [$language_id, $name]);
 	}
 
 }

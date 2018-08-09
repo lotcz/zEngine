@@ -17,7 +17,7 @@
 			if ($password == $password_confirm) {
 
 				// check if email exists
-				$existing_customer = new CustomerModel($this->db);
+				$existing_customer = new CustomerModel($this->z->db);
 				$existing_customer->loadByEmail($email);
 				if ($existing_customer->is_loaded) {
 					$this->z->messages->error($this->t('This email is already used!'));

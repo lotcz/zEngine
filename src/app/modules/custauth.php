@@ -8,8 +8,6 @@ require_once __DIR__ . '/../models/custsess.m.php';
 */
 class custauthModule extends zModule {
 
-	private $db = null;
-
 	public $customer = null;
 	public $session = null;
 
@@ -20,13 +18,12 @@ class custauthModule extends zModule {
 		$this->requireConfig();
 	}
 
-	public function onInit() {
-		$this->db = $this->z->core->db;
+	public function OnBeforeInit() {
 		$this->checkAuthentication();
 	}
 
 	public function createAnonymousSession() {
-		$customer = new CustomerModel($this->db);
+		$customer = new CustomerModel($this->z->db);
 		$customer->data['customer_state'] = CustomerModel::$customer_state_anonymous;
 		$customer->data['customer_name'] = $this->z->core->t('Anonymous');
 		$customer->data['customer_language_id'] = $this->z->i18n->selected_language->val('language_id');
@@ -47,10 +44,10 @@ class custauthModule extends zModule {
 
 		$token_hash = Self::hashPassword($token);
 		$expires = time() + $this->config['session_expire'];
-		$session = new CustomerSessionModel($this->db);
+		$session = new CustomerSessionModel($this->z->db);
 		$session->data['customer_session_token_hash'] = $token_hash;
 		$session->data['customer_session_customer_id'] = $this->customer->val('customer_id');
-		$session->data['customer_session_expires'] = zSqlQuery::mysqlTimestamp($expires);
+		$session->data['customer_session_expires'] = z::mysqlTimestamp($expires);
 		$session->data['customer_session_ip'] = $ip;
 		$session->save();
 		setcookie($this->config['cookie_name'], $session->val('customer_session_id') . "-" . $token, $expires, '/', false, false);
@@ -85,7 +82,7 @@ class custauthModule extends zModule {
 
 		$this->logout();
 
-		$customer = new CustomerModel($this->db);
+		$customer = new CustomerModel($this->z->db);
 		$customer->loadByEmail($email);
 
 		if (isset($customer) && $customer->is_loaded) {
@@ -97,14 +94,14 @@ class custauthModule extends zModule {
 						$this->createSession($customer);
 
 						//if user put any products into cart before logging in, copy cart products
-						if ($this->z->moduleEnabled('cart') && isset($old_customer_id)) {
+						if ($this->z->isModuleEnabled('cart') && isset($old_customer_id)) {
 							$this->z->cart->transferCart($old_customer_id, $this->customer->ival('customer_id'));
 						}
 						return true;
 					} else {
 						$customer->data['customer_failed_attempts'] += 1;
 						$customer->save();
-						IpFailedAttemptModel::saveFailedAttempt($this->db);
+						IpFailedAttemptModel::saveFailedAttempt($this->z->db);
 					}
 				} else {
 					$this->z->messages->warning($this->z->core->t('--account-not-active--'));
@@ -131,15 +128,15 @@ class custauthModule extends zModule {
 		}
 
 		if (isset($session_id)) {
-			$this->session = new CustomerSessionModel($this->db, $session_id);
+			$this->session = new CustomerSessionModel($this->z->db, $session_id);
 			if (isset($this->session) && $this->session->is_loaded && Self::verifyPassword($session_token, $this->session->val('customer_session_token_hash'))) {
 				$expires = time()+$this->config['session_expire'];
-				$session = new CustomerSessionModel($this->db);
+				$session = new CustomerSessionModel($this->z->db);
 				$session->data['customer_session_id'] = $session_id;
-				$session->data['customer_session_expires'] = zSqlQuery::mysqlDatetime($expires);
+				$session->data['customer_session_expires'] = z::mysqlDatetime($expires);
 				$session->save();
 				setcookie($this->config['cookie_name'], $this->session->val('customer_session_id') . '-' . $session_token, $expires, '/', false, false);
-				$this->customer = new CustomerModel($this->db, $this->session->ival('customer_session_customer_id'));
+				$this->customer = new CustomerModel($this->z->db, $this->session->ival('customer_session_customer_id'));
 				$this->updateLastAccess();
 			}
 		}
@@ -159,9 +156,9 @@ class custauthModule extends zModule {
 	*/
 	public function updateLastAccess() {
 		if ($this->isAuth()) {
-			$customer = new CustomerModel($this->db);
+			$customer = new CustomerModel($this->z->db);
 			$customer->data['customer_id'] = $this->customer->val('customer_id');
-			$customer->data['customer_last_access'] = zSqlQuery::mysqlDatetime(time());
+			$customer->data['customer_last_access'] = z::mysqlDatetime(time());
 			$customer->save();
 		}
 	}
@@ -212,7 +209,7 @@ class custauthModule extends zModule {
 	}
 
 	public function registerCustomer($email, $password, $full_name) {
-		$customer = new CustomerModel($this->db);
+		$customer = new CustomerModel($this->z->db);
 		$customer->data['customer_name'] = $full_name;
 		$customer->data['customer_email'] = $email;
 		$customer->data['customer_state'] = CustomerModel::customer_state_waiting_for_activation;
@@ -222,7 +219,7 @@ class custauthModule extends zModule {
 		$activation_token = $this->z->custauth->generateAccountActivationToken();
 		$customer->data['customer_reset_password_hash'] = $this->z->custauth->hashPassword($activation_token);
 		$expires = time() + $this->z->custauth->getConfigValue('reset_password_expires');
-		$customer->data['customer_reset_password_expires'] = zSqlQuery::mysqlTimestamp($expires);
+		$customer->data['customer_reset_password_expires'] = z::mysqlTimestamp($expires);
 		$customer->save();
 
 		$subject = $this->getEmailSubject($this->z->core->t('Registration'));

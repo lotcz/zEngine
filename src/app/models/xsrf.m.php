@@ -12,7 +12,7 @@ class FormXSRFTokenModel extends zModel {
 		$token->set('form_xsrf_token_ip', $ip);
 		$token->set('form_xsrf_token_form_name', $form_name);
 		$token->set('form_xsrf_token_hash', $token_hash);
-		$token->set('form_xsrf_token_expires', zSqlQuery::mysqlDatetime($expires));
+		$token->set('form_xsrf_token_expires', z::mysqlDatetime($expires));
 		$token->save();
 		return $token;
 	}

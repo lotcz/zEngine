@@ -9,7 +9,7 @@ class CustomerModel extends zModel {
 		$where = 'customer_email = ?';
 		$bindings = [$email];
 		$types = 's';
-		$this->loadSingleFiltered($where, $bindings, $types);		
+		$this->loadSingle($where, $bindings, $types);		
 	}
 	
 	public function getLabel() {

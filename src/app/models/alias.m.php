@@ -7,7 +7,7 @@ class AliasModel extends zModel {
 
 	public function loadByUrl($url) {
 		$filter = 'alias_url = ?';
-		$this->loadSingleFiltered($filter, [$url]);
+		$this->loadSingle($filter, [$url]);
 	}
 
 	public function setUrl($url) {

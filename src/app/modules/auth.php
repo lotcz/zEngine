@@ -9,7 +9,6 @@ require_once __DIR__ . '/../models/ip_failed.m.php';
 */
 class authModule extends zModule {
 	private $authentication_checked = false;
-	private $db = null;
 
 	public $user = null;
 	public $session = null;
@@ -19,12 +18,11 @@ class authModule extends zModule {
 	function onEnabled() {
 		$this->requireConfig();
 		$this->cookie_name = $this->getConfigValue('cookie_name', $this->cookie_name);
-		$this->requireModule('mysql');
+		$this->requireModule('db');
 		$this->requireModule('messages');
-		$this->db = $this->z->core->db;
 	}
 
-	function onInit() {
+	function OnBeforeInit() {
 		$this->checkAuthentication();
 	}
 
@@ -53,7 +51,7 @@ class authModule extends zModule {
 			$this->logout();
 		}
 
-		$user = new UserModel($this->db);
+		$user = new UserModel($this->z->db);
 		$user->loadByLoginOrEmail($loginoremail);
 
 		if (isset($user) && $user->is_loaded) {
@@ -68,10 +66,10 @@ class authModule extends zModule {
 				$token = $this->generatePasswordToken();
 				$token_hash = Self::hashPassword($token);
 				$expires = time()+$this->config['session_expire'];
-				$session = new UserSessionModel($this->db);
+				$session = new UserSessionModel($this->z->db);
 				$session->data['user_session_token_hash'] = $token_hash;
 				$session->data['user_session_user_id'] = $this->user->val('user_id');
-				$session->data['user_session_expires'] = zSqlQuery::mysqlTimestamp($expires);
+				$session->data['user_session_expires'] = z::mysqlTimestamp($expires);
 				$session->data['user_session_ip'] = $ip;
 				$session->save();
 				setcookie($this->cookie_name, $session->val('user_session_id') . "-" . $token, $expires, '/', false, false);
@@ -80,7 +78,7 @@ class authModule extends zModule {
 			} else {
 				$user->data['user_failed_attempts'] += 1;
 				$user->save();
-				IpFailedAttemptModel::saveFailedAttempt($this->db);
+				IpFailedAttemptModel::saveFailedAttempt($this->z->db);
 				return false;
 			}
 
@@ -105,15 +103,15 @@ class authModule extends zModule {
 			}
 
 			if (isset($session_id)) {
-				$this->session = new UserSessionModel($this->db, $session_id);
+				$this->session = new UserSessionModel($this->z->db, $session_id);
 				if (isset($this->session) && $this->session->is_loaded && Self::verifyPassword($session_token, $this->session->val('user_session_token_hash'))) {
 					$expires = time()+$this->config['session_expire'];
-					$session = new UserSessionModel($this->db);
+					$session = new UserSessionModel($this->z->db);
 					$session->data['user_session_id'] = $session_id;
-					$session->data['user_session_expires'] = zSqlQuery::mysqlTimestamp($expires);
+					$session->data['user_session_expires'] = z::mysqlTimestamp($expires);
 					$session->save();
 					setcookie($this->cookie_name, $this->session->val('user_session_id') . '-' . $session_token, $expires, '/', false, false);
-					$this->user = new UserModel($this->db, $this->session->val('user_session_user_id'));
+					$this->user = new UserModel($this->z->db, $this->session->val('user_session_user_id'));
 					$this->updateLastAccess();
 				}
 			}
@@ -127,9 +125,9 @@ class authModule extends zModule {
 	*/
 	private function updateLastAccess() {
 		if (isset($this->user)) {
-			$user = new UserModel($this->db);
+			$user = new UserModel($this->z->db);
 			$user->data['user_id'] = $this->user->val('user_id');
-			$user->data['user_last_access'] = zSqlQuery::mysqlTimestamp(time());
+			$user->data['user_last_access'] = z::mysqlTimestamp(time());
 			$user->save();
 		}
 	}
@@ -149,6 +147,31 @@ class authModule extends zModule {
 			$this->session->deleteById();
 			$this->session = null;
 		}
+	}
+
+	/**
+	* Create and activates user account. Used for db initialization.
+	*/
+	public function createUserAccount($email, $password, $state) {
+		$user = new UserModel($this->z->db);
+		$user->data['customer_name'] = $full_name;
+		$customer->data['customer_email'] = $email;
+		$customer->data['customer_state'] = CustomerModel::customer_state_waiting_for_activation;
+		$customer->data['customer_language_id'] = $this->z->i18n->selected_language->val('language_id');
+		$customer->data['customer_currency_id'] = $this->z->i18n->selected_currency->val('currency_id');
+		$customer->data['customer_password_hash'] = $this->z->custauth->hashPassword($password);
+		$activation_token = $this->z->custauth->generateAccountActivationToken();
+		$customer->data['customer_reset_password_hash'] = $this->z->custauth->hashPassword($activation_token);
+		$expires = time() + $this->z->custauth->getConfigValue('reset_password_expires');
+		$customer->data['customer_reset_password_expires'] = z::mysqlTimestamp($expires);
+		$customer->save();
+
+		$subject = $this->getEmailSubject($this->z->core->t('Registration'));
+		$activation_link = sprintf('%s?email=%s&activation_token=%s', $this->z->core->url('activate'), $customer->val('customer_email'), $activation_token);
+		$this->z->emails->renderAndSend($email, $subject, 'registration', ['customer' => $customer, 'activation_link' => $activation_link]);
+		$this->z->messages->success($this->z->core->t('Thank you for your registration on our website.'));
+		$this->z->messages->warning($this->z->core->t('An e-mail was sent to your address with account activation instructions.'));
+
 	}
 
 	public function isValidPassword($password) {

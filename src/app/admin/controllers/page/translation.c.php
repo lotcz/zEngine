@@ -9,7 +9,7 @@
 				'label' => 'Language',
 				'type' => 'select',
 				'select_table' => 'languages',
-				'select_data' => LanguageModel::all($this->db),
+				'select_data' => LanguageModel::all($this->z->db),
 				'select_id_field' => 'language_id',
 				'select_label_field' => 'language_name'
 			],

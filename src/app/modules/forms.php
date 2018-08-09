@@ -14,7 +14,7 @@ class formsModule extends zModule {
 	public function onEnabled() {
 		$this->xsrf_enabled = $this->getConfigValue('xsrf_enabled', $this->xsrf_enabled);
 		$this->xsrf_token_expires = $this->getConfigValue('xsrf_token_expires', $this->xsrf_token_expires);
-		$this->requireModule('mysql');
+		$this->requireModule('db');
 		$this->requireModule('messages');
 		$this->requireModule('resources');
 		$this->z->core->includeJS('resources/forms.js');
@@ -102,10 +102,10 @@ class formsModule extends zModule {
 	}
 
 	public function processForm($form, $model_class_name) {
-		$model = new $model_class_name($this->z->core->db);
+		$model = new $model_class_name($this->z->db);
 		if (z::isPost()) {
 
-			if ($this->z->moduleEnabled('images')) {
+			if ($this->z->isModuleEnabled('images')) {
 				$form->images_module = $this->z->images;
 			}
 
@@ -139,7 +139,7 @@ class formsModule extends zModule {
 								$onAfterUpdate = $form->onAfterUpdate;
 								$onAfterUpdate($this->z, $form, $model);
 							}
-							$this->z->core->redirectBack();
+							$this->z->core->redirectBack($form->ret);
 						}
 					} else {
 						$this->z->messages->error('Some fields in the form don\'t validate! Form cannot be saved.');
@@ -175,7 +175,7 @@ class formsModule extends zModule {
 			$this->z->core->setPageTitle($this->z->core->t($form->entity_title) . ': ' . $this->z->core->t('New'));
 		}
 
-		$form->prepare($this->z->core->db, $model);
+		$form->prepare($this->z->db, $model);
 
 		// add XSRF token
 		if ($this->xsrf_enabled || $form->xsrf_enabled) {

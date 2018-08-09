@@ -7,7 +7,7 @@ class OrderModel extends zModel {
 
 	public function loadProducts() {
 		$this->products = OrderProductModel::select(
-		/* db */		$this->db, 
+		/* db */		$this->z->db, 
 		/* table */		'viewOrderProducts', 
 		/* where */		'order_product_order_id = ?',
 		/* bindings */	[ $this->ival('order_id') ],
@@ -21,7 +21,7 @@ class OrderModel extends zModel {
 		$now = new DateTime();
 		$year = $now->format("Y");
 		$month = $now->format("m");
-		$count = zSqlQuery::getRecordCount(
+		$count = z::getRecordCount(
 			$db, 
 			'orders', 
 			'where year(order_created) = ? and month(order_created) = ?', 

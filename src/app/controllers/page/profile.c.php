@@ -25,6 +25,6 @@
 			$customer->set('customer_name', z::get('customer_name'));
 			$customer->save();
 		}
-		$form->prepare($this->db, $customer);
+		$form->prepare($this->z->db, $customer);
 		$this->setData('form', $form);
 	}

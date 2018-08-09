@@ -6,7 +6,7 @@ class DeliveryTypeModel extends zModel {
 	public $id_name = 'delivery_type_id';
 	
 	public function loadAllowedPaymentTypes() {
-		$this->allowed_payment_types = zModel::select($this->db, 'viewAllowedPaymentTypes', 'allowed_payment_type_delivery_type_id = ?', [ $this->val('delivery_type_id') ]);
+		$this->allowed_payment_types = zModel::select($this->z->db, 'viewAllowedPaymentTypes', 'allowed_payment_type_delivery_type_id = ?', [ $this->val('delivery_type_id') ]);
 		return $this->allowed_payment_types;
 	}	
 	
@@ -16,7 +16,7 @@ class DeliveryTypeModel extends zModel {
 	
 	static function loadDefault($db) {
 		$d = new DeliveryType($db);
-		$d->loadSingleFiltered('delivery_type_is_default = ?', 1);
+		$d->loadSingle('delivery_type_is_default = ?', 1);
 		return $d;
 	}
 		

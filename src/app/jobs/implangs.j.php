@@ -5,7 +5,7 @@
 	$db = $this->z->core->db;
 	$languages = LanguageModel::all($db);
 
-	zSqlQuery::executeSQL($db, 'delete from translations');
+	z::executeSQL($db, 'delete from translations');
 
 	foreach ($languages as $language) {
 		$language_data = $this->z->i18n->loadLanguageData($language->val('language_code'));

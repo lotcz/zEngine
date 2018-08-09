@@ -9,7 +9,6 @@ require_once __DIR__ . '/../models/currency.m.php';
 */
 class i18nModule extends zModule {
 
-	private $db = null;
 	public $language_cookie_name = 'language';
 	public $currency_cookie_name = 'currency';
 	public $language_data = null;
@@ -21,18 +20,16 @@ class i18nModule extends zModule {
 	public function onEnabled() {
 		$this->requireModule('cookies');
 		$this->requireModule('resources');
-		$this->requireModule('mysql');
-		$this->db = $this->z->core->db;
+		$this->requireModule('db');
 
 		$this->language_cookie_name = $this->getConfigValue('language_cookie_name', $this->language_cookie_name);
 		$this->currency_cookie_name = $this->getConfigValue('currency_cookie_name', $this->currency_cookie_name);
-
 	}
 
-	public function onInit() {
+	public function onBeforeInit() {
 
-		$this->available_currencies = CurrencyModel::all($this->db);
-		$this->available_languages = LanguageModel::all($this->db);
+		$this->available_currencies = CurrencyModel::all($this->z->db);
+		$this->available_languages = LanguageModel::all($this->z->db);
 
 		if (!$this->getConfigValue('force_default_language')) {
 
@@ -44,12 +41,12 @@ class i18nModule extends zModule {
 				$this->selectLanguageByID($_COOKIE[$this->language_cookie_name]);
 			}
 
-			if ($this->z->moduleEnabled('custauth') && $this->z->custauth->isAuth()) {
+			if ($this->z->isModuleEnabled('custauth') && $this->z->custauth->isAuth()) {
 				// update customer default currency if different from cookie values
 				if (isset($this->selected_currency)) {
 					if ($this->z->custauth->customer->ival('customer_currency_id') != $this->selected_currency->ival('currency_id')) {
 						$this->z->custauth->customer->set('customer_currency_id', $this->selected_currency->ival('currency_id'));
-						$this->z->custauth->customer->save($this->db);
+						$this->z->custauth->customer->save($this->z->db);
 					}
 				} else {
 					// use saved customer defaults otherwise
@@ -60,7 +57,7 @@ class i18nModule extends zModule {
 				if (isset($this->selected_language)) {
 					if ($this->z->custauth->customer->ival('customer_language_id') != $this->selected_language->ival('language_id')) {
 						$this->z->custauth->customer->set('customer_language_id', $this->selected_language->ival('language_id'));
-						$this->z->custauth->customer->save($this->db);
+						$this->z->custauth->customer->save($this->z->db);
 					}
 				} else {
 					// use saved customer defaults otherwise
@@ -81,7 +78,7 @@ class i18nModule extends zModule {
 		if (!isset($this->selected_language)) {
 			$this->selectLanguageByCode($this->getConfigValue('default_language'));
 		}
-		
+
 		// include necessary JS
 		$this->z->core->includeJS('resources/i18n.js');
 		$this->z->core->insertJS(
@@ -124,21 +121,21 @@ class i18nModule extends zModule {
 	}
 
 	public function loadLanguageData($lang_code) {
-                
+
 		// zEngine localization
 		$z_lang_data = [];
 		$file_path = __DIR__ . '/../lang/' . $lang_code . '.php';
 		if (file_exists($file_path)) {
 			$z_lang_data = include $file_path;
 		}
-        
+
 		// app localization
         $app_lang_data = [];
         $file_path = $this->z->app_dir . 'lang/' . $lang_code . '.php';
 		if (file_exists($file_path)) {
 			$app_lang_data = include $file_path;
 		}
-        
+
         return array_merge($z_lang_data, $app_lang_data);
 	}
 

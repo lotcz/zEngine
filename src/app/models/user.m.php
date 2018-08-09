@@ -10,11 +10,11 @@ class UserModel extends zModel {
 		$where = 'user_login = ? OR user_email = ?';
 		$bindings = [$loginoremail, $loginoremail];
 		$types = 'ss';
-		$this->loadSingleFiltered($where, $bindings, $types);
+		$this->loadSingle($where, $bindings, $types);
 	}
 
 	public function loadPermissions() {
-		$permissions = zModel::select($this->db, 'viewPermissionsByUser', 'user_role_user_id = ?', [ $this->val('user_id') ]);
+		$permissions = zModel::select($this->z->db, 'viewPermissionsByUser', 'user_role_user_id = ?', [ $this->val('user_id') ]);
 		$this->permissions = [];
 		foreach ($permissions as $permission) {
 			$this->permissions[] = $permission->val('permission_name');

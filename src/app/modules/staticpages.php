@@ -8,9 +8,10 @@ require_once __DIR__ . '/../models/static_page.m.php';
 class staticpagesModule extends zModule {
 
 	public function onEnabled() {
+		$this->requireModule('db');
 		$this->requireModule('alias');
 	}
-	
+
 	public function activateEditor() {
 		$this->z->core->includeJS('resources/jhtmlarea/jhtmlarea.min.js');
 		$this->z->core->includeJS('resources/staticpages.js');

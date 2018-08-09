@@ -1,2 +1,2 @@
 <?php
-	$this->setData('sessions', zModel::select($this->db,'viewSessionsStats'));
+	$this->setData('sessions', zModel::select($this->z->db,'viewSessionsStats'));

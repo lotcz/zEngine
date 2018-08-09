@@ -19,7 +19,7 @@ class zForm {
 	public $render_wrapper = false;
 	public $images_module = null;
 	public $xsrf_enabled = false;
-	
+
 	public $onBeforeUpdate = null;
 	public $onAfterUpdate = null;
 	public $onBeforeDelete = null;
@@ -30,6 +30,7 @@ class zForm {
 		$this->action = $action;
 		$this->method = $method;
 		$this->css = $css;
+		$this->ret = z::get('r');
 	}
 
 	public function addField($field) {
@@ -123,7 +124,7 @@ class zForm {
 					$entity = new zModel($db);
 					$entity->table_name = $field->link_table;
 					$filter = sprintf('%s = ?', $field->link_id_field);
-					$entity->loadSingleFiltered($filter, [$this->data->val($field->name)]);
+					$entity->loadSingle($filter, [$this->data->val($field->name)]);
 					$field->link_label = $entity->val($field->link_label_field);
 					$field->link_url = sprintf($field->link_template, $entity->val($field->link_id_field));
 				}

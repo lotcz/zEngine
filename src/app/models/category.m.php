@@ -14,7 +14,7 @@ class CategoryModel extends zModel {
 	
 	public function loadByExtId($id) {
 		$filter = 'category_ext_id = ?';
-		$this->loadSingleFiltered($filter, [$id]);
+		$this->loadSingle($filter, [$id]);
 	}
 	
 	public function findInChildren($id, $column_name = 'category_id') {
@@ -162,7 +162,7 @@ class CategoryModel extends zModel {
 	
 	public function loadChildren() {
 		$sql = 'SELECT * FROM viewCategories WHERE category_parent_id = ? ORDER BY category_name';
-		if ($statement = $this->db->prepare($sql)) {
+		if ($statement = $this->z->db->prepare($sql)) {
 			$statement->bind_param('i', $this->val('category_id'));
 			if ($statement->execute()) {
 				$result = $statement->get_result();
@@ -174,17 +174,17 @@ class CategoryModel extends zModel {
 				}				
 				$statement->close();
 			} else {
-				dbErr($this->table_name, 'execute', $sql, $this->db->error);					
+				dbErr($this->table_name, 'execute', $sql, $this->z->db->error);					
 			}			
 		} else {
-			dbErr($this->table_name, 'prepare', $sql, $this->db->error);				
+			dbErr($this->table_name, 'prepare', $sql, $this->z->db->error);				
 		}		
 	}
 	
 	public function loadParentAlias() {
 		if ($this->ival('category_parent_id') > 0) {
-			$p = new Self($this->db, $this->ival('category_parent_id'));
-			$pa = new AliasModel($this->db, $p->ival('category_alias_id'));
+			$p = new Self($this->z->db, $this->ival('category_parent_id'));
+			$pa = new AliasModel($this->z->db, $p->ival('category_alias_id'));
 			if (!$pa->is_loaded) {		
 				$pa->setUrl($p->getAliasUrl());
 				$pa->data['alias_path'] = $p->getAliasPath();

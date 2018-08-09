@@ -82,10 +82,10 @@ class zTable {
 			$db,
 			$this->name,
 			$this->where,
+			$this->paging->getOrderBy(),
+			$this->paging->getLimit(),
 			$this->bindings,
-			$this->types,
-			$this->paging,
-			$this->orderby
+			$this->types
 		);
 
 	}

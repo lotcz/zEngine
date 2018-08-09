@@ -39,9 +39,9 @@ class coreModule extends zModule {
 	public function onEnabled() {
 		$this->default_app_dir = __DIR__ . '/../';
 		$this->requireModule('errorlog');
-		$this->requireConfig('base_url');
 		$this->app_dir = $this->z->app_dir;
-		$this->base_url = $this->getConfigValue('base_url', $this->base_url);
+		$this->requireConfig('base_url');
+		$this->base_url = $this->getConfigValue('base_url');
 		$this->debug_mode = $this->getConfigValue('debug_mode', $this->debug_mode);
 		$this->error_page = $this->getConfigValue('error_page', $this->error_page);
 		$this->not_found_path = $this->getConfigValue('not_found_path', $this->not_found_path);
@@ -169,7 +169,7 @@ class coreModule extends zModule {
 	* Translate string into current application language.
 	*/
 	public function t($s) {
-		if ($this->z->moduleEnabled('i18n')) {
+		if ($this->z->isModuleEnabled('i18n')) {
 			$t = $this->z->i18n->translate($s);
 		} else {
 			$t = $s;
@@ -188,7 +188,7 @@ class coreModule extends zModule {
 	* return true if there is administrator user authenticated.
 	*/
 	public function isAuth() {
-		return ($this->z->moduleEnabled('auth') && $this->z->auth->isAuth());
+		return ($this->z->isModuleEnabled('auth') && $this->z->auth->isAuth());
 	}
 
 	/**
@@ -204,7 +204,7 @@ class coreModule extends zModule {
 	* return true if there is customer user authenticated.
 	*/
 	public function isCustAuth() {
-		return ($this->z->moduleEnabled('custauth') && $this->z->custauth->isAuth());
+		return ($this->z->isModuleEnabled('custauth') && $this->z->custauth->isAuth());
 	}
 
 	/**
@@ -227,7 +227,7 @@ class coreModule extends zModule {
 	* format money according to selected language and currency.
 	*/
 	public function formatMoney($price) {
-		if ($this->z->moduleEnabled('i18n')) {
+		if ($this->z->isModuleEnabled('i18n')) {
 			return $this->z->i18n->formatMoney($price);
 		} else {
 			return $price;
@@ -238,7 +238,7 @@ class coreModule extends zModule {
 	* convert money into selected currency (from application's default currency with unit value of 1).
 	*/
 	public function convertMoney($price) {
-		if ($this->z->moduleEnabled('i18n')) {
+		if ($this->z->isModuleEnabled('i18n')) {
 			return $this->z->i18n->convertMoney($price);
 		} else {
 			return $price;
@@ -253,7 +253,7 @@ class coreModule extends zModule {
 	}
 
 	public function formatDecimal($number, $decimals = 2) {
-		if ($this->z->moduleEnabled('i18n')) {
+		if ($this->z->isModuleEnabled('i18n')) {
 			return $this->z->i18n->selected_language->formatDecimal($number, $decimals);
 		} else {
 			return $number;
@@ -261,7 +261,7 @@ class coreModule extends zModule {
 	}
 
 	public function formatInteger($number) {
-		if ($this->z->moduleEnabled('i18n')) {
+		if ($this->z->isModuleEnabled('i18n')) {
 			return $this->z->i18n->selected_language->formatInteger($number);
 		} else {
 			return $number;
@@ -269,7 +269,7 @@ class coreModule extends zModule {
 	}
 
 	public function formatDate($date) {
-		if ($this->z->moduleEnabled('i18n')) {
+		if ($this->z->isModuleEnabled('i18n')) {
 			return $this->z->i18n->selected_language->formatDate($date);
 		} else {
 			return $date;
@@ -277,7 +277,7 @@ class coreModule extends zModule {
 	}
 
 	public function formatDatetime($date) {
-		if ($this->z->moduleEnabled('i18n')) {
+		if ($this->z->isModuleEnabled('i18n')) {
 			return $this->z->i18n->selected_language->formatDatetime($date);
 		} else {
 			return $date;

@@ -7,10 +7,10 @@
 	$customer_email = z::get('email');
 
 	if (isset($reset_token) && isset($customer_email)) {
-		$customer = new CustomerModel($this->db);
+		$customer = new CustomerModel($this->z->db);
 		$customer->loadByEmail($customer_email);
 
-		$token_not_expired = ($customer->val('customer_reset_password_expires') > zSqlQuery::mysqlTimestamp(time()));
+		$token_not_expired = ($customer->val('customer_reset_password_expires') > z::mysqlTimestamp(time()));
 		$token_valid = custauthModule::verifyPassword($reset_token, $customer->val('customer_reset_password_hash'));
 
 		if ($customer->is_loaded && $token_not_expired && $token_valid) {

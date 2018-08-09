@@ -13,9 +13,11 @@ class zEngine {
   public $app_dir = '';
 	public $modules = [];
 
-	function __construct($app_dir = 'app/') {
+	function __construct($app_dir = 'app/', $modules = ['core']) {
 		$this->app_dir = $app_dir;
-		$this->enableModule('core');
+		foreach ($modules as $module_name) {
+			$this->enableModule($module_name);
+		}
 	}
 
 	/**
@@ -23,7 +25,7 @@ class zEngine {
 	*/
 	public function enableModule($module_name) {
 		try {
-			if (!$this->moduleEnabled($module_name)) {
+			if (!$this->isModuleEnabled($module_name)) {
 				require_once __DIR__ . "/app/modules/$module_name.php";
 				$module_class = $module_name . 'Module';
 				$module = new $module_class($this);
@@ -49,7 +51,7 @@ class zEngine {
 	/**
 	* Returns true if module is enabled.
 	*/
-	public function moduleEnabled($module_name) {
+	public function isModuleEnabled($module_name) {
 		return isset($this->modules[$module_name]);
 	}
 
@@ -71,8 +73,8 @@ class zEngine {
 			}
 
 			foreach ($this->modules as $module) {
-				if (method_exists($module, 'onInit')) {
-					$module->onInit();
+				if (method_exists($module, 'onBeforeInit')) {
+					$module->onBeforeInit();
 				}
 			}
 
