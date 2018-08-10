@@ -16,6 +16,9 @@ class dbModule extends zModule {
 		$this->requireConfig();
 	}
 
+	/**
+	* @return PDO
+	*/
 	private function getConnection() {
 		if (!isset($this->connection)) {
 			$this->connection = new PDO(
@@ -38,18 +41,40 @@ class dbModule extends zModule {
 		$this->connection = null;
 	}
 
+	/**
+	* Executes sql query.
+	* @param String $sql Sql query to execute. Replace binded variables with "?".
+	* @param Array $bindings Array of values to be subject to binding.
+	* @param Array $types Array of PDO type specifications for binding values.
+	* @return PDOStatement
+	*/
 	public function executeQuery($sql, $bindings = null, $types = null) {
-		$stmt = $this->getConnection()->prepare($sql);
+		$connection = $this->getConnection();
+		$stmt = $connection->prepare($sql);
 		if (isset($bindings) && sizeof($bindings) > 0) {
 			for($i = 0, $max = sizeof($bindings); $i < $max; $i++) {
 				$stmt->bindValue($i+1, $bindings[$i], $types[$i]);
 			}
 		}
-	 	$stmt->execute();
-		return $stmt;
+	 	if ($stmt->execute()) {
+			return $stmt;
+		} else {
+			throw new Exception(sprintf('execute', $sql, $connection->errorInfo()));
+		}
 	}
 
-	public function executeSelectQuery($table_name, $columns = '*', $where = null, $orderby = null, $limit = null, $bindings = null, $types = null) {
+	/**
+	* Executes select query.
+	* @param String $table_name Name of the table.
+	* @param Array $columns Array of column names to be selected.
+	* @param String $where WHERE part of sql query with ? placeholders.
+	* @param String $ordery ORDER BY part of sql query. Comma separated list of columns.
+	* @param String $limit LIMIT part of sql query.
+	* @param Array $bindings Array of values to be subject to binding.
+	* @param Array $types Array of PDO type specifications for binding values.
+	* @return PDOStatement
+	*/
+	public function executeSelectQuery($table_name, $columns = ['*'], $where = null, $orderby = null, $limit = null, $bindings = null, $types = null) {
 		$whereSQL = '';
 		if (isset($where)) {
 			$whereSQL = sprintf('WHERE %s', $this->where);
@@ -65,10 +90,19 @@ class dbModule extends zModule {
 			$limitSQL = sprintf('LIMIT %s', $limit);
 		}
 
-		$sql = sprintf('SELECT %s FROM %s %s %s %s', $columns, $table_name, $whereSQL, $orderbySQL, $limitSQL);
+		$sql = sprintf('SELECT %s FROM %s %s %s %s', implode(',', $columns), $table_name, $whereSQL, $orderbySQL, $limitSQL);
 		return $this->executeQuery($sql, $bindings, $types);
 	}
 
+	/**
+	* Executes update query.
+	* @param String $table_name Name of the table.
+	* @param Array $columns Array of column names to be selected.
+	* @param String $where WHERE part of sql query with ? placeholders.
+	* @param Array $bindings Array of values to be subject to binding.
+	* @param Array $types Array of PDO type specifications for binding values.
+	* @return PDOStatement
+	*/
 	public function executeUpdateQuery($table_name, $columns, $where, $bindings, $types) {
 		$whereSQL = sprintf('WHERE %s', $where);
 
@@ -81,6 +115,14 @@ class dbModule extends zModule {
 		return $this->executeQuery($sql, $bindings, $types);
 	}
 
+	/**
+	* Executes insert query.
+	* @param String $table_name Name of the table.
+	* @param Array $columns Array of column names to be selected.
+	* @param Array $bindings Array of values to be subject to binding.
+	* @param Array $types Array of PDO type specifications for binding values.
+	* @return PDOStatement
+	*/
 	public function executeInsertQuery($table_name, $columns, $bindings, $types) {
 		$values = [];
 
@@ -92,14 +134,25 @@ class dbModule extends zModule {
 		return $this->executeQuery($sql, $bindings, $types);
 	}
 
+	/**
+	* @return string
+	*/
 	public function lastInsertId() {
 		return $this->getConnection()->lastInsertId();
 	}
 
+	/**
+	* Executes delete query.
+	* @param String $table_name Name of the table.
+	* @param String $where WHERE part of sql query with ? placeholders.
+	* @param Array $bindings Array of values to be subject to binding.
+	* @param Array $types Array of PDO type specifications for binding values.
+	* @return PDOStatement
+	*/
 	public function executeDeleteQuery($table_name, $where = null, $bindings = null, $types = null) {
 		$whereSQL = '';
 		if (isset($where)) {
-			$whereSQL = sprintf('WHERE %s', $this->where);
+			$whereSQL = sprintf('WHERE %s', $where);
 		}
 
 		$sql = sprintf('DELETE FROM %s %s', $table_name, $whereSQL);

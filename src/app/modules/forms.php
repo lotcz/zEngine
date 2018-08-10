@@ -164,7 +164,7 @@ class formsModule extends zModule {
 				$onBeforeDelete = $form->onBeforeDelete;
 				$onBeforeDelete($this->z, $form, $model_id);
 			}
-			if ($model->deleteById($model_id)) {
+			if ($model->delete($model_id)) {
 				if ($form->onAfterDelete !== null) {
 					$onAfterDelete = $form->onAfterDelete;
 					$onAfterDelete($this->z, $form, $model_id);

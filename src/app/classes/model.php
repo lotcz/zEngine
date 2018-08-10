@@ -78,7 +78,7 @@ class zModel {
 	}
 
 	static function select($db, $table_name, $where = null, $orderby = null, $limit = null, $bindings = null, $types = null) {
-		$statement = $db->executeSelectQuery($table_name, '*', $where, $orderby, $limit, $bindings, $types);
+		$statement = $db->executeSelectQuery($table_name, ['*'], $where, $orderby, $limit, $bindings, $types);
 		$list = [];
 		$class = get_called_class();
 		while ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
@@ -123,7 +123,7 @@ class zModel {
 		if (!isset($id)) {
 			$id = $this->ival($this->id_name);
 		}
-		$this->db->executeDeleteQuery($this->table_name, sprintf('%s = ?', $this->id_name), [$id], [PDO::PARAM_INT]);
+		return $this->db->executeDeleteQuery($this->table_name, sprintf('%s = ?', $this->id_name), [$id], [PDO::PARAM_INT]);
 	}
 
 	static function deleteById(dbModule $db, int $id) {

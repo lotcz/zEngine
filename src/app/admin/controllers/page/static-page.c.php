@@ -4,7 +4,7 @@
 
 	$onAfterUpdate = function($z, $form, $static_page) {
 		// update alias
-		$a = new AliasModel($z->core->db, $static_page->ival('static_page_alias_id'));
+		$a = new AliasModel($z->db, $static_page->ival('static_page_alias_id'));
 		$page_need_update = !$a->is_loaded;
 
 		$a->setUrl($static_page->getAliasUrl());
@@ -22,7 +22,7 @@
 		$static_page = new StaticPageModel($z->core->db, $static_page_id);
 		$alias_id = $static_page->ival('static_page_alias_id');
 		if (isset($alias_id)) {
-			AliasModel::del($z->core->db, $alias_id);
+			AliasModel::deleteById($z->db, $alias_id);
 		}
 	};
 
