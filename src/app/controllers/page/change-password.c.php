@@ -2,7 +2,7 @@
 	$this->requireModule('forms');
 	$this->setPageTitle('Change Password');
 
-	if (!($this->isCustAuth() && !$this->z->custauth->isAnonymous())) {
+	if (!($this->z->auth->isAuth() && !$this->z->auth->isAnonymous())) {
 		$this->redirect('login');
 	}
 
@@ -27,13 +27,13 @@
 		$password = z::get('password');
 		$password_confirm = z::get('password_confirm');
 
-		if ($this->z->custauth->isValidPassword($password)) {
+		if ($this->z->auth->isValidPassword($password)) {
 
 			if ($password == $password_confirm) {
 
-				$customer = $this->getCustomer();
-				$customer->data['customer_password_hash'] = $this->z->custauth->hashPassword($password);
-				$customer->save();
+				$user = $this->z->auth->user;
+				$user->data['user_password_hash'] = $this->z->auth->hashPassword($password);
+				$user->save();
 				$this->message('Your password was successfully changed.', 'success');
 
 			} else {

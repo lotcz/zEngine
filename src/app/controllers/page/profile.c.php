@@ -2,29 +2,29 @@
 	$this->requireModule('forms');
 	$this->setPageTitle('User Profile');
 
-	if (!$this->isCustAuth() || $this->z->custauth->isAnonymous()) {
+	if (!($this->auth->isAuth() && !$this->z->auth->isAnonymous())) {
 		$this->redirect('login');
 	} else {
-		$form = new zForm('customer');
+		$form = new zForm('user');
 		$form->type = '';
 		$form->add([
 			[
-			  'name' => 'customer_email',
+			  'name' => 'user_email',
 			  'label' => 'E-mail',
 			  'type' => 'text',
 				'disabled' => 'disabled'
 			],
 			[
-			'name' => 'customer_name',
+			'name' => 'user_name',
 			'label' => 'Full name',
 			'type' => 'text'
 			]
 	 	]);
-		$customer = $this->getCustomer();
+		$user = $this->z->auth->user;
 		if (z::isPost()) {
-			$customer->set('customer_name', z::get('customer_name'));
-			$customer->save();
+			$user->set('user_name', z::get('user_name'));
+			$user->save();
 		}
-		$form->prepare($this->z->db, $customer);
+		$form->prepare($this->z->db, $user);
 		$this->setData('form', $form);
 	}

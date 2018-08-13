@@ -33,7 +33,7 @@ CREATE TABLE `user` (
     REFERENCES `language` (`language_id`)
 ) ENGINE = InnoDB;
 
-DROP TABLE IF EXISTS `user_session`;
+DROP TABLE IF EXISTS `session`;
 
 CREATE TABLE `user_session` (
   `user_session_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,

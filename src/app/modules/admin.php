@@ -60,6 +60,19 @@ class adminModule extends zModule {
 		}
 	}
 
+	/**
+	*
+	* @return bool
+	*/
+	public function login($login_or_email, $password) : bool {
+		if ($this->z->auth->login($login_or_email, $password)) {
+			$this->authentication_checked = false;
+			return $this->isAuth();
+		} else {
+			return false;
+		}
+	}
+
 	public function onEnabled() {
 		$this->base_url = $this->getConfigValue('admin_area_base_url', $this->base_url);
 		$this->base_dir = $this->getConfigValue('admin_area_base_dir', $this->base_dir);
@@ -231,7 +244,7 @@ class adminModule extends zModule {
 	public function createActiveAdminAccount($full_name, $login, $email, $password) {
 		$user = $this->auth->createActiveUser($full_name, $login, $email, $password);
 		$admin = new AdminModel($this->z->db);
-		$admin->set('admin_user_id', $user->val('user_id'));
+		$admin->set('admin_user_id', $user->ival('user_id'));
 		$admin->save();
 	}
 

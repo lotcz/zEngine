@@ -41,16 +41,20 @@ class formsModule extends zModule {
 		return $is_valid;
 	}
 
+	public function fieldValidation($validation_type, $value, $param = null) {
+		$method = 'zForm::validate_' .$validation_type;
+		return $method($value, $param);
+	}
+
 	public function validateField($field, $value) {
 		$is_valid = true;
 		if (isset($field->validations) && count($field->validations) > 0) {
 			foreach ($field->validations as $validation) {
-				$method = 'zForm::validate_' . $validation['type'];
 				$validation_param = null;
 				if (isset($validation['param'])) {
 					$validation_param = $validation['param'];
 				}
-				if (!$method($value, $validation_param)) {
+				if (!$this->fieldValidation($validation['type'], $value, $validation_param)) {
 					$this->z->messages->error($this->z->core->t('Value of field %s is not valid: %s', $field->name, $this->getValidationMessage($validation)));
 					$is_valid = false;
 				}
@@ -63,30 +67,20 @@ class formsModule extends zModule {
 		$token_value = z::generateRandomToken(50);
 		$token_hash = z::createHash($token_value);
 		$expires = time() + $this->xsrf_token_expires;
-		if ($this->z->core->isAuth()) {
-			$customer_session_id = null;
+		if ($this->z->auth->isAuth()){
 			$user_session_id = $this->z->auth->session->ival('user_session_id');
 			$ip = $this->z->auth->session->val('user_session_ip');
-		} elseif ($this->z->core->isCustAuth()){
-			$user_session_id = null;
-			$customer_session_id = $this->z->custauth->session->ival('customer_session_id');
-			$ip = $this->z->custauth->session->val('customer_session_ip');
 		} else {
-			throw new Exception('There is neither customer or admin session! Cannot create form token.');
+			throw new Exception('There is no session! Cannot create form token.');
 		}
-		$token = FormXSRFTokenModel::createToken($this->z->core->db, $customer_session_id, $user_session_id, $ip, $form_name, $token_hash, $expires);
+		$token = FormXSRFTokenModel::createToken($this->z->db, $user_session_id, $ip, $form_name, $token_hash, $expires);
 		return sprintf('%d-%s', $token->ival('form_xsrf_token_id'), $token_value);
 	}
 
 	public function verifyXSRFTokenHash($form_name, $token_raw_value) {
-		if ($this->z->core->isAuth()) {
-			$customer_session_id = null;
+		if ($this->z->auth->isAuth()) {
 			$user_session_id = $this->z->auth->session->ival('user_session_id');
 			$ip = $this->z->auth->session->val('user_session_ip');
-		} elseif ($this->z->core->isCustAuth()){
-			$user_session_id = null;
-			$customer_session_id = $this->z->custauth->session->ival('customer_session_id');
-			$ip = $this->z->custauth->session->val('customer_session_ip');
 		} else {
 			return false;
 		}
@@ -95,7 +89,7 @@ class formsModule extends zModule {
 		if (count($arr) == 2) {
 			$token_id = intval($arr[0]);
 			$token_value = $arr[1];
-			return FormXSRFTokenModel::verifyToken($this->z->core->db, $token_id, $customer_session_id, $user_session_id, $ip, $form_name, $token_value);
+			return FormXSRFTokenModel::verifyToken($this->z->core->db, $token_id, $user_session_id, $ip, $form_name, $token_value);
 		} else {
 			return false;
 		}

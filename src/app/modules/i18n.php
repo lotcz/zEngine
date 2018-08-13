@@ -40,27 +40,16 @@ class i18nModule extends zModule {
 				$this->selectLanguageByID($_COOKIE[$this->language_cookie_name]);
 			}
 
-			if ($this->z->isModuleEnabled('custauth') && $this->z->custauth->isAuth()) {
-				// update customer default currency if different from cookie values
-				if (isset($this->selected_currency)) {
-					if ($this->z->custauth->customer->ival('customer_currency_id') != $this->selected_currency->ival('currency_id')) {
-						$this->z->custauth->customer->set('customer_currency_id', $this->selected_currency->ival('currency_id'));
-						$this->z->custauth->customer->save($this->z->db);
-					}
-				} else {
-					// use saved customer defaults otherwise
-					$this->selectCurrencyByID($this->z->custauth->ival('customer_currency_id'));
-				}
-
+			if ($this->z->isModuleEnabled('auth') && $this->z->auth->isAuth()) {
 				// update customer default language if different from cookie values
 				if (isset($this->selected_language)) {
-					if ($this->z->custauth->customer->ival('customer_language_id') != $this->selected_language->ival('language_id')) {
-						$this->z->custauth->customer->set('customer_language_id', $this->selected_language->ival('language_id'));
-						$this->z->custauth->customer->save($this->z->db);
+					if ($this->z->auth->user->ival('user_language_id') != $this->selected_language->ival('language_id')) {
+						$this->z->auth->user->set('user_language_id', $this->selected_language->ival('language_id'));
+						$this->z->auth->user->save();
 					}
 				} else {
 					// use saved customer defaults otherwise
-					$this->selectLanguageByID($this->z->custauth->ival('customer_language_id'));
+					$this->selectLanguageByID($this->z->auth->user->ival('user_language_id'));
 				}
 			}
 
@@ -129,13 +118,14 @@ class i18nModule extends zModule {
 		}
 
 		// app localization
-        $app_lang_data = [];
-        $file_path = $this->z->app_dir . 'lang/' . $lang_code . '.php';
+    $app_lang_data = [];
+    $file_path = $this->z->app_dir . 'lang/' . $lang_code . '.php';
+
 		if (file_exists($file_path)) {
 			$app_lang_data = include $file_path;
 		}
 
-        return array_merge($z_lang_data, $app_lang_data);
+    return array_merge($z_lang_data, $app_lang_data);
 	}
 
 	public function loadLanguage($lang_code) {
