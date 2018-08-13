@@ -42,4 +42,29 @@ class appModule extends zModule {
 		}
 	}
 
+	public function installAllModules() {
+		$installed_modules = [];
+		foreach ($this->modules as $module_name) {
+			$this->installModule($module_name, $installed_modules);
+		}
+		foreach ($this->getConfigValue('also_install', []) as $module_name) {
+			$this->installModule($module_name, $installed_modules);
+		}
+	}
+
+	private function installModule($module_name, &$installed_modules) {
+		if (!isset($installed_modules[$module_name])) {
+			$this->requireModule($module_name);
+			$module = $this->z->$module_name;
+			foreach ($module->depends_on as $depend_module_name) {
+				$this->installModule($depend_module_name, $installed_modules);
+			}
+			foreach ($module->also_install as $also_module_name) {
+				$this->installModule($also_module_name, $installed_modules);
+			}
+			$module->install();
+			$installed_modules[$module_name] = true;
+		}
+	}
+
 }

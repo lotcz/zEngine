@@ -2,9 +2,6 @@
 
 class FormXSRFTokenModel extends zModel {
 
-	public $table_name = 'form_xsrf_tokens';
-	public $id_name = 'form_xsrf_token_id';
-	
 	static function createToken($db, $customer_session_id, $user_session_id, $ip, $form_name, $token_hash, $expires) {
 		$token = new FormXSRFTokenModel($db);
 		$token->set('form_xsrf_token_user_session_id', $user_session_id);
@@ -16,7 +13,7 @@ class FormXSRFTokenModel extends zModel {
 		$token->save();
 		return $token;
 	}
-	
+
 	static function verifyToken($db, $token_id, $customer_session_id, $user_session_id, $ip, $form_name, $token_value) {
 		$token_verified = false;
 		$token = new FormXSRFTokenModel($db, $token_id);
@@ -36,8 +33,8 @@ class FormXSRFTokenModel extends zModel {
 			}
 		} else {
 			$token_verified = false;
-		}		
+		}
 		return $token_verified;
 	}
-	
+
 }

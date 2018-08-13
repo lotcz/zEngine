@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../models/admin.m.php';
+
 /**
 * Module that handles administration area.
 */
@@ -28,6 +30,36 @@ class adminModule extends zModule {
 
 	public $menu = null;
 
+	private $authentication_checked = false;
+
+	public $admin = null;
+
+	/**
+	* Return true if an admin is authenticated.
+	*/
+	public function isAuth() {
+		$this->checkAuthentication();
+		return isset($this->admin);
+	}
+
+	/**
+	* Verifies if there is an admin logged in.
+	* Call this only once in the beginning of request processing and then call to isAuth() method to check whether admin is authenticated.
+	*/
+	private function checkAuthentication() {
+		if (!$this->authentication_checked) {
+			$this->admin = null;
+			if ($this->z->auth->isAuth()) {
+				$admin = new AdminModel($this->z->db);
+				$admin->loadByUserId($this->z->auth->user->ival('user_id'));
+				if ($admin->is_loaded) {
+					$this->admin = $admin;
+				}
+			}
+			$this->authentication_checked = true;
+		}
+	}
+
 	public function onEnabled() {
 		$this->base_url = $this->getConfigValue('admin_area_base_url', $this->base_url);
 		$this->base_dir = $this->getConfigValue('admin_area_base_dir', $this->base_dir);
@@ -44,15 +76,13 @@ class adminModule extends zModule {
 			$this->requireModule('tables');
 			$this->is_login_page = (count($this->z->core->path) == 1 && ($this->z->core->path[0] == $this->login_url));
 			$this->is_public_page = (count($this->z->core->path) == 1 && (in_array($this->z->core->path[0], $this->public_pages)));
-			if (!$this->is_public_page && !$this->z->auth->isAuth()) {
+			if (!$this->is_public_page && !$this->isAuth()) {
 				$this->z->core->path = [$this->login_url];
-			} else if ($this->is_login_page && $this->z->auth->isAuth()) {
+			} else if ($this->is_login_page && $this->isAuth()) {
 				$this->z->core->path = [$this->base_url];
 			}
 		}
-
 		$this->initializeAdminMenu();
-
 	}
 
 	public function getAdminAreaURL($page) {
@@ -60,7 +90,7 @@ class adminModule extends zModule {
 	}
 
 	/**
-	* Returns basic admin menu including users, languages etc. based on enabled modules
+	* Initializes basic admin menu including users, languages etc. based on enabled modules
 	*/
 	private function initializeAdminMenu() {
 		$menu = new zMenu($this->getAdminAreaURL(''), $this->z->core->getData('site_title'));
@@ -73,17 +103,13 @@ class adminModule extends zModule {
 			//standard admin menu
 			if ($this->getConfigValue('show_default_menu', false)) {
 				$submenu = $menu->addSubmenu('Administration');
-				$submenu->addItem('admin/static-pages', 'Static pages');
-				$submenu->addItem('admin/customers', 'Customers');
-				$submenu->addItem('admin/users', 'Administrators');
-				$submenu->addItem('admin/roles', 'Roles');
-				$submenu->addItem('admin/permissions', 'Permissions');
+				$submenu->addItem('admin/users', 'Users');
+				$submenu->addItem('admin/administrators', 'Administrators');
 				$submenu->addSeparator();
 				$submenu->addHeader('Advanced');
 				$submenu->addItem('admin/aliases', 'Aliases');
 				$submenu->addItem('admin/languages', 'Languages');
 				$submenu->addItem('admin/currencies', 'Currencies');
-				$submenu->addItem('admin/translations', 'Translations');
 				$submenu->addItem('admin/ip-failed-attempts', 'Failed login attempts');
 				$submenu->addItem('admin/info', 'Server Info');
 				$submenu->addItem('admin/about', 'About');
@@ -200,28 +226,13 @@ class adminModule extends zModule {
 	}
 
 	/**
-	* Create and activates admin account. Used for db initialization.
+	* Create and activate admin account. Used for db initialization.
 	*/
-	public function createAdminAccount($login, $password) {
-		$admin = new CustomerModel($this->z->db);
-		$customer->data['customer_name'] = $full_name;
-		$customer->data['customer_email'] = $email;
-		$customer->data['customer_state'] = CustomerModel::customer_state_waiting_for_activation;
-		$customer->data['customer_language_id'] = $this->z->i18n->selected_language->val('language_id');
-		$customer->data['customer_currency_id'] = $this->z->i18n->selected_currency->val('currency_id');
-		$customer->data['customer_password_hash'] = $this->z->custauth->hashPassword($password);
-		$activation_token = $this->z->custauth->generateAccountActivationToken();
-		$customer->data['customer_reset_password_hash'] = $this->z->custauth->hashPassword($activation_token);
-		$expires = time() + $this->z->custauth->getConfigValue('reset_password_expires');
-		$customer->data['customer_reset_password_expires'] = z::mysqlTimestamp($expires);
-		$customer->save();
-
-		$subject = $this->getEmailSubject($this->z->core->t('Registration'));
-		$activation_link = sprintf('%s?email=%s&activation_token=%s', $this->z->core->url('activate'), $customer->val('customer_email'), $activation_token);
-		$this->z->emails->renderAndSend($email, $subject, 'registration', ['customer' => $customer, 'activation_link' => $activation_link]);
-		$this->z->messages->success($this->z->core->t('Thank you for your registration on our website.'));
-		$this->z->messages->warning($this->z->core->t('An e-mail was sent to your address with account activation instructions.'));
-
+	public function createActiveAdminAccount($full_name, $login, $email, $password) {
+		$user = $this->auth->createActiveUser($full_name, $login, $email, $password);
+		$admin = new AdminModel($this->z->db);
+		$admin->set('admin_user_id', $user->val('user_id'));
+		$admin->save();
 	}
 
 }

@@ -51,4 +51,11 @@ class zModule {
 		return $ret_val;
 	}
 
+	public function install() {
+		$sql_file = __DIR__ . '/../../../install/' . $this->name . '.sql';
+		if (file_exists($sql_file)) {
+			$this->z->db->executeFile($sql_file);
+		}
+	}
+
 }

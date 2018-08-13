@@ -185,38 +185,6 @@ class coreModule extends zModule {
 	}
 
 	/**
-	* return true if there is administrator user authenticated.
-	*/
-	public function isAuth() {
-		return ($this->z->isModuleEnabled('auth') && $this->z->auth->isAuth());
-	}
-
-	/**
-	* return authenticated administrator user .
-	*/
-	public function getUser() {
-		if ($this->isAuth()) {
-			return $this->z->auth->user;
-		}
-	}
-
-	/**
-	* return true if there is customer user authenticated.
-	*/
-	public function isCustAuth() {
-		return ($this->z->isModuleEnabled('custauth') && $this->z->custauth->isAuth());
-	}
-
-	/**
-	* return authenticated customer user .
-	*/
-	public function getCustomer() {
-		if ($this->isCustAuth()) {
-			return $this->z->custauth->customer;
-		}
-	}
-
-	/**
 	* send new message into messages queue.
 	*/
 	public function message($text, $type = 'info') {

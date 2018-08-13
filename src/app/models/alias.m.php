@@ -2,9 +2,6 @@
 
 class AliasModel extends zModel {
 
-	public $table_name = 'aliases';
-	public $id_name = 'alias_id';
-
 	public function loadByUrl($url) {
 		$filter = 'alias_url = ?';
 		$this->loadSingle($filter, [$url]);

@@ -5,11 +5,12 @@ require_once __DIR__ . '/../models/session.m.php';
 require_once __DIR__ . '/../models/ip_failed.m.php';
 
 /**
-* Module that handles authentication for administration area.
+* Module that handles user authentication.
 */
 class authModule extends zModule {
 
 	public $depends_on = ['db', 'cookies', 'messages'];
+	public $also_install = ['i18n'];
 
 	private $authentication_checked = false;
 
@@ -28,7 +29,7 @@ class authModule extends zModule {
 	}
 
 	/**
-	* Return true if administrator is authenticated.
+	* Return true if a user is authenticated.
 	*/
 	public function isAuth() {
 		$this->checkAuthentication();
@@ -36,19 +37,49 @@ class authModule extends zModule {
 	}
 
 	/**
-	* Return true if authenticated admin has give permission.
+	* Return true if there is no authenticated user or authenticated user is anonymous.
 	*/
-	public function can($perm_name) {
-		return $this->isAuth() && ($this->user->val('user_is_superuser') || $this->user->hasPermission($perm_name));
+	public function isAnonymous() {
+		return ((!$this->isAuth()) || $this->user->isAnonymous());
+	}
+
+	public function createAnonymousSession() {
+		$user = $this->createUser($this->z->core->t('Anonymous'), null, null, null, UserModel::user_state_anonymous);
+		$this->createSession($user);
+	}
+
+	private function createSession($user) {
+		$ip = $_SERVER['REMOTE_ADDR'];
+		// TODO: check if IP address has too many sessions already
+
+		$this->user = $user;
+		$token = $this->generateSessionToken();
+		$token_hash = Self::hashPassword($token);
+		$expires = time() + $this->config['session_expire'];
+		$session = new UserSessionModel($this->z->db);
+		$session->data['user_session_token_hash'] = $token_hash;
+		$session->data['user_session_user_id'] = $this->user->ival('user_id');
+		$session->data['user_session_expires'] = z::mysqlTimestamp($expires);
+		$session->data['user_session_ip'] = $ip;
+		$session->save();
+		$this->session = $session;
+		$this->updateSessionCookie($token, $expires);
+		$this->updateLastAccess();
+	}
+
+	private function updateSessionCookie($token, $expire) {
+		$this->z->cookies->setCookie($this->cookie_name, $this->session->val('user_session_id') . "-" . $token, $expire);
+	}
+
+	private function getSessionCookie() {
+		return $this->z->cookies->getCookie($this->cookie_name);
 	}
 
 	/**
 	* Perform login for given username/email and password by creating a session. Return true if successful.
 	*/
 	public function login($loginoremail, $password) {
-		$ip = $_SERVER['REMOTE_ADDR'];
-
-		if (isset($_COOKIE[$this->cookie_name])) {
+		if ($this->getSessionCookie() != null) {
 			$this->logout();
 		}
 
@@ -62,19 +93,7 @@ class authModule extends zModule {
 			}
 			if (Self::verifyPassword($password, $user->val('user_password_hash'))) {
 				// success - create new session
-				$this->user = $user;
-				$this->updateLastAccess();
-				$token = $this->generatePasswordToken();
-				$token_hash = Self::hashPassword($token);
-				$expires = time()+$this->config['session_expire'];
-				$session = new UserSessionModel($this->z->db);
-				$session->data['user_session_token_hash'] = $token_hash;
-				$session->data['user_session_user_id'] = $this->user->val('user_id');
-				$session->data['user_session_expires'] = z::mysqlTimestamp($expires);
-				$session->data['user_session_ip'] = $ip;
-				$session->save();
-				setcookie($this->cookie_name, $session->val('user_session_id') . "-" . $token, $expires, '/', false, false);
-				$this->session = $session;
+				$this->createSession($user);
 				return true;
 			} else {
 				$user->data['user_failed_attempts'] += 1;
@@ -89,16 +108,16 @@ class authModule extends zModule {
 	}
 
 	/**
-	* Verifies if there is admin logged in.
-	* Call this only once in the beginning of request processing and then call to isAuth() method
-	* to check whether admin is authenticated.
+	* Verifies if there is a user logged in.
+	* Call this only once in the beginning of request processing and then call to isAuth() method to check whether any user is authenticated.
 	*/
 	private function checkAuthentication() {
 		if (!$this->authentication_checked) {
 			$this->user = null;
 
-			if (isset($_COOKIE[$this->config['cookie_name']])) {
-				$arr = explode('-', $_COOKIE[$this->config['cookie_name']]);
+			$cookie_value = $this->getSessionCookie();
+			if (isset($cookie_value)) {
+				$arr = explode('-', $cookie_value);
 				$session_id = intval($arr[0]);
 				$session_token = $arr[1];
 			}
@@ -111,7 +130,7 @@ class authModule extends zModule {
 					$session->data['user_session_id'] = $session_id;
 					$session->data['user_session_expires'] = z::mysqlTimestamp($expires);
 					$session->save();
-					setcookie($this->cookie_name, $this->session->val('user_session_id') . '-' . $session_token, $expires, '/', false, false);
+					$this->updateSessionCookie($session_token, $expires);
 					$this->user = new UserModel($this->z->db, $this->session->val('user_session_user_id'));
 					$this->updateLastAccess();
 				}
@@ -122,57 +141,95 @@ class authModule extends zModule {
 	}
 
 	/**
-	* Save last access date and time for logged in admin.
+	* Save last access date and time for logged in user.
 	*/
 	private function updateLastAccess() {
 		if (isset($this->user)) {
 			$user = new UserModel($this->z->db);
-			$user->data['user_id'] = $this->user->val('user_id');
+			$user->data['user_id'] = $this->user->ival('user_id');
 			$user->data['user_last_access'] = z::mysqlTimestamp(time());
 			$user->save();
 		}
 	}
 
 	/**
-	* Perform logout operation by deleting current admin's session.
+	* Perform logout operation by unsetting cookie and deleting current session.
 	*/
 	public function logout() {
 		$this->user = null;
 
-		if (isset($_COOKIE[$this->cookie_name])) {
-			unset($_COOKIE[$this->cookie_name]);
-			setcookie($this->cookie_name, '', time()-3600, '/', false, false);
+		if ($this->getSessionCookie()) {
+			$this->z->cookies->resetCookie($this->cookie_name);
 		}
 
 		if (isset($this->session)) {
-			$this->session->deleteById();
+			$this->session->delete();
 			$this->session = null;
 		}
 	}
 
 	/**
-	* Create and activates user account. Used for db initialization.
+	* Create user account.
+	* @return UserModel
 	*/
-	public function createUserAccount($email, $password, $state) {
+	public function createUser($full_name, $login, $email, $password, $state) {
 		$user = new UserModel($this->z->db);
-		$user->data['customer_name'] = $full_name;
-		$customer->data['customer_email'] = $email;
-		$customer->data['customer_state'] = CustomerModel::customer_state_waiting_for_activation;
-		$customer->data['customer_language_id'] = $this->z->i18n->selected_language->val('language_id');
-		$customer->data['customer_currency_id'] = $this->z->i18n->selected_currency->val('currency_id');
-		$customer->data['customer_password_hash'] = $this->z->custauth->hashPassword($password);
-		$activation_token = $this->z->custauth->generateAccountActivationToken();
-		$customer->data['customer_reset_password_hash'] = $this->z->custauth->hashPassword($activation_token);
-		$expires = time() + $this->z->custauth->getConfigValue('reset_password_expires');
-		$customer->data['customer_reset_password_expires'] = z::mysqlTimestamp($expires);
-		$customer->save();
+		$user->data['user_name'] = $full_name;
+		$user->data['user_login'] = $login;
+		$user->data['user_email'] = $email;
+		$user->data['user_state'] = $state;
+		$user->data['user_password_hash'] = $this->hashPassword($password);
+		if ($this->z->isModuleEnabled('i18n')) {
+			$user->data['user_language_id'] = $this->z->i18n->selected_language->val('language_id');
+		} else {
+			$user->data['user_language_id'] = 1;
+		}
+		$user->save();
+		return $user;
+	}
+
+	/**
+	* Create and activates user account. Used for db initialization.
+	* @return UserModel
+	*/
+	public function createActiveUser($full_name, $login, $email, $password) {
+		$user = $this->createUser($full_name, $login, $email, $password, UserModel::user_state_active);
+		return $user;
+	}
+
+	/**
+	* Create a user account and send activation email. Used on user registration.
+	* @return UserModel
+	*/
+	public function registerUser($full_name, $login, $email, $password) {
+		$user = $this->createUser($full_name, $login, $email, $password, UserModel::user_state_waiting_for_activation);
+		$activation_token = $this->generateAccountActivationToken();
+		$user->data['user_reset_password_hash'] = $this->hashPassword($activation_token);
+		$expires = time() + $this->getConfigValue('reset_password_expires');
+		$user->data['user_reset_password_expires'] = z::mysqlTimestamp($expires);
+		$user->save();
 
 		$subject = $this->getEmailSubject($this->z->core->t('Registration'));
-		$activation_link = sprintf('%s?email=%s&activation_token=%s', $this->z->core->url('activate'), $customer->val('customer_email'), $activation_token);
-		$this->z->emails->renderAndSend($email, $subject, 'registration', ['customer' => $customer, 'activation_link' => $activation_link]);
+		$activation_link = sprintf('%s?email=%s&activation_token=%s', $this->z->core->url('activate'), $email, $activation_token);
+		$this->z->emails->renderAndSend($email, $subject, 'registration', ['user' => $user, 'activation_link' => $activation_link]);
 		$this->z->messages->success($this->z->core->t('Thank you for your registration on our website.'));
 		$this->z->messages->warning($this->z->core->t('An e-mail was sent to your address with account activation instructions.'));
 
+		return $user;
+	}
+
+	/* EMAILS */
+
+	public function getEmailSubject($text) {
+		return sprintf('%s: %s', $this->z->core->getConfigValue('site_title'), $text);
+	}
+
+	static function hashPassword($pass) {
+		return z::createHash($pass);
+	}
+
+	static function verifyPassword($pass, $hash) {
+		return z::verifyHash($pass, $hash);
 	}
 
 	public function isValidPassword($password) {
@@ -187,12 +244,12 @@ class authModule extends zModule {
 		return z::generateRandomToken(100);
 	}
 
-	static function hashPassword($pass) {
-		return z::createHash($pass);
+	public function generateAccountActivationToken() {
+		return z::generateRandomToken(100);
 	}
 
-	static function verifyPassword($pass, $hash) {
-		return z::verifyHash($pass, $hash);
+	private function generateSessionToken() {
+		return z::generateRandomToken(50);
 	}
 
 }

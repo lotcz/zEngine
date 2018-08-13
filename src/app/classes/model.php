@@ -7,15 +7,26 @@ class zModel {
 
 	protected $db = null;
 
-	public $table_name = 'table';
-	public $id_name = 'table_id';
+	static $table_name = null;
+	static $id_name = null;
 
 	static $cache = [];
+
 	public $is_loaded = false;
 	public $data = [];
 
 	function __construct(dbModule $db = null, int $id = null) {
 		$this->db = $db;
+
+		if (!(isset(Self::$table_name))) {
+			$class_name = get_called_class();
+			Self::$table_name = to_lower(substr($class_name, 0, strlen($class_name) - 5));
+		}
+
+		if (!(isset(Self::$id_name))) {
+			Self::$id_name = $this->table_name . '_id';
+		}
+
 		if (isset($id)) {
 			$this->loadById($id);
 		}
@@ -57,8 +68,16 @@ class zModel {
 		return z::phpDatetime($this->val($key, $default));
 	}
 
+	public function getId() : int {
+			return $this->ival(Self::$id_name);
+	}
+
+	public function setId(int $id) {
+			$this->set(Self::$id_name, $id);
+	}
+	
 	public function loadSingle($where, $bindings = null, $types = null) {
-		$sql = sprintf('SELECT * FROM %s WHERE %s', $this->table_name, $where);
+		$sql = sprintf('SELECT * FROM %s WHERE %s', Self::$table_name, $where);
 		$statement = $this->db->executeQuery($sql, $bindings, $types);
 		if ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
 			$this->is_loaded = true;
@@ -71,7 +90,7 @@ class zModel {
 	}
 
 	public function loadById(int $id) {
-		$where = sprintf('%s = ?', $this->id_name);
+		$where = sprintf('%s = ?', Self::$id_name);
 		$bindings = [$id];
 		$types = [PDO::PARAM_INT];
 		$this->loadSingle($where, $bindings, $types);
@@ -92,14 +111,14 @@ class zModel {
 	}
 
 	public function save() {
-		$id = $this->ival($this->id_name);
+		$id = $this->ival(Self::$id_name);
 
 		$columns = [];
 		$bindings = [];
 		$types = [];
 
 		foreach ($this->data as $key => $value) {
-			if ($key != $this->id_name) {
+			if ($key != Self::$id_name) {
 				$columns[] = $key;
 				$bindings[] = $value;
 				$types[] = z::getDbType($value);
@@ -110,10 +129,10 @@ class zModel {
 			$bindings[] = $id;
 			$types[] = PDO::PARAM_INT;
 
-			$this->db->executeUpdateQuery($this->table_name, $columns, sprintf('%s = ?', $this->id_name), $bindings, $types);
+			$this->db->executeUpdateQuery(Self::$table_name, $columns, sprintf('%s = ?', Self::$id_name), $bindings, $types);
 		} else {
-			$statement = $this->db->executeInsertQuery($this->table_name, $columns, $bindings, $types);
-			$this->set($this->id_name, $this->db->lastInsertId());
+			$statement = $this->db->executeInsertQuery(Self::$table_name, $columns, $bindings, $types);
+			$this->set(Self::$id_name, $this->db->lastInsertId());
 		}
 
 		return true;
@@ -123,7 +142,7 @@ class zModel {
 		if (!isset($id)) {
 			$id = $this->ival($this->id_name);
 		}
-		return $this->db->executeDeleteQuery($this->table_name, sprintf('%s = ?', $this->id_name), [$id], [PDO::PARAM_INT]);
+		return $this->db->executeDeleteQuery(Self::$table_name, sprintf('%s = ?', Self::$id_name), [$id], [PDO::PARAM_INT]);
 	}
 
 	static function deleteById(dbModule $db, int $id) {
@@ -136,7 +155,7 @@ class zModel {
 		if (isset(Self::$cache[$class])) {
 			return Self::$cache[$class];
 		} else {
-			$all = Self::select($this->db, $this->table_name);
+			$all = Self::select($this->db, Self::$table_name);
 			Self::$cache[$class] = $all;
 		}
 		return Self::$cache[$class];

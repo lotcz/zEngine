@@ -1,15 +1,14 @@
 <?php
 
 require_once __DIR__ . '/../models/customer.m.php';
-require_once __DIR__ . '/../models/custsess.m.php';
 
 /**
-* Module that handles authentication for public/customer area.
+* Module that handles shopping
 */
-class custauthModule extends zModule {
+class shopModule extends zModule {
 
-	public $depends_on = ['i18n', 'messages', 'emails'];
-	
+	public $depends_on = ['db', 'i18n', 'emails'];
+
 	public $customer = null;
 	public $session = null;
 
@@ -22,13 +21,11 @@ class custauthModule extends zModule {
 	}
 
 	public function createAnonymousSession() {
+		$this->z->auth->createAnonymousSession();
 		$customer = new CustomerModel($this->z->db);
-		$customer->data['customer_state'] = CustomerModel::$customer_state_anonymous;
-		$customer->data['customer_name'] = $this->z->core->t('Anonymous');
-		$customer->data['customer_language_id'] = $this->z->i18n->selected_language->val('language_id');
 		$customer->data['customer_currency_id'] = $this->z->i18n->selected_currency->val('currency_id');
-		$customer->save();
-		$this->createSession($customer);
+		$user->save();
+		$this->createSession($user);
 	}
 
 	public function createSession($customer, $token = null) {
@@ -120,91 +117,8 @@ class custauthModule extends zModule {
 	public function checkAuthentication() {
 		$this->customer = null;
 
-		if (isset($_COOKIE[$this->config['cookie_name']])) {
-			$arr = explode('-', $_COOKIE[$this->config['cookie_name']]);
-			$session_id = intval($arr[0]);
-			$session_token = $arr[1];
-		}
+		// TO DO: authenticate customer
 
-		if (isset($session_id)) {
-			$this->session = new CustomerSessionModel($this->z->db, $session_id);
-			if (isset($this->session) && $this->session->is_loaded && Self::verifyPassword($session_token, $this->session->val('customer_session_token_hash'))) {
-				$expires = time()+$this->config['session_expire'];
-				$session = new CustomerSessionModel($this->z->db);
-				$session->data['customer_session_id'] = $session_id;
-				$session->data['customer_session_expires'] = z::mysqlDatetime($expires);
-				$session->save();
-				setcookie($this->config['cookie_name'], $this->session->val('customer_session_id') . '-' . $session_token, $expires, '/', false, false);
-				$this->customer = new CustomerModel($this->z->db, $this->session->ival('customer_session_customer_id'));
-				$this->updateLastAccess();
-			}
-		}
-
-	}
-
-	public function val($name, $def = null) {
-		if ($this->isAuth()) {
-			return $this->customer->val($name, $def);
-		} else {
-			return null;
-		}
-	}
-
-	/**
-	* Save last access date and time for logged in customer.
-	*/
-	public function updateLastAccess() {
-		if ($this->isAuth()) {
-			$customer = new CustomerModel($this->z->db);
-			$customer->data['customer_id'] = $this->customer->val('customer_id');
-			$customer->data['customer_last_access'] = z::mysqlDatetime(time());
-			$customer->save();
-		}
-	}
-
-	/**
-	* Perform logout operation by deleting current customer's session.
-	*/
-	public function logout() {
-		$this->customer = null;
-
-		if (isset($_COOKIE[$this->config['cookie_name']])) {
-			unset($_COOKIE[$this->config['cookie_name']]);
-			setcookie($this->config['cookie_name'], '', time()-3600, '/', false, false);
-		}
-
-		if (isset($this->session)) {
-			$this->session->deleteById();
-			$this->session = null;
-		}
-	}
-
-	public function isValidEmail($email) {
-		return filter_var($email, FILTER_VALIDATE_EMAIL);
-	}
-
-	public function isValidPassword($password) {
-		return (strlen($password) >= $this->config['min_password_length']);
-	}
-
-	public function generateResetPasswordToken() {
-		return z::generateRandomToken(100);
-	}
-
-	public function generateAccountActivationToken() {
-		return z::generateRandomToken(100);
-	}
-
-	private function generateSessionToken() {
-		return z::generateRandomToken(50);
-	}
-
-	static function hashPassword($pass) {
-		return z::createHash($pass);
-	}
-
-	static function verifyPassword($pass, $hash) {
-		return z::verifyHash($pass, $hash);
 	}
 
 	public function registerCustomer($email, $password, $full_name) {

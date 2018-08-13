@@ -8,7 +8,8 @@ require_once __DIR__ . '/../models/xsrf.m.php';
 */
 class formsModule extends zModule {
 
-	public $depends_on = ['db', 'messages', 'resources'];	
+	public $depends_on = ['db', 'messages', 'resources'];
+	public $also_install = ['auth'];
 
 	private $xsrf_enabled = false;
 	private $xsrf_token_expires = 60*60;

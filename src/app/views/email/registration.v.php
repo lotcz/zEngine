@@ -5,9 +5,11 @@
 </p>
 
 <p>
-<?=$this->z->core->t('Full name') ?>: <strong><?=$data['customer']->val('customer_name') ?></strong>
+<?=$this->z->core->t('Full name') ?>: <strong><?=$data['user']->val('user_name') ?></strong>
 <br/>
-<?=$this->z->core->t('E-mail') ?>: <strong><?=$data['customer']->val('customer_email') ?></strong>
+<?=$this->z->core->t('E-mail') ?>: <strong><?=$data['user']->val('user_email') ?></strong>
+<br/>
+<?=$this->z->core->t('Login') ?>: <strong><?=$data['user']->val('user_login') ?></strong>
 </p>
 
 <p>

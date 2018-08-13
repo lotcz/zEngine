@@ -5,9 +5,6 @@
 */
 class IpFailedAttemptModel extends zModel {
 
-	public $table_name = 'ip_failed_attempts';
-	public $id_name = 'ip_failed_attempt_id';
-
 	public function loadByIp($ip) {
 		$this->loadSingle('ip_failed_attempt_ip = ?', [$ip], 's');
 	}
