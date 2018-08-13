@@ -53,11 +53,13 @@ DROP VIEW IF EXISTS `viewSessionsStats` ;
 
 CREATE VIEW viewSessionsStats AS
 	SELECT 'Anonymous' as n, COUNT(*) as c
-    FROM user_session
-    WHERE user_state = 0
+    FROM user_session us
+    JOIN user u ON (u.user_id = us.user_session_user_id) 
+    WHERE u.user_state = 0
 
     UNION
 
     SELECT 'Logged in' as n, COUNT(*) as c
-    FROM user_session
-    WHERE user_state > 0;
+    FROM user_session us
+    JOIN user u ON (u.user_id = us.user_session_user_id)
+    WHERE u.user_state > 0;

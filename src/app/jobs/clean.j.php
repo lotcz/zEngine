@@ -1,22 +1,21 @@
 <?php
-	require_once $home_dir . 'models/customer.m.php';
-	require_once $home_dir . 'models/custsess.m.php';
+	$this->requireModule('auth');
 
-	$sessions = CustomerSession::Select(
+	$sessions = UserSession::select(
 		/* db */		$this->z->db,
-		/* table */		'customer_sessions',
-		/* where */		'customer_session_expires <= ?',
+		/* table */		'user_sessions',
+		/* where */		'user_session_expires <= ?',
 		/* bindings */	[SqlQuery::mysqlTimestamp(time())],
-		/* types */		's',
+		/* types */		null,
 		/* paging */	null,
 		/* orderby */	null
 	);
 
 	foreach ($sessions as $session) {
-		$customer = new Customer($this->z->db, $session->val('customer_session_customer_id'));
+		$user = new UserModel($this->z->db, $session->ival('user_session_user_id'));
 		$session->delete();
-		if ($customer->val('customer_anonymous')) {
-			$customer->delete();
+		if ($user->isAnonymous()) {
+			$user->delete();
 		}
 	}
 
