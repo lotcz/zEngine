@@ -108,7 +108,7 @@ class adminModule extends zModule {
 	private function initializeAdminMenu() {
 		$menu = new zMenu($this->getAdminAreaURL(''), $this->z->core->getData('site_title'));
 
-		if ($this->z->auth->isAuth()) {
+		if ($this->isAuth()) {
 
 			//custom menu from app's admin config
 			$menu->loadItemsFromArray($this->getConfigValue('custom_menu'));
@@ -120,10 +120,12 @@ class adminModule extends zModule {
 				$submenu->addItem('admin/administrators', 'Administrators');
 				$submenu->addSeparator();
 				$submenu->addHeader('Advanced');
-				$submenu->addItem('admin/aliases', 'Aliases');
+				if ($this->z->isModuleEnabled('alias')) {
+					$submenu->addItem('admin/aliases', 'Aliases');
+				}
 				$submenu->addItem('admin/languages', 'Languages');
 				$submenu->addItem('admin/currencies', 'Currencies');
-				$submenu->addItem('admin/ip-failed-attempts', 'Failed login attempts');
+				$submenu->addItem('admin/ip-failed-attempts', 'Failed Login Attempts');
 				$submenu->addItem('admin/info', 'Server Info');
 				$submenu->addItem('admin/about', 'About');
 			}
@@ -201,7 +203,8 @@ class adminModule extends zModule {
 	/**
 	* Render default form for administration area.
 	*/
-	public function renderAdminForm($entity_name, $model_class_name, $fields, $onBeforeUpdate = null, $onAfterUpdate = null, $onBeforeDelete = null, $onAfterDelete = null) {
+	public function renderAdminForm($model_class_name, $fields, $onBeforeUpdate = null, $onAfterUpdate = null, $onBeforeDelete = null, $onAfterDelete = null) {
+		$entity_name = strtolower(substr($model_class_name, 0, strlen($model_class_name) - 5));
 		$form = new zForm($entity_name);
 		$form->type = 'vertical';
 		$form->entity_title = ucwords(str_replace('_', ' ', $entity_name));
@@ -213,7 +216,7 @@ class adminModule extends zModule {
 
 		$form->addField(
 			[
-				'name' => $entity_name . '_id',
+				'name' => $model_class_name::getIdName(),
 				'type' => 'hidden'
 			]
 		);
@@ -223,7 +226,7 @@ class adminModule extends zModule {
 		if ($this->z->forms->pathAction() == 'edit') {
 			$this->z->core->setPageTitle($this->z->core->t($form->entity_title) . ': ' . $this->z->core->t('Edit'));
 		} else {
-			$this->z->core->setPageTitle($this->z->core->t($form->entity_title) . ': ' . $this->z->core->t('New'));
+			$this->z->core->setPageTitle($this->z->core->t($form->entity_title) . ': ' . $this->z->core->t('Add'));
 		}
 
 		$form->addField(
@@ -242,7 +245,7 @@ class adminModule extends zModule {
 	* Create and activate admin account. Used for db initialization.
 	*/
 	public function createActiveAdminAccount($full_name, $login, $email, $password) {
-		$user = $this->auth->createActiveUser($full_name, $login, $email, $password);
+		$user = $this->z->auth->createActiveUser($full_name, $login, $email, $password);
 		$admin = new AdminModel($this->z->db);
 		$admin->set('admin_user_id', $user->ival('user_id'));
 		$admin->save();

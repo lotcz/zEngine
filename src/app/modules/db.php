@@ -59,7 +59,7 @@ class dbModule extends zModule {
 	 	if ($stmt->execute()) {
 			return $stmt;
 		} else {
-			$info = $connection->errorInfo();
+			$info = $stmt->errorInfo();
 			$code = $info[1];
 			$desc = $info[2];
 			throw new Exception(sprintf('Error %s - %s in query: %s.', $code, $desc, $sql));

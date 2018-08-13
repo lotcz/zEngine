@@ -1,7 +1,7 @@
 <?php
 	$this->setPageTitle('Customers');
 	$this->renderAdminTable(
-		'customers',
+		'customer',
 		'customer',
 		[
 			[

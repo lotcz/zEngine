@@ -1,11 +1,10 @@
 <?php
-	
+
 	require_once __DIR__ . '/../../../models/currency.m.php';
-	
+
 	$this->renderAdminForm(
-		'currency',
 		'CurrencyModel',
-		[		
+		[
 			[
 				'name' => 'currency_name',
 				'label' => 'Name',
@@ -37,6 +36,6 @@
 				'hint' => 'This specifies how many decimal places will be displayed for prices in this currency.',
 				'validations' => [['type' => 'integer']]
 			]
-			
+
 		]
 	);

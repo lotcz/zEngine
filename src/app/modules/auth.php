@@ -179,7 +179,7 @@ class authModule extends zModule {
 		$user->data['user_email'] = $email;
 		$user->data['user_state'] = $state;
 		$user->data['user_password_hash'] = $this->hashPassword($password);
-		if ($this->z->isModuleEnabled('i18n')) {
+		if ($this->z->isModuleEnabled('i18n') && isset($this->z->i18n->selected_language)) {
 			$user->data['user_language_id'] = $this->z->i18n->selected_language->val('language_id');
 		} else {
 			$user->data['user_language_id'] = 1;

@@ -1,13 +1,13 @@
 <?php
-	
+
 	$this->setPageTitle('Aliases');
 	$this->renderAdminTable(
-		'aliases', 		
+		'alias', 		
 		'alias',
 		[
 			[
 				'name' => 'alias_url',
-				'label' => 'URL'			
+				'label' => 'URL'
 			],
 			[
 				'name' => 'alias_path',

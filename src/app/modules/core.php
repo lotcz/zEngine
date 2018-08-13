@@ -268,8 +268,8 @@ class coreModule extends zModule {
 		$this->z->admin->renderAdminTable($table_name, $entity_name, $fields, $filter_fields);
 	}
 
-	public function renderAdminForm($entity_name, $model_class_name, $fields, $onBeforeUpdate = null, $onAfterUpdate = null, $onBeforeDelete = null, $onAfterDelete = null) {
-		$this->z->admin->renderAdminForm($entity_name, $model_class_name, $fields, $onBeforeUpdate, $onAfterUpdate, $onBeforeDelete, $onAfterDelete);
+	public function renderAdminForm($model_class_name, $fields, $onBeforeUpdate = null, $onAfterUpdate = null, $onBeforeDelete = null, $onAfterDelete = null) {
+		$this->z->admin->renderAdminForm($model_class_name, $fields, $onBeforeUpdate, $onAfterUpdate, $onBeforeDelete, $onAfterDelete);
 	}
 
 	/*

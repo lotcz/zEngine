@@ -1,27 +1,25 @@
 <?php
 
-	require_once __DIR__ . '/../../../models/user.m.php';	
-	
+	require_once __DIR__ . '/../../../models/user.m.php';
+
 	$this->renderAdminForm(
-		'user',
 		'UserModel',
-		[	
+		[
 			[
-				'name' => 'user_deleted',
-				'label' => 'User Deactivated',
-				'type' => 'bool'
+				'name' => 'user_state',
+				'label' => 'Status',
+				'type' => 'static_custom',
+				'custom_function' => 'UserModel::getUserStatusLabel'
 			],
 			[
-				'name' => 'user_is_superuser',
-				'label' => 'Is Superuser',
-				'type' => 'bool'
+				'name' => 'user_name',
+				'label' => 'Full name',
+				'type' => 'text'
 			],
 			[
 				'name' => 'user_login',
 				'label' => 'Login',
-				'type' => 'text',
-				'required' => true,
-				'validations' => [['type' => 'length', 'param' => 1]]
+				'type' => 'text'
 			],
 			[
 				'name' => 'user_email',
@@ -42,12 +40,12 @@
 			[
 				'name' => 'user_failed_attempts',
 				'label' => 'Failed Attempts',
-				'type' => 'static'			
+				'type' => 'static'
 			],
 			[
 				'name' => 'user_last_access',
 				'label' => 'Last Visit',
-				'type' => 'staticdate'			
-			]		
+				'type' => 'staticdate'
+			]
 		]
 	);

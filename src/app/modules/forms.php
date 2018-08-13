@@ -36,7 +36,9 @@ class formsModule extends zModule {
 	public function validateForm($form, $data) {
 		$is_valid = true;
 		foreach ($form->fields as $field) {
-			$is_valid = $is_valid && $this->validateField($field, $data[$field->name]);
+			if (isset($data[$field->name])) {
+				$is_valid = $is_valid && $this->validateField($field, $data[$field->name]);
+			}
 		}
 		return $is_valid;
 	}
@@ -120,20 +122,24 @@ class formsModule extends zModule {
 
 					//VALIDATION
 					if ($this->validateForm($form, $form->processed_input)) {
-						if (z::parseInt($_POST[$model->id_name]) > 0) {
-							$model->loadById($_POST[$model->id_name]);
+						$entity_id_value = z::parseInt($_POST[$model_class_name::getIdName()]);
+						if ($entity_id_value > 0) {
+							$model->loadById($entity_id_value);
 						}
 						$model->setData($form->processed_input);
 						if ($form->onBeforeUpdate !== null) {
 							$onBeforeUpdate = $form->onBeforeUpdate;
 							$onBeforeUpdate($this->z, $form, $model);
 						}
-						if ($model->save()) {
+						try {
+							$model->save();
 							if ($form->onAfterUpdate !== null) {
 								$onAfterUpdate = $form->onAfterUpdate;
 								$onAfterUpdate($this->z, $form, $model);
 							}
 							$this->z->core->redirectBack($form->ret);
+						} catch (Exception $e) {
+							$this->z->messages->error($e->getMessage());
 						}
 					} else {
 						$this->z->messages->error('Some fields in the form don\'t validate! Form cannot be saved.');
@@ -151,7 +157,6 @@ class formsModule extends zModule {
 
 		} elseif ($this->pathAction() == 'edit') {
 			$model->loadById($this->pathParam());
-			$this->z->core->setPageTitle($this->z->core->t($form->entity_title) . ': ' . $this->z->core->t('Editing'));
 		} elseif ($this->pathAction() == 'delete') {
 			$model_id = z::parseInt($this->pathParam());
 			if ($form->onBeforeDelete !== null) {
@@ -165,8 +170,6 @@ class formsModule extends zModule {
 				}
 				$this->z->core->redirectBack($form->ret);
 			}
-		} else {
-			$this->z->core->setPageTitle($this->z->core->t($form->entity_title) . ': ' . $this->z->core->t('New'));
 		}
 
 		$form->prepare($this->z->db, $model);

@@ -1,9 +1,8 @@
-<?php	
+<?php
 	require_once __DIR__ . '/../../../models/language.m.php';
 	$this->renderAdminForm(
-		'language',
 		'LanguageModel',
-		[		
+		[
 			[
 				'name' => 'language_name',
 				'label' => 'Name',
@@ -44,7 +43,7 @@
 				'name' => 'language_default_currency_id',
 				'label' => 'Default Currency',
 				'type' => 'select',
-				'select_table' => 'currencies',
+				'select_table' => 'currency',
 				'select_id_field' => 'currency_id',
 				'select_label_field' => 'currency_name'
 			]

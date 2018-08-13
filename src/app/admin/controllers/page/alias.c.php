@@ -1,11 +1,10 @@
 <?php
 
 	require_once __DIR__ . '/../../../models/alias.m.php';
-	
-	$this->renderAdminForm(
-		'alias',
-		'AliasModel',	
-		[		
+
+	$this->renderAdminForm(		
+		'AliasModel',
+		[
 			[
 				'name' => 'alias_url',
 				'label' => 'URL',
@@ -17,7 +16,7 @@
 				'label' => 'Path',
 				'type' => 'text',
 				'validations' => [['type' => 'length', 'param' => 1]]
-			]		
-			
+			]
+
 		]
 	);

@@ -2,7 +2,7 @@
 	$this->requireModule('forms');
 	$this->setPageTitle('User Profile');
 
-	if (!($this->auth->isAuth() && !$this->z->auth->isAnonymous())) {
+	if (!($this->z->auth->isAuth() && !$this->z->auth->isAnonymous())) {
 		$this->redirect('login');
 	} else {
 		$form = new zForm('user');

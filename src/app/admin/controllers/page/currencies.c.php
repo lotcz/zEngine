@@ -1,21 +1,21 @@
 <?php
 
-	$this->setPageTitle('Currencies');	
+	$this->setPageTitle('Currencies');
 	$this->renderAdminTable(
-		'currencies', 		
+		'currency', 		
 		'currency',
-		[		
+		[
 			[
 				'name' => 'currency_name',
-				'label' => 'Name'			
+				'label' => 'Name'
 			],
 			[
 				'name' => 'currency_format',
-				'label' => 'Format'			
+				'label' => 'Format'
 			],
 			[
 				'name' => 'currency_value',
-				'label' => 'Value'			
+				'label' => 'Value'
 			]
 		]
 	);

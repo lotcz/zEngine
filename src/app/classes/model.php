@@ -83,7 +83,7 @@ class zModel {
 	public function dtval($key, $default = null) {
 		return z::phpDatetime($this->val($key, $default));
 	}
-	
+
 	public function loadSingle($where, $bindings = null, $types = null) {
 		$sql = sprintf('SELECT * FROM %s WHERE %s', get_called_class()::getTableName(), $where);
 		$statement = $this->db->executeQuery($sql, $bindings, $types);
@@ -150,7 +150,7 @@ class zModel {
 	public function delete(int $id = null) {
 		$class_name = get_called_class();
 		if (!isset($id)) {
-			$id = $this->getId();
+			$id = $this->ival($class_name::getIdName());
 		}
 		return $this->db->executeDeleteQuery($class_name::getTableName(), sprintf('%s = ?', $class_name::getIdName()), [$id], [PDO::PARAM_INT]);
 	}

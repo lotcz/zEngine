@@ -1,10 +1,9 @@
 <?php
 	require_once __DIR__ . '/../../../models/customer.m.php';
-	
+
 	$this->renderAdminForm(
-		'customer',
 		'CustomerModel',
-		[			
+		[
 			[
 				'name' => 'customer_state',
 				'label' => 'Status',
@@ -32,7 +31,7 @@
 				'select_table' => 'currencies',
 				'select_id_field' => 'currency_id',
 				'select_label_field' => 'currency_name'
-			],			
+			],
 			[
 				'name' => 'customer_name',
 				'label' => 'Name',
@@ -56,5 +55,3 @@
 			]
 		]
 	);
-	
-	

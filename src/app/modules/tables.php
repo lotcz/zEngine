@@ -8,9 +8,10 @@ require_once __DIR__ . '/../classes/tables.php';
 */
 class tablesModule extends zModule {
 
-	public $depends_on = ['core', 'db'];
+	public $depends_on = ['core', 'db', 'resources'];
 
 	public function onEnabled() {
+		$this->z->core->includeCSS('resources/tables.css');
 	}
 
 	public function renderTable($table) {

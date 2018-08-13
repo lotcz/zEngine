@@ -1,17 +1,17 @@
 <?php
-	
+
 	$this->setPageTitle('Languages');
 	$this->renderAdminTable(
-		'languages', 		
+		'language', 		
 		'language',
-		[		
+		[
 			[
 				'name' => 'language_name',
-				'label' => 'Name'		
+				'label' => 'Name'
 			],
 			[
 				'name' => 'language_code',
-				'label' => 'Code'			
+				'label' => 'Code'
 			]
 		]
 	);

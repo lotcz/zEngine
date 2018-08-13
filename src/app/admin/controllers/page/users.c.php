@@ -1,17 +1,17 @@
 <?php
 
-	$this->setPageTitle('Administrators');
+	$this->setPageTitle('Users');
 	$this->renderAdminTable(
-		'users', 		
 		'user',
-		[		
+		'user',
+		[
 			[
 				'name' => 'user_login',
-				'label' => 'Login'			
+				'label' => 'Login'
 			],
 			[
 				'name' => 'user_email',
-				'label' => 'E-mail'			
+				'label' => 'E-mail'
 			],
 			[
 				'name' => 'user_last_login',
