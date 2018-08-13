@@ -5,6 +5,9 @@
 */
 class adminModule extends zModule {
 
+	public $depends_on = ['auth', 'menu', 'resources'];
+	public $also_install = ['forms', 'tables'];
+
 	// url part defining admin protected area
 	public $base_url = 'admin';
 
@@ -26,8 +29,6 @@ class adminModule extends zModule {
 	public $menu = null;
 
 	public function onEnabled() {
-		$this->requireModule('auth');
-		$this->requireModule('menu');
 		$this->base_url = $this->getConfigValue('admin_area_base_url', $this->base_url);
 		$this->base_dir = $this->getConfigValue('admin_area_base_dir', $this->base_dir);
 		$this->login_url = $this->getConfigValue('login_page_url', $this->login_url);
@@ -48,7 +49,6 @@ class adminModule extends zModule {
 			} else if ($this->is_login_page && $this->z->auth->isAuth()) {
 				$this->z->core->path = [$this->base_url];
 			}
-      //$this->z->core->includeCSS('resources/admin.css');
 		}
 
 		$this->initializeAdminMenu();

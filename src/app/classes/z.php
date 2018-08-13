@@ -15,6 +15,7 @@ class z {
 
 	/**
 	* If value can be interpreted as integer, then return it. Return null otherwise.
+	* @return int
 	*/
 	static function parseInt($val) {
 		if (isset($val) && strlen(trim($val)) > 0) {

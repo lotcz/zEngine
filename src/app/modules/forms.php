@@ -8,15 +8,14 @@ require_once __DIR__ . '/../models/xsrf.m.php';
 */
 class formsModule extends zModule {
 
+	public $depends_on = ['db', 'messages', 'resources'];	
+
 	private $xsrf_enabled = false;
 	private $xsrf_token_expires = 60*60;
 
 	public function onEnabled() {
 		$this->xsrf_enabled = $this->getConfigValue('xsrf_enabled', $this->xsrf_enabled);
 		$this->xsrf_token_expires = $this->getConfigValue('xsrf_token_expires', $this->xsrf_token_expires);
-		$this->requireModule('db');
-		$this->requireModule('messages');
-		$this->requireModule('resources');
 		$this->z->core->includeJS('resources/forms.js');
 		$this->z->core->includeCSS('resources/forms.css');
 	}

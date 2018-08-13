@@ -9,6 +9,9 @@ require_once __DIR__ . '/../models/currency.m.php';
 */
 class i18nModule extends zModule {
 
+	public $depends_on = ['cookies', 'resources', 'db'];
+	public $also_install = [];
+
 	public $language_cookie_name = 'language';
 	public $currency_cookie_name = 'currency';
 	public $language_data = null;
@@ -18,10 +21,6 @@ class i18nModule extends zModule {
 	public $selected_currency = null;
 
 	public function onEnabled() {
-		$this->requireModule('cookies');
-		$this->requireModule('resources');
-		$this->requireModule('db');
-
 		$this->language_cookie_name = $this->getConfigValue('language_cookie_name', $this->language_cookie_name);
 		$this->currency_cookie_name = $this->getConfigValue('currency_cookie_name', $this->currency_cookie_name);
 	}

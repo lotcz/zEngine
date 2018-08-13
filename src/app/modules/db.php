@@ -159,32 +159,32 @@ class dbModule extends zModule {
 		return $this->executeQuery($sql, $bindings, $types);
 	}
 
+	/**
+	*
+	* @return int
+	*/
 	public function getRecordCount($table_name, $whereSQL = '', $bindings = null, $types = null) {
 		$count = null;
 		$sql = sprintf('SELECT count(*) AS cnt FROM %s %s', $table_name, $whereSQL);
 		$statement = $this->executeQuery($sql, $bindings, $types);
 		if ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
-			$count = $row['cnt'];
+			$count = z::parseInt($row['cnt']);
 		}
 		$statement->closeCursor();
 		return $count;
 	}
 
+	/**
+	* Executes sql file through command line and returns output.
+	* @return string
+	*/
 	public function executeFile($file_path, $db_user = null, $password = null, $db_name = null) {
 		$hostname = $this->config['hostname'];
-		if (!isset($db_user)) {
-			$db_user = $this->config['user'];
-		}
-		if (!isset($password)) {
-			$password = $this->config['password'];
-		}
-		if (!isset($db_name)) {
-			$db_name = $this->config['database'];
-		}
-
-		$command = "mysql --default-character-set=utf8 -h $hostname -D $db_name --user=$db_user --password='$password' < ";
-
-		$output = shell_exec($command . $file_path);
-		echo $output;
+		$db_user = $db_user ?? $this->config['user'];
+		$password = $password ?? $this->config['password'];
+		$db_name = $db_name ?? $this->config['database'];
+		$command = "mysql --default-character-set=utf8 -h $hostname -D $db_name --user=$db_user --password=$password < $file_path";
+		return shell_exec($command);
 	}
+
 }

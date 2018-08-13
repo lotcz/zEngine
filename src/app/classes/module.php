@@ -9,6 +9,19 @@ class zModule {
 	public $config = null;
 	public $name = null;
 
+	/**
+	* Array of module names that this module depends on.
+	* These modules will be installed on installAllModules command and always enabled when this module is enabled.
+	*/
+	public $depends_on = [];
+
+	/**
+	* Array of module names that must also be installed.
+	* This can be modules that are activated only sometimes.
+	* These modules will be also installed on installAllModules command, but not automatically enabled.
+	*/
+	public $also_install = [];
+
 	function __construct($z) {
 		$this->z = $z;
 	}
@@ -24,7 +37,7 @@ class zModule {
 	}
 
 	public function requireModule($module_name) {
-		$this->z->enableModule($module_name);	
+		$this->z->enableModule($module_name);
 	}
 
 	public function getConfigValue($attr_name, $default = null) {

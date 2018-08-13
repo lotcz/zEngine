@@ -5,9 +5,10 @@
 */
 class cookiesModule extends zModule {
 
+	public $depends_on = ['resources'];
+
 	public function onEnabled() {
-		$this->requireModule('resources');
 		$this->z->core->includeJS('resources/cookies.js');		
 	}
-		
+
 }

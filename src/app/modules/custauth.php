@@ -8,13 +8,12 @@ require_once __DIR__ . '/../models/custsess.m.php';
 */
 class custauthModule extends zModule {
 
+	public $depends_on = ['i18n', 'messages', 'emails'];
+	
 	public $customer = null;
 	public $session = null;
 
 	public function onEnabled() {
-		$this->requireModule('i18n');
-		$this->requireModule('messages');
-		$this->requireModule('emails');
 		$this->requireConfig();
 	}
 

@@ -7,8 +7,10 @@ require_once __DIR__ . '/../models/alias.m.php';
 */
 class aliasModule extends zModule {
 
+	public $depends_on = ['db'];
+
 	public function onEnabled() {
-		$this->requireModule('db');
+
 	}
 
 	public function OnBeforeInit() {

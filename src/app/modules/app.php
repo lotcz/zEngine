@@ -5,6 +5,8 @@
 */
 class appModule extends zModule {
 
+	public $depends_on = ['core'];
+
 	public $version = 0;
   public $require_z_version = 3;
 	public $minimum_z_version = 3;
@@ -14,7 +16,6 @@ class appModule extends zModule {
 	public $includes = [];
 
 	public function onEnabled() {
-		$this->requireModule('core');
 		$this->requireConfig();
 		$this->version = $this->getConfigValue('version', $this->version);
 		$this->require_z_version = intval($this->getConfigValue('require_z_version', $this->require_z_version));

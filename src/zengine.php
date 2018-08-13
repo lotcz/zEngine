@@ -36,9 +36,18 @@ class zEngine {
 					$module->config = include $module_config_path;
 				}
 
+				// enable dependency modules
+				foreach ($module->depends_on as $dependecy_module_name) {
+					$this->enableModule($dependecy_module_name);
+				}
+
+				// add to modules array
 				$this->modules[$module_name] = $module;
+
+				// add module reference to $z directly
 				$this->$module_name = $module;
 
+				// run onEnabled method
 				if (method_exists($module, 'onEnabled')) {
 					$module->onEnabled();
 				}

@@ -8,6 +8,9 @@ require_once __DIR__ . '/../models/ip_failed.m.php';
 * Module that handles authentication for administration area.
 */
 class authModule extends zModule {
+
+	public $depends_on = ['db', 'cookies', 'messages'];
+
 	private $authentication_checked = false;
 
 	public $user = null;
@@ -18,8 +21,6 @@ class authModule extends zModule {
 	function onEnabled() {
 		$this->requireConfig();
 		$this->cookie_name = $this->getConfigValue('cookie_name', $this->cookie_name);
-		$this->requireModule('db');
-		$this->requireModule('messages');
 	}
 
 	function OnBeforeInit() {
