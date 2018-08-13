@@ -22,14 +22,14 @@ DROP VIEW IF EXISTS `viewSessionsStats` ;
 
 CREATE VIEW viewSessionsStats AS
 	SELECT 'Anonymous' as n, COUNT(*) as c
-    FROM user_session
+    FROM user_session us
     JOIN user u ON (u.user_id = us.user_session_user_id) 
     WHERE u.user_state = 0
 
     UNION
 
     SELECT 'Visitors' as n, COUNT(*) as c
-    FROM user_session
+    FROM user_session us
     JOIN user u ON (u.user_id = us.user_session_user_id) 
     LEFT OUTER JOIN admin a ON (a.admin_user_id = us.user_session_user_id)
     WHERE a.admin_id IS NULL AND u.user_state > 0
