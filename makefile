@@ -4,7 +4,7 @@ perms:
 	chown -R www-data:www-data ../zEngine
 
 pull:
-	git pull    
+	git pull
 
 checkout:
 	git checkout -b $(Z_VERSION)
@@ -12,3 +12,6 @@ checkout:
 update: pull perms
 
 upgrade: pull checkout perms
+
+test:
+	phpunit --bootstrap tests/autoload.php --testdox tests
