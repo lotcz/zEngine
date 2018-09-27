@@ -5,8 +5,10 @@
 */
 class IpFailedAttemptModel extends zModel {
 
+	public $table_name = 'ip_failed_attempt';
+	
 	public function loadByIp($ip) {
-		$this->loadSingle('ip_failed_attempt_ip = ?', [$ip], 's');
+		$this->loadSingle('ip_failed_attempt_ip = ?', [$ip], [PDO::PARAM_STR]);
 	}
 
 	public static function saveFailedAttempt($db) {
