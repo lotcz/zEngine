@@ -42,27 +42,27 @@ class appModule extends zModule {
 		}
 	}
 
-	public function installAllModules() {
+	public function installAllModules($db_login = null, $db_password = null, $db_name = null) {
 		$installed_modules = [];
 		foreach ($this->modules as $module_name) {
-			$this->installModule($module_name, $installed_modules);
+			$this->installModule($module_name, $installed_modules, $db_login, $db_password, $db_name);
 		}
 		foreach ($this->getConfigValue('also_install', []) as $module_name) {
-			$this->installModule($module_name, $installed_modules);
+			$this->installModule($module_name, $installed_modules, $db_login, $db_password, $db_name);
 		}
 	}
 
-	private function installModule($module_name, &$installed_modules) {
+	private function installModule($module_name, &$installed_modules, $db_login = null, $db_password = null, $db_name = null) {
 		if (!isset($installed_modules[$module_name])) {
 			$this->requireModule($module_name);
 			$module = $this->z->$module_name;
 			foreach ($module->depends_on as $depend_module_name) {
-				$this->installModule($depend_module_name, $installed_modules);
+				$this->installModule($depend_module_name, $installed_modules, $db_login, $db_password, $db_name);
 			}
 			foreach ($module->also_install as $also_module_name) {
-				$this->installModule($also_module_name, $installed_modules);
+				$this->installModule($also_module_name, $installed_modules, $db_login, $db_password, $db_name);
 			}
-			$module->install();
+			$module->install($db_login, $db_password, $db_name);
 			$installed_modules[$module_name] = true;
 		}
 	}
