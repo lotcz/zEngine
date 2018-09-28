@@ -91,7 +91,7 @@ class formsModule extends zModule {
 		if (count($arr) == 2) {
 			$token_id = intval($arr[0]);
 			$token_value = $arr[1];
-			return FormXSRFTokenModel::verifyToken($this->z->core->db, $token_id, $user_session_id, $ip, $form_name, $token_value);
+			return FormXSRFTokenModel::verifyToken($this->z->db, $token_id, $user_session_id, $ip, $form_name, $token_value);
 		} else {
 			return false;
 		}

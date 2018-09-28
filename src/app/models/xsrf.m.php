@@ -19,13 +19,13 @@ class FormXSRFTokenModel extends zModel {
 		$token_verified = false;
 		$token = new FormXSRFTokenModel($db, $token_id);
 		if ($token->is_loaded) {
-			$session_ok = ($token->ival('form_xsrf_token_user_session_id') == $user_session_id);			
+			$session_ok = ($token->ival('form_xsrf_token_user_session_id') == $user_session_id);
 			$token_attrs_ok = ($token->val('form_xsrf_token_ip') == $ip) && ($token->val('form_xsrf_token_form_name') == $form_name);
 			$token_hash_ok = z::verifyHash($token_value, $token->val('form_xsrf_token_hash'));
 			$token_not_expired = ($token->dtval('form_xsrf_token_expires') > time());
 			$token_verified = $session_ok && $token_attrs_ok && $token_hash_ok && $token_not_expired;
 			if ($token_verified) {
-				$token->deleteByID();
+				$token->delete();
 			}
 		} else {
 			$token_verified = false;

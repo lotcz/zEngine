@@ -99,22 +99,22 @@ class z {
 	/**
 	* Convert php Datetime to mysql Datetime
 	*/
-	static function mysqlDatetime($time = null) {
-		if (!isset($time)) {
-			return null;
-		} else {
+	static function mysqlDatetime($time) {
+		if (isset($time)) {
 			return date('Y-m-d H:i:s', $time);
+		} else {
+			return null;
 		}
 	}
 
 	/**
 	* Convert php time to mysql Datetime
 	*/
-	static function mysqlTimestamp($time = null) {
-		if (!isset($time)) {
-			return null;
-		} else {
+	static function mysqlTimestamp($time) {
+		if (isset($time)) {
 			return date('Y-m-d H:i:s', $time);
+		} else {
+			return null;
 		}
 	}
 

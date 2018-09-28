@@ -80,12 +80,12 @@ class dbModule extends zModule {
 	public function executeSelectQuery($table_name, $columns = ['*'], $where = null, $orderby = null, $limit = null, $bindings = null, $types = null) {
 		$whereSQL = '';
 		if (isset($where)) {
-			$whereSQL = sprintf('WHERE %s', $this->where);
+			$whereSQL = sprintf('WHERE %s', $where);
 		}
 
 		$orderbySQL = '';
 		if (isset($orderby)) {
-			$orderbySQL = sprintf('ORDER BY %s', $this->orderby);
+			$orderbySQL = sprintf('ORDER BY %s', $orderby);
 		}
 
 		$limitSQL = '';
@@ -166,10 +166,9 @@ class dbModule extends zModule {
 	*
 	* @return int
 	*/
-	public function getRecordCount($table_name, $whereSQL = '', $bindings = null, $types = null) {
+	public function getRecordCount($table_name, $where = null, $bindings = null, $types = null) {
 		$count = null;
-		$sql = sprintf('SELECT count(*) AS cnt FROM %s %s', $table_name, $whereSQL);
-		$statement = $this->executeQuery($sql, $bindings, $types);
+		$statement = $this->executeSelectQuery($table_name, ['count(*) as cnt'], $where, $bindings, $types);
 		if ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
 			$count = z::parseInt($row['cnt']);
 		}

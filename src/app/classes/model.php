@@ -104,6 +104,10 @@ class zModel {
 		$this->loadSingle($where, $bindings, $types);
 	}
 
+	/**
+	* Executes select query and returns array of zModel.
+	* @return Array
+	*/
 	static function select($db, $table_name, $where = null, $orderby = null, $limit = null, $bindings = null, $types = null) {
 		$statement = $db->executeSelectQuery($table_name, ['*'], $where, $orderby, $limit, $bindings, $types);
 		$list = [];
