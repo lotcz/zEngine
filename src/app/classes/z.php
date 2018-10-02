@@ -5,6 +5,8 @@
 */
 class z {
 
+	static $crlf = "\r\n";
+	
 	/**
 	* Redirect to a new URL.
 	*/

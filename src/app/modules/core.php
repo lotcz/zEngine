@@ -108,8 +108,12 @@ class coreModule extends zModule {
 	/**
 	* Retrieve data sent to view.
 	*/
-	public function getData($name) {
-		return $this->data[$name];
+	public function getData($name, $default = null) {
+		if ($this->dataExists($name) && ($this->data[$name] !== null)) {
+			return $this->data[$name];
+		} else {
+			return $default;
+		}
 	}
 
 	/**
@@ -338,23 +342,23 @@ class coreModule extends zModule {
 						}
 						echo '</script>';
 					} else {
-						echo sprintf('<script>%s</script>', $incl[0]);
+						echo sprintf('<script>%s</script>' . z::$crlf, $incl[0]);
 					}
 				break;
 				case 'link_js':
-					echo sprintf('<script src="%s"></script>', $incl[0]);
+					echo sprintf('<script src="%s"></script>' . z::$crlf, $incl[0]);
 				break;
 				case 'link_css':
-					echo sprintf('<link rel="stylesheet" type="text/css" href="%s">', $incl[0]);
+					echo sprintf('<link rel="stylesheet" type="text/css" href="%s">' . z::$crlf, $incl[0]);
 				break;
 				case 'print_css':
-					echo sprintf('<link rel="stylesheet" type="text/css" href="%s" media="print">', $incl[0]);
+					echo sprintf('<link rel="stylesheet" type="text/css" href="%s" media="print">' . z::$crlf, $incl[0]);
 				break;
 				case 'link_less':
-					echo sprintf('<link rel="stylesheet/less" type="text/css" href="%s" />', $incl[0]);
+					echo sprintf('<link rel="stylesheet/less" type="text/css" href="%s" />' . z::$crlf, $incl[0]);
 				break;
 				case 'favicon':
-					echo sprintf('<link rel="shortcut icon" type="image/x-icon" href="%s" />', $incl[0]);
+					echo sprintf('<link rel="shortcut icon" type="image/x-icon" href="%s" />' . z::$crlf, $incl[0]);
 				break;
 				default:
 					throw new Exception(sprintf('Unknown include type: %s', $incl[1]));
