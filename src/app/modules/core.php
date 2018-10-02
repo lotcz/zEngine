@@ -340,7 +340,7 @@ class coreModule extends zModule {
 						foreach ($incl[0] as $key => $value) {
 							echo sprintf('var %s = %s;', $key, z::formatForJS($value));
 						}
-						echo '</script>';
+						echo '</script>' . z::$crlf;
 					} else {
 						echo sprintf('<script>%s</script>' . z::$crlf, $incl[0]);
 					}
