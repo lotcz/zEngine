@@ -129,10 +129,11 @@ class coreModule extends zModule {
 
 	public function getFullPageTitle() {
 		$page_title = $this->getData('page_title');
-		if (strlen($page_title) > 0) {
-			return $page_title . ' - ' .  $this->getData('site_title');
+		$site_title = $this->getData('site_title');
+		if ((strlen($page_title) > 0) && ($page_title != $site_title)) {
+			return $page_title . ' - ' .  $site_title;
 		} else {
-			return $this->getData('site_title');
+			return $site_title;
 		}
 	}
 
