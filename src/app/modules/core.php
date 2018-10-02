@@ -36,6 +36,8 @@ class coreModule extends zModule {
 	public $path = [];
 	public $raw_path = '';
 
+	private $page_keywords = '';
+
 	public function onEnabled() {
 		$this->default_app_dir = __DIR__ . '/../';
 		$this->requireModule('errorlog');
@@ -299,11 +301,23 @@ class coreModule extends zModule {
 		$this->includeJS($js_path, $abs, 'head');
 	}
 
+	public function includeFavicon($path = 'favicon.ico') {
+		$path = $this->url($path);
+		$this->addToIncludes($path, 'favicon', 'head');
+	}
+
 	public function includeCSS($css_path, $abs = false, $placement = 'head') {
 		if (!$abs) {
 			$css_path = $this->url($css_path);
 		}
 		$this->addToIncludes($css_path, 'link_css', $placement);
+	}
+
+	public function includePrintCSS($css_path, $abs = false) {
+		if (!$abs) {
+			$css_path = $this->url($css_path);
+		}
+		$this->addToIncludes($css_path, 'print_css', 'head');
 	}
 
 	public function includeLESS($less_path, $abs = false, $placement = 'head') {
@@ -333,11 +347,17 @@ class coreModule extends zModule {
 				case 'link_css':
 					echo sprintf('<link rel="stylesheet" type="text/css" href="%s">', $incl[0]);
 				break;
+				case 'print_css':
+					echo sprintf('<link rel="stylesheet" type="text/css" href="%s" media="print">', $incl[0]);
+				break;
 				case 'link_less':
 					echo sprintf('<link rel="stylesheet/less" type="text/css" href="%s" />', $incl[0]);
 				break;
+				case 'favicon':
+					echo sprintf('<link rel="shortcut icon" type="image/x-icon" href="%s" />', $incl[0]);
+				break;
 				default:
-					throw new Exception(sprintf('Unknown include type: ', $incl[1]));
+					throw new Exception(sprintf('Unknown include type: %s', $incl[1]));
 				break;
 			}
 		}
@@ -476,6 +496,29 @@ class coreModule extends zModule {
 
 	public function runPageController() {
 		$this->runController();
+	}
+
+	/**
+	*	This will render e-mail address into the page in such a way that it can't be scraped by bots.
+	*/
+	public function secureEmail($email) {
+		$email_arr = explode('@', $email);
+		$secure_email = '<script>';
+		$secure_email .= sprintf('document.write(\'%s\');', z::toHtmlEntities($email_arr[0]));
+		$secure_email .= sprintf('document.write(\'%s\');', z::toHtmlEntities('@'));
+		$secure_email .= sprintf('document.write(\'%s\');', z::toHtmlEntities($email_arr[1]));
+		$secure_email .= '</script>';
+		return $secure_email;
+	}
+
+	/* META */
+
+	public function getPageKeywords() {
+		return $this->page_keywords;
+	}
+
+	public function setPageKeywords($keywords) {
+		$this->page_keywords = $keywords;
 	}
 
 }

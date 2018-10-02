@@ -163,6 +163,14 @@ class z {
 		return password_verify($value, $hash);
 	}
 
+	/**
+	* Convert all characters in a string to html entities.
+	*/
+	static function toHtmlEntities($string) {
+		$convmap = array(0, 0xffffff, 0, 0xffffff);
+	  return mb_encode_numericentity($string, $convmap);
+	}
+
 	/*
 		TOKEN GENERATOR
 

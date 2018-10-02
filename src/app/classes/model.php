@@ -19,12 +19,11 @@ class zModel {
 
 	function __construct(dbModule $db = null, int $id = null) {
 		$this->db = $db;
-		if (isset($this->table_name)) {
-			$class_name = get_called_class();
+		$class_name = get_called_class();
+		if (!(isset(zModel::$table_names[$class_name])) && isset($this->table_name)) {
 			zModel::$table_names[$class_name] = $this->table_name;
 		}
-		if (isset($this->id_name)) {
-			$class_name = get_called_class();
+		if (!(isset(zModel::$id_names[$class_name])) && isset($this->id_name)) {
 			zModel::$id_names[$class_name] = $this->id_name;
 		}
 		if (isset($id)) {
@@ -35,7 +34,10 @@ class zModel {
 	static function getTableName() : string {
 		$class_name = get_called_class();
 		if (!(isset(zModel::$table_names[$class_name]))) {
-			zModel::$table_names[$class_name] = strtolower(substr($class_name, 0, strlen($class_name) - 5));
+			$dummy = new $class_name();
+			if (!(isset(zModel::$table_names[$class_name]))) {
+				zModel::$table_names[$class_name] = strtolower(substr($class_name, 0, strlen($class_name) - 5));
+			}
 		}
 		return zModel::$table_names[$class_name];
 	}
@@ -43,7 +45,10 @@ class zModel {
 	static function getIdName() : string {
 		$class_name = get_called_class();
 		if (!(isset(zModel::$id_names[$class_name]))) {
-			zModel::$id_names[$class_name] = $class_name::getTableName() . '_id';
+			$dummy = new $class_name();
+			if (!(isset(zModel::$id_names[$class_name]))) {
+				zModel::$id_names[$class_name] = $class_name::getTableName() . '_id';
+			}
 		}
 		return zModel::$id_names[$class_name];
 	}
@@ -179,6 +184,10 @@ class zModel {
 
 	/* static methods for working with arrays of models */
 
+	/**
+	* Find an element matching the filter.
+	* @return zModel
+	*/
 	static function find($arr, $field, $value) {
 		if (isset($arr) && count($arr) > 0) {
 			foreach ($arr as $model) {
@@ -192,6 +201,10 @@ class zModel {
 		}
 	}
 
+	/**
+	* Return sum of values in a single column.
+	* @return Number
+	*/
 	static function sum($arr, $field) {
 		$sum = 0;
 		foreach ($arr as $model) {

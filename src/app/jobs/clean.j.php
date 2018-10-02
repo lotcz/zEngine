@@ -1,14 +1,14 @@
 <?php
 	$this->requireModule('auth');
 
-	$sessions = UserSession::select(
+	$sessions = UserSessionModel::select(
 		/* db */		$this->z->db,
-		/* table */		'user_sessions',
+		/* table */		'user_session',
 		/* where */		'user_session_expires <= ?',
-		/* bindings */	[SqlQuery::mysqlTimestamp(time())],
-		/* types */		null,
-		/* paging */	null,
-		/* orderby */	null
+		/* orderby */	null,
+		/* limit */	null,
+		/* bindings */	[z::mysqlTimestamp(time())],
+		/* types */		[PDO::PARAM_INT]
 	);
 
 	foreach ($sessions as $session) {

@@ -44,6 +44,10 @@ function validate_min(n, param) {
 	return  (parseFloat(n) >= parseFloat(param));
 }
 
+function validate_max(n, param) {
+	return  (parseFloat(n) <= parseFloat(param));
+}
+
 function validate_decimal(n) {
 	return !isNaN(parseFloat(n)) && isFinite(n);
 }
@@ -74,8 +78,8 @@ function validate_zip(zip) {
 	return (parseInt(nZip) > 9999 && parseInt(nZip) < 100000);
 }
 
-function formValidation(frm) {
-	this.frm = $('#' + frm);
+function formValidation(form_name) {
+	this.frm = $('#' + form_name);
 	this.is_valid = true;
 	this.fields = [];
 
@@ -100,7 +104,7 @@ function formValidation(frm) {
 		return $('#' + field_name, this.frm).val();
 	}
 
-	this.show_validation = function(field_name, validation, is_valid) {
+	this.showFieldValidation = function(field_name, validation, is_valid) {
 		if (is_valid) {
 			$('#' + field_name + '_validation_' + validation, this.frm).hide();
 			$('#' + field_name + '_form_group', this.frm).removeClass('has-error');
@@ -112,7 +116,13 @@ function formValidation(frm) {
 		}
 	}
 
-	this.validate = function(field) {
+	this.validateField = function(field) {
+		var is_valid = this.isFieldValid(field);
+		this.showFieldValidation(field.name, field.validation, is_valid);
+		return is_valid;
+	}
+
+	this.isFieldValid = function(field) {
 		var is_valid = true;
 		var value = this.val(field.name);
 		switch (field.validation) {
@@ -123,7 +133,6 @@ function formValidation(frm) {
 			default:
 				is_valid = window['validate_' + field.validation](value, field.param);
 		}
-		this.show_validation(field.name, field.validation, is_valid);
 		return is_valid;
 	}
 
@@ -132,7 +141,7 @@ function formValidation(frm) {
 function formField(field_name, validation, param) {
 	this.name = field_name;
 	this.validation = validation || 'length';
-	this.param = param || 1;
+	this.param = param;
 }
 
 function deleteItemConfirm(delete_question, delete_url) {

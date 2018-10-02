@@ -8,7 +8,7 @@ class jobsModule extends zModule {
 	//url base for running jobs
 	public $base_url = 'jobs';
 
-	public $security_token = 'XMFY24689CBNHe2AC0q456MOa';
+	public $security_token = 'jobs123';
 
 	public function onEnabled() {
 		$this->base_url = $this->getConfigValue('base_url', $this->base_url);
