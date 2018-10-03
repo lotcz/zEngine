@@ -39,13 +39,14 @@ class resourcesModule extends zModule {
 				if (isset($_SERVER['HTTP_IF_NONE_MATCH']) && ($Etag == $_SERVER['HTTP_IF_NONE_MATCH'])) {
 					http_response_code(304);
 					header('Cache-Control: max-age=' . $this->getConfigValue('default_cache_age', 120));
-					header('ETag: ' . $Etag);					
+					header('ETag: ' . $Etag);
 					exit;
 				} else {
 					$path_parts = pathinfo($resource_file);
 					header('Content-Description: File Transfer');
 					header('Content-Type: ' . Self::getContentType($path_parts['extension']));
 					header('Content-Disposition: attachment; filename="' . $resource_file . '"');
+					header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + $this->getConfigValue('default_cache_age', 120)));
 					header('Cache-Control: max-age=' . $this->getConfigValue('default_cache_age', 120));
 					header('ETag: ' . $Etag);
 					header('Pragma: public');
