@@ -9,7 +9,7 @@ require_once __DIR__ . '/app/classes/module.php';
 */
 class zEngine {
 
-	public $version = 3.2;
+	public $version = 3.3;
   public $app_dir = '';
 	public $modules = [];
 
@@ -31,9 +31,16 @@ class zEngine {
 				$module = new $module_class($this);
 				$module->name = $module_name;
 
+				// look for app's own module config file
 				$module_config_path = $this->app_dir . "config/$module_name.php";
 				if (file_exists($module_config_path)) {
 					$module->config = include $module_config_path;
+				} else {
+					// look for zEngine's default module config file
+					$module_config_path = __DIR__ . "/app/config/$module_name.php";
+					if (file_exists($module_config_path)) {
+						$module->config = include $module_config_path;
+					}
 				}
 
 				// enable dependency modules

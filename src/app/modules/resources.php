@@ -30,10 +30,14 @@ class resourcesModule extends zModule {
 			if ($this->z->core->pathExists(2)) {
 				$resource_file .= '/' . $this->z->core->getPath(2);
 			}
-			$resource_path = __DIR__ . $this->base_dir . $resource_file;
+			$resource_path = $this->z->app_dir . 'resources/' . $resource_file;
+			if (!file_exists($resource_path)) {
+				$resource_path = __DIR__ . $this->base_dir . $resource_file;
+			}
 			if (file_exists($resource_path)) {
 				$Etag = filemtime($resource_path);
 				if (isset($_SERVER['HTTP_IF_NONE_MATCH']) && ($Etag == $_SERVER['HTTP_IF_NONE_MATCH'])) {
+					header('Cache-Control: max-age=' . $this->getConfigValue('default_cache_age', 120));
 					header('ETag: ' . $Etag);
 					http_response_code(304);
 					exit;
@@ -42,6 +46,7 @@ class resourcesModule extends zModule {
 					header('Content-Description: File Transfer');
 					header('Content-Type: ' . Self::getContentType($path_parts['extension']));
 					header('Content-Disposition: attachment; filename="' . $resource_file . '"');
+					header('Cache-Control: max-age=' . $this->getConfigValue('default_cache_age', 120));
 					header('ETag: ' . $Etag);
 					header('Pragma: public');
 					header('Content-Length: ' . filesize($resource_path));
