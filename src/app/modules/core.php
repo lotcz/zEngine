@@ -169,7 +169,8 @@ class coreModule extends zModule {
 		if ($this->raw_path == $path) {
 			$css .= ' active';
 		}
-		return sprintf('<a href="%s" class="%s">%s</a>', $this->url($path, $ret), $css, $this->t($title));
+		$translated_title = $this->t($title);
+		return sprintf('<a href="%s" title="%s" class="%s">%s</a>', $this->url($path, $ret), $translated_title, $css, $translated_title);
 	}
 
 	/**
