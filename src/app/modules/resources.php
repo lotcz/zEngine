@@ -37,9 +37,9 @@ class resourcesModule extends zModule {
 			if (file_exists($resource_path)) {
 				$Etag = filemtime($resource_path);
 				if (isset($_SERVER['HTTP_IF_NONE_MATCH']) && ($Etag == $_SERVER['HTTP_IF_NONE_MATCH'])) {
-					header('Cache-Control: max-age=' . $this->getConfigValue('default_cache_age', 120));
-					header('ETag: ' . $Etag);
 					http_response_code(304);
+					header('Cache-Control: max-age=' . $this->getConfigValue('default_cache_age', 120));
+					header('ETag: ' . $Etag);					
 					exit;
 				} else {
 					$path_parts = pathinfo($resource_file);
