@@ -121,10 +121,9 @@ class zForm {
 						$field->select_data[] = $empty_option;
 					}
 				} elseif ($field->type == 'foreign_key_link') {
-					$entity = new zModel($db);
-					$entity->table_name = $field->link_table;
 					$filter = sprintf('%s = ?', $field->link_id_field);
-					$entity->loadSingle($filter, [$this->data->val($field->name)]);
+					$result = zModel::select($db, $field->link_table, $filter, null, null, [$this->data->val($field->name)], [PDO::PARAM_STR]);
+					$entity = $result[0];
 					$field->link_label = $entity->val($field->link_label_field);
 					$field->link_url = sprintf($field->link_template, $entity->val($field->link_id_field));
 				}

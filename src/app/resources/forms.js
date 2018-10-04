@@ -86,7 +86,7 @@ function formValidation(form_name) {
 	this.submit = function() {
 		this.is_valid = true;
 		for (var i = 0, max = this.fields.length; i < max; i++) {
-			this.is_valid = this.validate(this.fields[i]) && this.is_valid;
+			this.is_valid = this.validateField(this.fields[i]) && this.is_valid;
 		}
 		if (this.is_valid) {
 			this.frm.submit();

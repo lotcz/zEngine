@@ -61,7 +61,7 @@ class adminModule extends zModule {
 	}
 
 	/**
-	*
+	* Log user in if login and password are correct and return true if successful.
 	* @return bool
 	*/
 	public function login($login_or_email, $password) : bool {
@@ -185,11 +185,11 @@ class adminModule extends zModule {
 		$this->z->core->setPageTemplate('admin');
 	}
 
-	public function getAdminFormButtons($form) {
+	public function getAdminFormButtons($form, $model_class_name) {
 		$buttons = [];
 		$buttons[] = ['type' => 'link', 'label' => 'Back', 'link_url' => $this->z->core->return_path, 'css' => 'm-2'];
 
-		$model_id = $form->data->ival($form->data->id_name);
+		$model_id = $form->data->ival($model_class_name::getIdName());
 		if ($model_id > 0) {
 			$delete_question = $this->z->core->t('Are you sure to delete this item?');
 			$delete_url = $this->z->core->url(sprintf($this->base_url . '/default/default/' .  str_replace('_', '-', $form->id) . '/delete/%d', $model_id), $this->z->core->return_path);
@@ -233,7 +233,7 @@ class adminModule extends zModule {
 			[
 				'name' => 'form_buttons',
 				'type' => 'buttons',
-				'buttons' => $this->getAdminFormButtons($form)
+				'buttons' => $this->getAdminFormButtons($form, $model_class_name)
 			]
 		);
 
