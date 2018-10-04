@@ -505,7 +505,8 @@ class coreModule extends zModule {
 	}
 
 	/**
-	*	This will render e-mail address into the page in such a way that it can't be scraped by bots.
+	*	This will return e-mail address to be rendered into the page in such a way that it can't be scraped by bots.
+	* @return String
 	*/
 	public function secureEmail($email) {
 		$email_arr = explode('@', $email);
@@ -515,6 +516,24 @@ class coreModule extends zModule {
 		$secure_email .= sprintf('document.write(\'%s\');', z::toHtmlEntities($email_arr[1]));
 		$secure_email .= '</script>';
 		return $secure_email;
+	}
+
+	/**
+	*	This will render mailto link into the page in such a way that address can't be scraped by bots.
+	*/
+	public function renderSecureEmailLink($email) {
+		$random_token = z::generateRandomToken(4);
+		$email_arr = explode('@', $email);
+			?>
+				<a id="<?=$random_token ?>"><?=$this->t('Turn on Javascript to see the e-email address.') ?></a>
+				<script>
+					var addr = ['<?=$email_arr[0] ?>', '<?=$email_arr[1] ?>'].join('@');
+					var el = document.getElementById('<?=$random_token ?>');
+					el.href = 'mailto:' + addr;
+					el.textContent = addr;
+					el.title = addr;
+				</script>
+			<?php
 	}
 
 	/* META */
