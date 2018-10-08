@@ -2,7 +2,6 @@
 
 	$this->setPageTitle('Currencies');
 	$this->renderAdminTable(
-		'currency', 		
 		'currency',
 		[
 			[

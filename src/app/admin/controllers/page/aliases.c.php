@@ -2,7 +2,6 @@
 
 	$this->setPageTitle('Aliases');
 	$this->renderAdminTable(
-		'alias', 		
 		'alias',
 		[
 			[

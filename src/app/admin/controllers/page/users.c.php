@@ -3,7 +3,6 @@
 	$this->setPageTitle('Users');
 	$this->renderAdminTable(
 		'user',
-		'user',
 		[
 			[
 				'name' => 'user_name',

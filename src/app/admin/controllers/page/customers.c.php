@@ -2,7 +2,6 @@
 	$this->setPageTitle('Customers');
 	$this->renderAdminTable(
 		'customer',
-		'customer',
 		[
 			[
 				'name' => 'customer_state',

@@ -14,9 +14,56 @@ class tablesModule extends zModule {
 		$this->z->core->includeCSS('resources/tables.css');
 	}
 
-	public function createTable() {
-		$this->paging->limit = $this->getConfigValue('page_size');
-		$this->paging->$max_pages_links = $this->getConfigValue('max_pages_links');
+	public function createTable($name = 'table or view', $css = '') {
+		$table = new zTable($name, $css);
+		$table->paging = zPaging::getFromUrl(null, $this->getConfigValue('page_size'));
+		return $table;
+	}
+
+	public function prepareTable($table) {
+		// filtering
+		if (isset($table->filter_form) && z::isPost()) {
+			$filter_values = $table->filter_form->processed_input;
+			$where = [];
+			$table->bindings = [];
+			$table->types = '';
+			foreach ($table->filter_form->fields as $field) {
+				if ($field->type == 'text') {
+					foreach ($field->filter_fields as $filter_field) {
+						$field->value = $filter_values[$field->name];
+						if (strlen($filter_values[$field->name]) > 0) {
+							$where[] = sprintf('%s like ?', $filter_field);
+							$table->bindings[] = '%' . $filter_values[$field->name] . '%';
+							$table->types .= 's';
+						}
+					}
+				}
+			}
+			if (count($where)) {
+				$table->where = implode($where, ' or ');
+			} else {
+				$table->where = null;
+				$table->bindings = null;
+				$table->types = null;
+			}
+		}
+
+		$table->paging->total_records = $this->z->db->getRecordCount(
+			$table->name,
+			$table->where,
+			$table->bindings,
+			$table->types
+		);
+
+		$table->data = zModel::select(
+			$this->z->db,
+			$table->name,
+			$table->where,
+			$table->paging->getOrderBy(),
+			$table->paging->getLimit(),
+			$table->bindings,
+			$table->types
+		);
 
 	}
 
@@ -49,7 +96,7 @@ class tablesModule extends zModule {
 							<?php
 
 								foreach ($table->data as $row) {
-									$item_url = $this->z->core->url(sprintf($table->edit_link, $row->val($table->id_field)), $this->z->core->raw_path);
+									$item_url = $this->z->core->url(sprintf($table->edit_link, $row->val($table->id_field_name)), $this->z->core->raw_path);
 									?>
 										<tr onclick="javascript:document.location = '<?=$item_url ?>';" class="">
 											<?php

@@ -148,7 +148,7 @@ class adminModule extends zModule {
 	/**
 	* Render default table for administration area.
 	*/
-	public function renderAdminTable($table_name, $entity_name, $fields, $filter_fields = null) {
+	public function renderAdminTable($entity_name, $fields, $filter_fields = null) {
 		$form = new zForm($entity_name, '', 'POST', 'form-inline');
 		$form->type = 'inline';
 		$form->render_wrapper = true;
@@ -175,12 +175,16 @@ class adminModule extends zModule {
 		}
 		$this->z->core->setData('form', $form);
 
-		$table = new zAdminTable($table_name, $entity_name);
+		$table = $this->z->tables->createTable($entity_name, 'table-striped table-sm table-bordered table-hover mt-2');
+		$table->id_field_name = $entity_name . '_id';
+		$table->edit_link = sprintf('admin/default/default/%s/edit/',  str_replace('_', '-', $entity_name)) . '%d';
+	 	$table->new_link = sprintf('admin/default/default/%s',  str_replace('_', '-', $entity_name));
+
 		$table->add($fields);
 		if (isset($filter_fields)) {
 			$table->filter_form = $form;
 		}
-		$table->prepare($this->z->db);
+		$this->z->tables->prepareTable($table);
 		$this->z->core->setData('table', $table);
 		$this->z->core->setPageTemplate('admin');
 	}

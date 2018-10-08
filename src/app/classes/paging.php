@@ -34,8 +34,8 @@ class zPaging {
 		}
 	}
 
-	static function getFromUrl($sorting_items = null) {
-		$paging = new zPaging();
+	static function getFromUrl($custom_offset = null, $custom_limit = null, $sorting_items = null) {
+		$paging = new zPaging($custom_offset, $custom_limit);
 		$paging->loadFromUrl($sorting_items);
 		return $paging;
 	}

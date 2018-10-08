@@ -2,7 +2,6 @@
 
 	$this->setPageTitle('Failed Attempts');
 	$this->renderAdminTable(
-		'ip_failed_attempt', 		
 		'ip_failed_attempt',
 		[
 			[

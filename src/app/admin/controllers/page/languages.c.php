@@ -2,7 +2,6 @@
 
 	$this->setPageTitle('Languages');
 	$this->renderAdminTable(
-		'language', 		
 		'language',
 		[
 			[
