@@ -1,4 +1,4 @@
-Z_VERSION = v3
+Z_VERSION = v4
 
 perms:
 	chown -R www-data:www-data ../zEngine
