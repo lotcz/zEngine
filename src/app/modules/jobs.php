@@ -30,7 +30,7 @@ class jobsModule extends zModule {
 				exit;
 
 			} else {
-				die('Wrong security token.');
+				die(sprintf('Wrong security token. Your token: %s', $security_token));
 			}
 		}
 	}
