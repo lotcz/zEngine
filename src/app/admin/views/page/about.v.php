@@ -7,7 +7,7 @@
 			</tr>
 			<tr>
 				<td><?=$this->t('zEngine version')?>:</td>
-				<td><strong><?=$this->z->version ?></strong> (<?=$this->t('required at least %s', $this->z->app->require_z_version) ?>)</td>
+				<td><strong><?=$this->z->version ?></strong> (<?=$this->t('required at least %s', $this->z->app->minimum_z_version) ?>)</td>
 			</tr>
 		</table>
 	</div>
@@ -22,7 +22,7 @@
 		</div>
 	</div>
 </div>
-	
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.bundle.min.js"></script>
 
 <script>
