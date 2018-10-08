@@ -14,6 +14,12 @@ class tablesModule extends zModule {
 		$this->z->core->includeCSS('resources/tables.css');
 	}
 
+	public function createTable() {
+		$this->paging->limit = $this->getConfigValue('page_size');
+		$this->paging->$max_pages_links = $this->getConfigValue('max_pages_links');
+
+	}
+
 	public function renderTable($table) {
 		if (isset($table->paging)) {
 			$table->paging->renderLinks();

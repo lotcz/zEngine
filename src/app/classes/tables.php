@@ -21,9 +21,6 @@ class zTable {
 	public $fields = [];
 	public $data = [];
 
-	public $page_size = 20;
-	public $max_pages_links = 20;
-
 	function __construct($name = 'table or view', $id_field = '', $edit_link = '', $new_link = '', $css = '') {
 		$this->name = $name;
 		$this->id_field = $id_field;
@@ -48,8 +45,6 @@ class zTable {
 
 	public function prepare($db) {
 		$this->paging = zPaging::getFromUrl();
-		$this->paging->limit = $this->page_size;
-		zPaging::$max_pages_links = $this->max_pages_links;
 
 		// filtering
 		if (isset($this->filter_form) && z::isPost()) {
@@ -78,6 +73,13 @@ class zTable {
 			}
 		}
 
+		$this->paging->total_records = $db->getRecordCount(
+			$this->name,
+			$this->where,
+			$this->bindings,
+			$this->types
+		);
+		
 		$this->data = zModel::select(
 			$db,
 			$this->name,

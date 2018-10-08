@@ -6,6 +6,10 @@
 		'user',
 		[
 			[
+				'name' => 'user_name',
+				'label' => 'Full name'
+			],
+			[
 				'name' => 'user_login',
 				'label' => 'Login'
 			],
