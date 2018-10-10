@@ -168,7 +168,7 @@ class dbModule extends zModule {
 	*/
 	public function getRecordCount($table_name, $where = null, $bindings = null, $types = null) {
 		$count = null;
-		$statement = $this->executeSelectQuery($table_name, ['count(*) as cnt'], $where, $bindings, $types);
+		$statement = $this->executeSelectQuery($table_name, ['count(*) as cnt'], $where, null, null, $bindings, $types);
 		if ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
 			$count = z::parseInt($row['cnt']);
 		}
