@@ -40,6 +40,23 @@
 				]
 			],
 			[
+				'name' => 'language_date_format',
+				'label' => 'Date format',
+				'type' => 'text',
+				'validations' => [
+					['type' => 'length', 'param' => 1]
+				]
+			],
+			[
+				'name' => 'language_datetime_format',
+				'label' => 'Date & time format',
+				'type' => 'text',
+				'validations' => [
+					['type' => 'length', 'param' => 1]
+				],
+				'hint' => 'Date and Date & time are formatted with PHP <a href="http://php.net/manual/en/function.date.php" target="_blank">date</a> function.'
+			],
+			[
 				'name' => 'language_default_currency_id',
 				'label' => 'Default Currency',
 				'type' => 'select',
