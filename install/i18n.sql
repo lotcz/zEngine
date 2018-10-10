@@ -30,5 +30,5 @@ CREATE TABLE `language` (
     REFERENCES `currency` (`currency_id`)
 )ENGINE = InnoDB;
 
-INSERT INTO language VALUES (NULL, 'English','en','j/n/Y','j/n/Y h:i:s', '.', ',',2);
-INSERT INTO language VALUES (NULL, 'Čeština','cs','j.n.Y','j.n.Y h:i:s', ',', '&nbsp',1);
+INSERT INTO language VALUES (NULL, 'English', 'en', 'j/n/Y', 'j/n/Y h:i:s', '.', ',', 2);
+INSERT INTO language VALUES (NULL, 'Čeština', 'cs', 'j.n.Y', 'j.n.Y H:i:s', ',', '&nbsp', 1);
