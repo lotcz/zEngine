@@ -1,4 +1,4 @@
-Z_VERSION = v4
+Z_VERSION = master
 
 perms:
 	chown -R www-data:www-data ../zEngine

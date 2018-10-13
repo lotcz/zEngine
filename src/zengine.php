@@ -13,8 +13,9 @@ class zEngine {
   public $app_dir = '';
 	public $modules = [];
 
-	function __construct($app_dir = 'app/', $modules = ['core']) {
+	function __construct($app_dir = 'app/', $modules = []) {
 		$this->app_dir = $app_dir;
+		$this->enableModule('core');
 		foreach ($modules as $module_name) {
 			$this->enableModule($module_name);
 		}
@@ -31,17 +32,40 @@ class zEngine {
 				$module = new $module_class($this);
 				$module->name = $module_name;
 
-				// look for app's own module config file
-				$module_config_path = $this->app_dir . "config/$module_name.php";
-				if (file_exists($module_config_path)) {
-					$module->config = include $module_config_path;
-				} else {
-					// look for zEngine's default module config file
-					$module_config_path = __DIR__ . "/app/config/$module_name.php";
-					if (file_exists($module_config_path)) {
-						$module->config = include $module_config_path;
-					}
+				/**
+				* zEngine's default config for this module.
+				*/
+				$default_config = [];
+
+				/**
+				* App's own default config for this module.
+				*/
+				$app_config = [];
+
+				/**
+				* Local config for this module specific to deployment.
+				*/
+				$local_config = [];
+
+				// look for zEngine's default module config file
+				$default_config_path = __DIR__ . "/app/config/$module_name.php";
+				if (file_exists($default_config_path)) {
+					$default_config = include $default_config_path;
 				}
+
+				// look for app's own default module config file
+				$app_config_path = $this->app_dir . "config/$module_name.php";
+				if (file_exists($app_config_path)) {
+					$app_config = include $app_config_path;
+				}
+
+				// look for app's local module config file
+				$local_config_path = $this->app_dir . "config/local/$module_name.php";
+				if (file_exists($local_config_path)) {
+					$local_config = include $local_config_path;
+				}
+
+				$module->config = z::mergeAssocArrays(z::mergeAssocArrays($default_config, $app_config), $local_config);
 
 				// enable dependency modules
 				foreach ($module->depends_on as $dependecy_module_name) {

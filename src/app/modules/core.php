@@ -7,6 +7,12 @@
 */
 class coreModule extends zModule {
 
+	public $depends_on = ['errorlog'];
+
+	public $app_version = 0.0;
+  public $require_z_version = 4;
+	public $minimum_z_version = 4;
+
 	//path to application directory
 	public $app_dir = null;
 
@@ -40,15 +46,64 @@ class coreModule extends zModule {
 
 	public function onEnabled() {
 		$this->default_app_dir = __DIR__ . '/../';
-		$this->requireModule('errorlog');
 		$this->app_dir = $this->z->app_dir;
-		$this->requireConfig('base_url');
 		$this->base_url = $this->getConfigValue('base_url');
 		$this->debug_mode = $this->getConfigValue('debug_mode', $this->debug_mode);
 		$this->error_page = $this->getConfigValue('error_page', $this->error_page);
 		$this->not_found_path = $this->getConfigValue('not_found_path', $this->not_found_path);
+
+		$this->app_version = $this->getConfigValue('app_version', $this->app_version);
+		$this->require_z_version = intval($this->getConfigValue('require_z_version', $this->require_z_version));
+    $this->minimum_z_version = $this->getConfigValue('minimum_z_version', $this->minimum_z_version);
+
+		if (intval($this->z->version) != $this->require_z_version) {
+			throw new Exception(sprintf('Application is for zEngine version %d. zEngine is version %s.', $this->require_z_version, $this->z->version));
+		}
+
+		if ($this->z->version < $this->minimum_z_version) {
+			throw new Exception(sprintf('zEngine version %s is too old. Application requires at least version %s.', $this->z->version, $this->minimum_z_version));
+		}
+
 		$this->setData('site_title', $this->getConfigValue('site_title', 'Site Name'));
-		$this->return_path = z::get('r', false);
+		$this->return_path = z::get($this->getConfigValue('return_path_name'), false);
+
+		// activate default modules
+		$default_modules = $this->getConfigValue('default_modules', []);
+		foreach ($default_modules as $module_name) {
+			$this->requireModule($module_name);
+		}
+
+		// process default includes
+		$includes = $this->getConfigValue('includes',[]);
+		foreach ($includes as $include) {
+			$this->z->core->addToIncludes(($include[1]) ? $include[0] : $this->z->core->url($include[0]), $include[2], $include[3]);
+		}
+
+	}
+
+	public function installAllModules($db_login = null, $db_password = null, $db_name = null) {
+		$installed_modules = [];
+		foreach ($this->modules as $module_name) {
+			$this->installModule($module_name, $installed_modules, $db_login, $db_password, $db_name);
+		}
+		foreach ($this->getConfigValue('also_install', []) as $module_name) {
+			$this->installModule($module_name, $installed_modules, $db_login, $db_password, $db_name);
+		}
+	}
+
+	private function installModule($module_name, &$installed_modules, $db_login = null, $db_password = null, $db_name = null) {
+		if (!isset($installed_modules[$module_name])) {
+			$this->requireModule($module_name);
+			$module = $this->z->$module_name;
+			foreach ($module->depends_on as $depend_module_name) {
+				$this->installModule($depend_module_name, $installed_modules, $db_login, $db_password, $db_name);
+			}
+			foreach ($module->also_install as $also_module_name) {
+				$this->installModule($also_module_name, $installed_modules, $db_login, $db_password, $db_name);
+			}
+			$module->install($db_login, $db_password, $db_name);
+			$installed_modules[$module_name] = true;
+		}
 	}
 
 	public function pathExists($index) {

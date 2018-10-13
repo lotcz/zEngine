@@ -6,7 +6,7 @@
 class z {
 
 	static $crlf = "\r\n";
-	
+
 	/**
 	* Redirect to a new URL.
 	*/
@@ -171,6 +171,17 @@ class z {
 	static function toHtmlEntities($string) {
 		$convmap = array(0, 0xffffff, 0, 0xffffff);
 	  return mb_encode_numericentity($string, $convmap);
+	}
+
+	/**
+	* Takes seed array and replaces keys that exist in addition array with values from addition array.
+	* Used for example when merging module config files.
+	* @param $array_seed Array
+	* @param $array_addition Array
+	* @return Array
+	*/
+	static function mergeAssocArrays($array_seed, $array_addition) {
+		return array_merge($array_seed, $array_addition);
 	}
 
 	/*

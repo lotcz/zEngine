@@ -5,9 +5,21 @@
 */
 class zModule {
 
+	/**
+	* Reference to zEngine that owns this module.
+	*/
 	public $z = null;
-	public $config = null;
+
+	/**
+	* Short name of this module.
+	* Must be identical with php file names. Important when loading config files etc.
+	*/
 	public $name = null;
+
+	/**
+	* Final config for this module merged from zEngine's default, app's default and local.
+	*/
+	public $config = null;
 
 	/**
 	* Array of module names that this module depends on.
