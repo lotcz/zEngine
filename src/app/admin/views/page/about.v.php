@@ -3,11 +3,11 @@
 		<table>
 			<tr>
 				<td><?=$this->t('Application version')?>:</td>
-				<td><strong><?=$this->z->app->version ?></strong></td>
+				<td><strong><?=$this->z->core->app_version ?></strong></td>
 			</tr>
 			<tr>
 				<td><?=$this->t('zEngine version')?>:</td>
-				<td><strong><?=$this->z->version ?></strong> (<?=$this->t('required at least %s', $this->z->app->minimum_z_version) ?>)</td>
+				<td><strong><?=$this->z->version ?></strong> (<?=$this->t('required at least %s', $this->z->core->minimum_z_version) ?>)</td>
 			</tr>
 		</table>
 	</div>
