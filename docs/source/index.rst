@@ -10,6 +10,7 @@ Welcome to documentation of zEngine
    :maxdepth: 2
    :caption: Contents:
 
+   test
    
 Indices and tables
 ------------------
@@ -17,3 +18,5 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+  test
