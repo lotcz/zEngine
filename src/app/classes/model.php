@@ -61,6 +61,20 @@ class zModel {
 		}
 	}
 
+	/** Column names will be stripped of table names to be shorter.
+	* Useful when extracting data for json.
+	* @return Array associative array of columns
+	*/
+	public function getStrippedData() {
+		$table_name = $this->getTableName();
+		$strip_chars = strlen($table_name) + 1;
+		$result = [];
+		foreach ($this->data as $key => $value) {
+			$result[substr($key, $strip_chars)] = $this->data[$key];
+		}
+		return $result;
+	}
+
 	public function set($key, $value) {
 		$this->data[$key] = $value;
 	}
@@ -215,7 +229,7 @@ class zModel {
 
 	/**
 	* Will accept array of models, column name and type.
-	* Returns array of values of selected column.
+	* @return Array array of values from selected column.
 	*/
 	static function columnAsArray($arr, $field, $type = 's') {
 		$result = [];
@@ -227,6 +241,20 @@ class zModel {
 			} else {
 				$result[] = $model->val($field);
 			}
+		}
+		return $result;
+	}
+
+	/**
+	* Will accept array of models and return array of it's data.
+	* Column names will be stripped of table names to be shorter.
+	* Useful when extracting data for json.
+	* @return Array array of data components
+	*/
+	static function extractDataFromArray($arr) {
+		$result = [];
+		foreach ($arr as $model) {
+			$result[] = $model->getStrippedData();
 		}
 		return $result;
 	}

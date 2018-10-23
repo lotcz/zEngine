@@ -16,6 +16,7 @@ class authModule extends zModule {
 
 	public $user = null;
 	public $session = null;
+	public $session_token = null;
 
 	public $cookie_name = 'session_token';
 
@@ -53,8 +54,8 @@ class authModule extends zModule {
 		// TODO: check if IP address has too many sessions already
 
 		$this->user = $user;
-		$token = $this->generateSessionToken();
-		$token_hash = Self::hashPassword($token);
+		$this->session_token = $this->generateSessionToken();
+		$token_hash = Self::hashPassword($this->session_token);
 		$expires = time() + $this->config['session_expire'];
 		$session = new UserSessionModel($this->z->db);
 		$session->data['user_session_token_hash'] = $token_hash;
@@ -63,7 +64,7 @@ class authModule extends zModule {
 		$session->data['user_session_ip'] = $ip;
 		$session->save();
 		$this->session = $session;
-		$this->updateSessionCookie($token, $expires);
+		$this->updateSessionCookie($this->session_token, $expires);
 		$this->updateLastAccess();
 	}
 

@@ -2,7 +2,7 @@
 	$this->setPageTitle('Registration');
 	$this->requireModule('forms');
 
-	if ($this->auth->isAuth() && !$this->z->auth->isAnonymous()) {
+	if ($this->z->auth->isAuth() && !$this->z->auth->isAnonymous()) {
 		$this->redirect('profile');
 	} elseif (z::isPost()) {
 
