@@ -83,7 +83,7 @@ class coreModule extends zModule {
 
 	public function installAllModules($db_login = null, $db_password = null, $db_name = null) {
 		$installed_modules = [];
-		foreach ($this->modules as $module_name) {
+		foreach ($this->getConfigValue('modules', []) as $module_name) {
 			$this->installModule($module_name, $installed_modules, $db_login, $db_password, $db_name);
 		}
 		foreach ($this->getConfigValue('also_install', []) as $module_name) {
