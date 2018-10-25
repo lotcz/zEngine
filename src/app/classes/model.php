@@ -75,6 +75,18 @@ class zModel {
 		return $result;
 	}
 
+	/** Column names will be prefixed by table names.
+	* This is reverse to getStrippedData
+	*/
+	public function setFromStrippedData($data) {
+		if (isset($data)) {
+			$table_name = $this->getTableName();
+			foreach ($data as $key => $value) {
+				$this->set($table_name . '_' . $key, $value);
+			}
+		}
+	}
+
 	public function set($key, $value) {
 		$this->data[$key] = $value;
 	}
