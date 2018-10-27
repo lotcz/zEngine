@@ -30,6 +30,10 @@
 		addToConsole(data + '<br/>');
 	}
 
+	function jobErrored(request, message, error) {
+		addToConsole(request.responseText + '<br/>');
+	}
+
 	function runCustomJob() {
 		var job_name = $('#custom').val();
 		runJob(job_name);
@@ -43,7 +47,8 @@
 				job: name,
 				security_token: '<?=$this->z->jobs->getConfigValue('security_token') ?>'
 			},
-			success: jobFinished
+			success: jobFinished,
+			error: jobErrored
 		});
 	}
 
