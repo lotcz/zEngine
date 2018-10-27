@@ -75,6 +75,13 @@ class zModel {
 		return $result;
 	}
 
+	/** Extracting data for json.
+	* @return Array associative array of columns
+	*/
+	public function getJson() {
+		return (Object) $this->getStrippedData();
+	}
+
 	/** Column names will be prefixed by table names.
 	* This is reverse to getStrippedData
 	*/
@@ -85,6 +92,13 @@ class zModel {
 				$this->set($table_name . '_' . $key, $value);
 			}
 		}
+	}
+
+	/**
+	* This is reverse to getJson
+	*/
+	public function setFromJson($json) {
+		$this->setFromStrippedData($json);
 	}
 
 	public function set($key, $value) {
