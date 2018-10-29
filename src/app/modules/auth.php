@@ -49,7 +49,7 @@ class authModule extends zModule {
 		$this->createSession($user);
 	}
 
-	private function createSession($user) {
+	public function createSession($user) {
 		$ip = $_SERVER['REMOTE_ADDR'];
 		// TODO: check if IP address has too many sessions already
 
@@ -66,6 +66,7 @@ class authModule extends zModule {
 		$this->session = $session;
 		$this->updateSessionCookie($this->session_token, $expires);
 		$this->updateLastAccess();
+		return $session;
 	}
 
 	private function updateSessionCookie($token, $expire) {
