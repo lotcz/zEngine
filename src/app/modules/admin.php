@@ -149,7 +149,10 @@ class adminModule extends zModule {
 	/**
 	* Render default table for administration area.
 	*/
-	public function renderAdminTable($entity_name, $fields, $filter_fields = null) {
+	public function renderAdminTable($entity_name, $fields, $filter_fields = null, $view_name = null) {
+		if (!isset($view_name)) {
+			$view_name = $entity_name;
+		}
 		$form = new zForm($entity_name, '', 'POST', 'form-inline');
 		$form->type = 'inline';
 		$form->render_wrapper = true;
@@ -157,7 +160,7 @@ class adminModule extends zModule {
 			'name' => 'form_buttons',
 			'type' => 'buttons',
 			'buttons' => [
-				['type' => 'link', 'label' => '+ Add', 'css' => 'btn btn-success mr-2' , 'link_url' => $this->base_url . '/' . str_replace('_', '-', $entity_name) . '?r=' . $this->z->core->raw_path]
+				['type' => 'link', 'label' => '+ Add', 'css' => 'btn btn-success mr-2' , 'link_url' => $this->base_url . '/' . $form->detail_page . '?r=' . $this->z->core->raw_path]
 			]
 		]);
 		if (isset($filter_fields)) {
@@ -176,10 +179,10 @@ class adminModule extends zModule {
 		}
 		$this->z->core->setData('form', $form);
 
-		$table = $this->z->tables->createTable($entity_name, 'table-striped table-sm table-bordered table-hover mt-2');
+		$table = $this->z->tables->createTable($entity_name, $view_name, 'table-striped table-sm table-bordered table-hover mt-2');		
 		$table->id_field_name = $entity_name . '_id';
-		$table->edit_link = sprintf('admin/default/default/%s/edit/',  str_replace('_', '-', $entity_name)) . '%d';
-	 	$table->new_link = sprintf('admin/default/default/%s',  str_replace('_', '-', $entity_name));
+		$table->edit_link = sprintf('admin/default/default/%s/edit/', $form->detail_page) . '%d';
+	 	$table->new_link = sprintf('admin/default/default/%s', $form->detail_page);
 
 		$table->add($fields);
 		if (isset($filter_fields)) {
@@ -197,7 +200,7 @@ class adminModule extends zModule {
 		$model_id = $form->data->ival($model_class_name::getIdName());
 		if ($model_id > 0) {
 			$delete_question = $this->z->core->t('Are you sure to delete this item?');
-			$delete_url = $this->z->core->url(sprintf($this->base_url . '/default/default/' .  str_replace('_', '-', $form->id) . '/delete/%d', $model_id), $this->z->core->return_path);
+			$delete_url = $this->z->core->url(sprintf($this->base_url . '/default/default/' . $form->detail_page . '/delete/%d', $model_id), $this->z->core->return_path);
 			$buttons[] = ['type' => 'button', 'label' => 'Delete', 'onclick' => 'deleteItemConfirm(\'' . $delete_question . '\',' . '\'' . $delete_url . '\');', 'css' => 'btn btn-danger m-2' ];
 		}
 
@@ -209,7 +212,7 @@ class adminModule extends zModule {
 	* Render default form for administration area.
 	*/
 	public function renderAdminForm($model_class_name, $fields, $onBeforeUpdate = null, $onAfterUpdate = null, $onBeforeDelete = null, $onAfterDelete = null) {
-		$entity_name = strtolower(substr($model_class_name, 0, strlen($model_class_name) - 5));
+		$entity_name = $model_class_name::getTableName();
 		$form = new zForm($entity_name);
 		$form->type = 'vertical';
 		$form->entity_title = ucwords(str_replace('_', ' ', $entity_name));

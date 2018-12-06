@@ -21,8 +21,12 @@ class zTable {
 	public $fields = [];
 	public $data = [];
 
-	function __construct($name = 'table or view', $css = '') {
-		$this->name = $name;
+	function __construct($entity_name = 'table or view', $view_name = null, $css = '') {
+		$this->entity_name = $entity_name;		
+		if (!isset($view_name)) {
+			$view_name = $entity_name;
+		}
+		$this->view_name = $view_name;
 		$this->css = $css;
 	}
 

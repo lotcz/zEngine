@@ -153,6 +153,10 @@ class z {
 		die();
 	}
 
+	static function dbg($var) {
+		z::debug($var);
+	}
+
 	static function formatForJS($value) {
 		return json_encode($value);
 	}

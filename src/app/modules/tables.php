@@ -14,9 +14,10 @@ class tablesModule extends zModule {
 		$this->z->core->includeCSS('resources/tables.css');
 	}
 
-	public function createTable($name = 'table or view', $css = '') {
-		$table = new zTable($name, $css);
+	public function createTable($entity_name = 'entity name', $view_name = null, $css = '') {
+		$table = new zTable($entity_name, $view_name, $css);
 		$table->paging = zPaging::getFromUrl(null, $this->getConfigValue('page_size'));
+		$table->detail_page = str_replace('_', '-', $entity_name);
 		return $table;
 	}
 
@@ -49,7 +50,7 @@ class tablesModule extends zModule {
 		}
 
 		$table->paging->total_records = $this->z->db->getRecordCount(
-			$table->name,
+			$table->view_name,
 			$table->where,
 			$table->bindings,
 			$table->types
@@ -57,7 +58,7 @@ class tablesModule extends zModule {
 
 		$table->data = zModel::select(
 			$this->z->db,
-			$table->name,
+			$table->view_name,
 			$table->where,
 			$table->paging->getOrderBy(),
 			$table->paging->getLimit(),

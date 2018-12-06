@@ -31,6 +31,7 @@ class zForm {
 		$this->method = $method;
 		$this->css = $css;
 		$this->ret = z::get('r');
+		$this->detail_page = str_replace('_', '-', $id);		
 	}
 
 	public function addField($field) {

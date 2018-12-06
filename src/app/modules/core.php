@@ -327,8 +327,8 @@ class coreModule extends zModule {
 		$this->z->admin->renderAdminMenu();
 	}
 
-	public function renderAdminTable($entity_name, $fields, $filter_fields = null) {
-		$this->z->admin->renderAdminTable($entity_name, $fields, $filter_fields);
+	public function renderAdminTable($entity_name, $fields, $filter_fields = null, $view_name = null) {
+		$this->z->admin->renderAdminTable($entity_name, $fields, $filter_fields, $view_name);
 	}
 
 	public function renderAdminForm($model_class_name, $fields, $onBeforeUpdate = null, $onAfterUpdate = null, $onBeforeDelete = null, $onAfterDelete = null) {
