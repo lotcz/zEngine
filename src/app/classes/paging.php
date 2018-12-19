@@ -92,7 +92,7 @@ class zPaging {
 				if ($this->total_pages > $this->max_pages_links) {
 					$allowed_links = floor(($this->max_pages_links-1)/2);
 					if (($this->current_page - $allowed_links) <= 1) { // only in ending
-						$render_end = Self::$max_pages_links - 1;
+						$render_end = $this->max_pages_links - 1;
 					} elseif ($this->current_page > ($this->total_pages - $allowed_links)) { // only in beginning
 						$render_start = $this->total_pages - $this->max_pages_links + 2;
 					} else { // both
