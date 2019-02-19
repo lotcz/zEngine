@@ -441,16 +441,32 @@ class coreModule extends zModule {
 		$this->templates[$type] = $template_name;
 	}
 
+	public function setView($type, $template_name) {
+		$this->setTemplate($type, $template_name);
+	}
+
 	public function setPageTemplate($template_name) {
 		$this->setTemplate('page', $template_name);
+	}
+
+	public function setPageView($template_name) {
+		$this->setPageTemplate($template_name);
 	}
 
 	public function setMainTemplate($template_name) {
 		$this->setTemplate('main', $template_name);
 	}
 
+	public function setMainView($template_name) {
+		$this->setMainTemplate($template_name);
+	}
+
 	public function setMasterTemplate($template_name) {
 		$this->setTemplate('master', $template_name);
+	}
+
+	public function setMasterView($template_name) {
+		$this->setMasterTemplate($template_name);
 	}
 
 	public function renderView($type = 'page') {
