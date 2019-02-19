@@ -8,6 +8,7 @@
 class coreModule extends zModule {
 
 	public $depends_on = ['errorlog'];
+	//public $also_install = ['i18n'];
 
 	public $app_version = 0.0;
   public $require_z_version = 4;

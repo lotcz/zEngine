@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../classes/model.php';
+
 class CurrencyModel extends zModel {
 
 	public function convert($price) {

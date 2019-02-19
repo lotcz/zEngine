@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../classes/model.php';
+
 class AdminModel extends zModel {
 
 	public function loadByUserId(int $user_id) {
@@ -8,5 +10,5 @@ class AdminModel extends zModel {
 		$types =  [PDO::PARAM_INT];
 		$this->loadSingle($where, $bindings, $types);
 	}
-	
+
 }

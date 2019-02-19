@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../classes/model.php';
+
 class FormXSRFTokenModel extends zModel {
 
 	public $table_name = 'form_xsrf_token';

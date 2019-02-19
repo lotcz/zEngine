@@ -9,8 +9,8 @@ require_once __DIR__ . '/../models/ip_failed.m.php';
 */
 class authModule extends zModule {
 
-	public $depends_on = ['resources', 'db', 'cookies', 'messages'];
-	public $also_install = ['i18n'];
+	public $depends_on = ['resources', 'db', 'i18n', 'cookies', 'messages'];
+	//public $also_install = [];
 
 	private $authentication_checked = false;
 

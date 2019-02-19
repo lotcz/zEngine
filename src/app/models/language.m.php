@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../classes/model.php';
+
 class LanguageModel extends zModel {
 
 	public function formatDecimal($number, $decimals = 2) {
