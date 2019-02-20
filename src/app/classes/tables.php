@@ -43,8 +43,8 @@ class zTable {
 		}
 	}
 
-	public function prepare($db) {
-		$this->paging = zPaging::getFromUrl();
+	public function prepare($db, $default_paging = null) {
+		$this->paging = zPaging::getFromUrl($default_paging);
 
 		// filtering
 		if (isset($this->filter_form) && z::isPost()) {
@@ -79,7 +79,7 @@ class zTable {
 			$this->bindings,
 			$this->types
 		);
-		
+
 		$this->data = zModel::select(
 			$db,
 			$this->name,

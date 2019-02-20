@@ -177,6 +177,39 @@ class dbModule extends zModule {
 	}
 
 	/**
+	* Returns median value
+	* @param String $table_name Name of the table.
+	* @param String $field_name Name of the field to calculate median of. Must be numeric.
+	* @param String $where WHERE part of sql query with ? placeholders.
+	* @param Array $bindings Array of values to be subject to binding.
+	* @param Array $types Array of PDO type specifications for binding values.
+	* @return float
+	*/
+	public function getMedianValue($table_name, $field_name, $where = null, $bindings = null, $types = null) {
+		$count = $this->getRecordCount($table_name, $where, $bindings, $types);
+		if ($count > 0) {
+			$field = "$field_name AS median";
+			if ($count % 2 == 0) {
+				$offset = ($count / 2) - 1;
+				$limit = 2;
+			} else {
+				$offset = floor($count / 2);
+				$limit = 1;
+			}
+			$limit_sql = "$offset, $limit";
+			$sum = 0;
+			$statement = $this->executeSelectQuery($table_name, [$field], $where, $field_name, $limit_sql, $bindings, $types);
+			while ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
+				$sum += z::parseFloat($row['median']);
+			}
+			$statement->closeCursor();
+			return $sum / $limit;
+		} else {
+			return 0;
+		}
+	}
+
+	/**
 	* Executes sql file through command line and returns output.
 	* @return string
 	*/
