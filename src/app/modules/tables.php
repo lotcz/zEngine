@@ -14,6 +14,9 @@ class tablesModule extends zModule {
 		$this->z->core->includeCSS('resources/tables.css');
 	}
 
+	public function createPaging() : zPaging {
+		return new zPaging(0, $this->getConfigValue('page_size'), $this->getConfigValue('max_pages_links'));
+
 	public function createTable($entity_name = 'entity name', $view_name = null, $css = '') {
 		$table = new zTable($entity_name, $view_name, $css);
 		$table->paging = zPaging::getFromUrl(null, $this->getConfigValue('page_size'));

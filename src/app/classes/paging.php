@@ -25,33 +25,37 @@ class zPaging {
 	public $sorting_items = [];
 	public $active_sorting = null;
 
-	function __construct($custom_offset = null, $custom_limit = null) {
+	function __construct($custom_offset = null, $custom_limit = null, $custom_max_pages_links = null) {
 		if (isset($custom_offset)) {
 			$this->offset = z::parseInt($custom_offset);
 		}
 		if (isset($custom_limit)) {
 			$this->limit = z::parseInt($custom_limit);
 		}
+		if (isset($custom_max_pages_links)) {
+			$this->max_pages_links = z::parseInt($custom_max_pages_links);
+		}
 	}
 
-	static function getFromUrl($custom_offset = null, $custom_limit = null, $sorting_items = null) {
-		$paging = new zPaging($custom_offset, $custom_limit);
-		$paging->loadFromUrl($sorting_items);
+	static function getFromUrl($default_paging = null) {
+		if ($default_paging == null) {
+			$paging = new zPaging();
+		} else {
+			$paging = $default_paging;
+		}
+		$paging->loadFromUrl();
 		return $paging;
 	}
 
-	public function loadFromUrl($sorting_items = null) {
+	public function loadFromUrl() {
 		if (isset($_GET[$this->url_name])) {
 			$arr = explode(',', $_GET[$this->url_name]);
 			$this->offset = z::parseInt($arr[0]);
 			$this->limit = z::parseInt($arr[1]);
 		}
 
-		if (isset($sorting_items) && count($sorting_items) > 0) {
-			$this->sorting_items = $sorting_items;
-			if (isset($_GET[$this->sorting_url_name])) {
-				$this->active_sorting = $_GET[$this->sorting_url_name];
-			}
+		if (isset($_GET[$this->sorting_url_name])) {
+			$this->active_sorting = $_GET[$this->sorting_url_name];
 			if (!isset($this->sorting_items[$this->active_sorting])) {
 				reset($this->sorting_items);
 				$this->active_sorting = key($this->sorting_items);
@@ -92,7 +96,7 @@ class zPaging {
 				if ($this->total_pages > $this->max_pages_links) {
 					$allowed_links = floor(($this->max_pages_links-1)/2);
 					if (($this->current_page - $allowed_links) <= 1) { // only in ending
-						$render_end = Self::$max_pages_links - 1;
+						$render_end = $this->max_pages_links - 1;
 					} elseif ($this->current_page > ($this->total_pages - $allowed_links)) { // only in beginning
 						$render_start = $this->total_pages - $this->max_pages_links + 2;
 					} else { // both

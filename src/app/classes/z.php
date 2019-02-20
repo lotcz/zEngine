@@ -146,11 +146,11 @@ class z {
 		}
 	}
 
-	function startsWith($haystack, $needle)	{
+	static function startsWith($haystack, $needle)	{
 		 return (substr($haystack, 0, strlen($needle)) === $needle);
 	}
 
-	function endsWith($haystack, $needle) {
+	static function endsWith($haystack, $needle) {
 		$length = strlen($needle);
 		return $length === 0 || (substr($haystack, -$length) === $needle);
 	}
