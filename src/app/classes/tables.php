@@ -22,7 +22,7 @@ class zTable {
 	public $data = [];
 
 	function __construct($entity_name = 'table or view', $view_name = null, $css = '') {
-		$this->entity_name = $entity_name;		
+		$this->entity_name = $entity_name;
 		if (!isset($view_name)) {
 			$view_name = $entity_name;
 		}
@@ -43,100 +43,6 @@ class zTable {
 			$this->addField($fields);
 		}
 	}
-
-	public function prepare($db, $default_paging = null) {
-		$this->paging = zPaging::getFromUrl($default_paging);
-
-		// filtering
-		if (isset($this->filter_form) && z::isPost()) {
-			$filter_values = $this->filter_form->processed_input;
-			$where = [];
-			$this->bindings = [];
-			$this->types = '';
-			foreach ($this->filter_form->fields as $field) {
-				if ($field->type == 'text') {
-					foreach ($field->filter_fields as $filter_field) {
-						$field->value = $filter_values[$field->name];
-						if (strlen($filter_values[$field->name]) > 0) {
-							$where[] = sprintf('%s like ?', $filter_field);
-							$this->bindings[] = '%' . $filter_values[$field->name] . '%';
-							$this->types .= 's';
-						}
-					}
-				}
-			}
-			if (count($where)) {
-				$this->where = implode($where, ' or ');
-			} else {
-				$this->where = null;
-				$this->bindings = null;
-				$this->types = null;
-			}
-		}
-
-		$this->paging->total_records = $db->getRecordCount(
-			$this->name,
-			$this->where,
-			$this->bindings,
-			$this->types
-		);
-
-		$this->data = zModel::select(
-			$db,
-			$this->name,
-			$this->where,
-			$this->paging->getOrderBy(),
-			$this->paging->getLimit(),
-			$this->bindings,
-			$this->types
-		);
-
-	public function prepare($db) {
-		$this->paging = zPaging::getFromUrl();
-
-		// filtering
-		if (isset($this->filter_form) && z::isPost()) {
-			$filter_values = $this->filter_form->processed_input;
-			$where = [];
-			$this->bindings = [];
-			$this->types = '';
-			foreach ($this->filter_form->fields as $field) {
-				if ($field->type == 'text') {
-					foreach ($field->filter_fields as $filter_field) {
-						$field->value = $filter_values[$field->name];
-						if (strlen($filter_values[$field->name]) > 0) {
-							$where[] = sprintf('%s like ?', $filter_field);
-							$this->bindings[] = '%' . $filter_values[$field->name] . '%';
-							$this->types .= 's';
-						}
-					}
-				}
-			}
-			if (count($where)) {
-				$this->where = implode($where, ' or ');
-			} else {
-				$this->where = null;
-				$this->bindings = null;
-				$this->types = null;
-			}
-		}
-
-		$this->paging->total_records = $db->getRecordCount(
-			$this->name,
-			$this->where,
-			$this->bindings,
-			$this->types
-		);
-		
-		$this->data = zModel::select(
-			$db,
-			$this->name,
-			$this->where,
-			$this->paging->getOrderBy(),
-			$this->paging->getLimit(),
-			$this->bindings,
-			$this->types
-		);
 
 	public function addLink($url, $title) {
 		$this->links[] = ['url' => $url, 'title' => $title];
