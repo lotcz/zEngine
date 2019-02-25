@@ -110,7 +110,7 @@ class z {
 	}
 
 	/**
-	* Convert php time to mysql Datetime
+	* Convert php time to mysql Timestamp
 	*/
 	static function mysqlTimestamp($time) {
 		if (isset($time)) {
