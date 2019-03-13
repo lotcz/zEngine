@@ -64,13 +64,13 @@ class authModule extends zModule {
 		$session->data['user_session_ip'] = $ip;
 		$session->save();
 		$this->session = $session;
-		$this->updateSessionCookie($this->session_token, $expires);
+		$this->updateSessionCookie($expires);
 		$this->updateLastAccess();
 		return $session;
 	}
 
-	private function updateSessionCookie($token, $expire) {
-		$this->z->cookies->setCookie($this->cookie_name, $this->session->val('user_session_id') . "-" . $token, $expire);
+	private function updateSessionCookie($expire) {
+		$this->z->cookies->setCookie($this->cookie_name, $this->session->val('user_session_id') . "-" . $this->session_token, $expire);
 	}
 
 	private function getSessionCookie() {
@@ -121,18 +121,14 @@ class authModule extends zModule {
 			if (isset($cookie_value)) {
 				$arr = explode('-', $cookie_value);
 				$session_id = intval($arr[0]);
-				$session_token = $arr[1];
+				$this->session_token = $arr[1];
 			}
 
 			if (isset($session_id)) {
 				$this->session = new UserSessionModel($this->z->db, $session_id);
-				if (isset($this->session) && $this->session->is_loaded && Self::verifyPassword($session_token, $this->session->val('user_session_token_hash'))) {
-					$expires = time()+$this->config['session_expire'];
-					$session = new UserSessionModel($this->z->db);
-					$session->data['user_session_id'] = $session_id;
-					$session->data['user_session_expires'] = z::mysqlTimestamp($expires);
-					$session->save();
-					$this->updateSessionCookie($session_token, $expires);
+				if (isset($this->session) && $this->session->is_loaded && Self::verifyPassword($this->session_token, $this->session->val('user_session_token_hash'))) {
+					$expires = time() + $this->config['session_expire'];
+					$this->setSessionExpiration($expires);
 					$this->user = new UserModel($this->z->db, $this->session->val('user_session_user_id'));
 					$this->updateLastAccess();
 				}
@@ -140,6 +136,14 @@ class authModule extends zModule {
 
 			$this->authentication_checked = true;
 		}
+	}
+
+	/**
+	* Set current session's expiration date
+	*/
+	public function setSessionExpiration($expires) {
+		UserSessionModel::setSessionExpiration($this->z->db, $this->session->ival('user_session_id'), $expires);
+		$this->updateSessionCookie($expires);
 	}
 
 	/**

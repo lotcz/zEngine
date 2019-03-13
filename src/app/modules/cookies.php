@@ -16,12 +16,15 @@ class cookiesModule extends zModule {
 	}
 
 	public function setCookie($cookie_name, $value, $expire, $path = '/', $domain = false, $secure = false) {
+		if ($expire == null) {
+			$expire = time() + (10 * 365 * 24 * 60 * 60); // 10 years
+		}
 		setcookie($cookie_name, $value, $expire, $path, $domain, $secure);
 	}
 
 	public function resetCookie($cookie_name, $path = '/', $domain = false, $secure = false) {
 		unset($_COOKIE[$cookie_name]);
-		$this->setCookie($cookie_name, '', time()-3600, $path, $domain, $secure);
+		$this->setCookie($cookie_name, '', time() - 3600, $path, $domain, $secure);
 	}
 
 }
