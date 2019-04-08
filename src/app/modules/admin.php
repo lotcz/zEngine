@@ -192,7 +192,7 @@ class adminModule extends zModule {
 		$model_id = $form->data->ival($model_class_name::getIdName());
 		if ($model_id > 0) {
 			$delete_question = $this->z->core->t('Are you sure to delete this item?');
-			$delete_url = $this->z->core->url(sprintf($this->base_url . '/default/default/' .  str_replace('_', '-', $form->id) . '/delete/%d', $model_id), $this->z->core->return_path);
+			$delete_url = $this->z->core->url(sprintf($this->base_url . '/default/default/' .  $form->id . '/delete/%d', $model_id), $this->z->core->return_path);
 			$buttons[] = ['type' => 'button', 'label' => 'Delete', 'onclick' => 'deleteItemConfirm(\'' . $delete_question . '\',' . '\'' . $delete_url . '\');', 'css' => 'btn btn-danger m-2' ];
 		}
 
@@ -205,7 +205,8 @@ class adminModule extends zModule {
 	*/
 	public function renderAdminForm($model_class_name, $fields, $onBeforeUpdate = null, $onAfterUpdate = null, $onBeforeDelete = null, $onAfterDelete = null) {
 		$entity_name = strtolower(substr($model_class_name, 0, strlen($model_class_name) - 5));
-		$form = new zForm($entity_name);
+		$table_name = strtolower(str_replace('_', '-', $model_class_name::getTableName()));
+		$form = new zForm($table_name);
 		$form->type = 'vertical';
 		$form->entity_title = ucwords(str_replace('_', ' ', $entity_name));
 		$form->render_wrapper = true;
