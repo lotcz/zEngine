@@ -11,8 +11,15 @@ class z {
 	* Redirect to a new URL.
 	*/
 	static function redirect($url = '', $statusCode = 303) {
-		header('Location: ' . $url, true, $statusCode);
-		die();
+		if (headers_sent()) {
+			echo '<script>';
+			echo "document.location = '$url';";
+			echo '</script>';
+			die();
+		} else {
+			header('Location: ' . $url, true, $statusCode);
+			die();
+		}
 	}
 
 	/**
