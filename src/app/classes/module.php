@@ -64,9 +64,16 @@ class zModule {
 	}
 
 	public function install($db_login = null, $db_password = null, $db_name = null) {
-		$sql_file = __DIR__ . '/../../../install/' . $this->name . '.sql';
-		if (file_exists($sql_file)) {
-			$this->z->db->executeFile($sql_file, $db_login, $db_password, $db_name);
+		$file_pattern = __DIR__ . '/../../../install/' . $this->name . '.%s';
+		$install_script_file = '';
+		$db_specific_file = sprintf($file_pattern, $this->z->db->connection_type);
+		if (file_exists($db_specific_file)) {
+			$install_script_file = $db_specific_file;
+		} else {
+			$install_script_file = sprintf($file_pattern, 'sql');
+		}
+		if (file_exists($install_script_file)) {
+			$this->z->db->executeFile($install_script_file, $db_login, $db_password, $db_name);
 		}
 	}
 

@@ -120,7 +120,7 @@ class adminModule extends zModule {
 				$submenu->addItem('admin/administrators', 'Administrators');
 				$submenu->addSeparator();
 				$submenu->addHeader('Advanced');
-					$submenu->addItem('admin/job-runner', 'Jobs');
+				$submenu->addItem('admin/job-runner', 'Jobs');
 				if ($this->z->isModuleEnabled('alias')) {
 					$submenu->addItem('admin/aliases', 'Aliases');
 				}

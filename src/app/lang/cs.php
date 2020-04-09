@@ -102,6 +102,7 @@ $language_data['Repeated form submit attempt was detected! Cannot process form. 
 /* TABLES */
 $language_data['No records were found.'] = 'Nebyly nalezeny žádné položky.';
 $language_data['Are you sure to delete this item?'] = 'Opravdu si přejete smazat tuto položku?';
+$language_data['Total records'] = 'Celkem záznamů';
 
 /* MISC */
 $language_data['Turn on Javascript to see the e-email address.'] = 'Pro zobrazení e-mailové adresy zapněte Javascript.';
