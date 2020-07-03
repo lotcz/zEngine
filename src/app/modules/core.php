@@ -183,6 +183,10 @@ class coreModule extends zModule {
 		$this->setData('page_title', $this->t($page_title));
 	}
 
+	public function getPageTitle() {
+		return $this->getData('page_title');
+	}
+
 	public function getFullPageTitle() {
 		$page_title = $this->getData('page_title');
 		$site_title = $this->getData('site_title');
