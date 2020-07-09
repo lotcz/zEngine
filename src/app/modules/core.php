@@ -601,16 +601,13 @@ class coreModule extends zModule {
 	public function renderSecureEmailLink($email) {
 		$random_token = z::generateRandomToken(4);
 		$email_arr = explode('@', $email);
-			?>
-				<a id="<?=$random_token ?>"><?=$this->t('Turn on Javascript to see the e-email address.') ?></a>
-				<script>
+			?><a id="<?=$random_token ?>"><?=$this->t('Turn on Javascript to see the e-email address.') ?></a><script>
 					var addr = ['<?=$email_arr[0] ?>', '<?=$email_arr[1] ?>'].join('@');
 					var el = document.getElementById('<?=$random_token ?>');
 					el.href = 'mailto:' + addr;
 					el.textContent = addr;
 					el.title = addr;
-				</script>
-			<?php
+				</script><?php
 	}
 
 	/* META */
