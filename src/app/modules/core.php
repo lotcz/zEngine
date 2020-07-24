@@ -488,7 +488,6 @@ class coreModule extends zModule {
 				if ($this->debug_mode) {
 					echo "Template for $type view not found: $default_template_path!";
 				} else {
-					//$this->setView($type, $template_name);
 					$this->redirect($this->not_found_path);
 				}
 			}
