@@ -408,19 +408,19 @@ class coreModule extends zModule {
 					}
 				break;
 				case 'link_js':
-					echo sprintf('<script src="%s"></script>' . z::$crlf, $incl[0]);
+					echo sprintf('<script src="%s?v=%s"></script>' . z::$crlf, $incl[0], $this->app_version);
 				break;
 				case 'link_css':
-					echo sprintf('<link rel="stylesheet" type="text/css" href="%s">' . z::$crlf, $incl[0]);
+					echo sprintf('<link rel="stylesheet" type="text/css" href="%s?v=%s">' . z::$crlf, $incl[0], $this->app_version);
 				break;
 				case 'print_css':
-					echo sprintf('<link rel="stylesheet" type="text/css" href="%s" media="print">' . z::$crlf, $incl[0]);
+					echo sprintf('<link rel="stylesheet" type="text/css" href="%s?v=%s" media="print">' . z::$crlf, $incl[0], $this->app_version);
 				break;
 				case 'link_less':
-					echo sprintf('<link rel="stylesheet/less" type="text/css" href="%s" />' . z::$crlf, $incl[0]);
+					echo sprintf('<link rel="stylesheet/less" type="text/css" href="%s?v=%s" />' . z::$crlf, $incl[0], $this->app_version);
 				break;
 				case 'favicon':
-					echo sprintf('<link rel="shortcut icon" type="image/x-icon" href="%s" />' . z::$crlf, $incl[0]);
+					echo sprintf('<link rel="shortcut icon" type="image/x-icon" href="%s?v=%s" />' . z::$crlf, $incl[0], $this->app_version);
 				break;
 				default:
 					throw new Exception(sprintf('Unknown include type: %s', $incl[1]));
