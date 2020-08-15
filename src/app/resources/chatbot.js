@@ -3,7 +3,7 @@ var z_chat_started = false;
 function chatAddChatMessage(sender, message) {
 	let chat = $('#chat_messages');
 	chat.stop();
-	let item = $('<div class="message ' + sender + '">' + message + '</div>');
+	let item = $('<div class="item ' + sender + '"><div class="avatar"></div><div class="message">' + message + '</div></div>');
 	chat.append(item);
 	chat.animate({
 		scrollTop: item.offset().top
@@ -40,13 +40,14 @@ function chatSendMessage(e) {
 
 function chatCloseWindow(e) {
 	e.preventDefault();
-	$('#chat_wrapper #chat_window').hide();
+	$('#chat_wrapper').removeClass('chat-is-open');
 }
 
 function chatOpenWindow(e) {
-	let w = $('#chat_wrapper #chat_window');
-	if (w.is(':visible')) {
+	let w = $('#chat_wrapper');
+	if (w.hasClass('chat-is-open')) {
 		chatSendMessage(e);
+		$('#chat_form #chat_text', w).focus();
 	} else {
 		if (e) {
 			e.preventDefault();
@@ -54,8 +55,8 @@ function chatOpenWindow(e) {
 		if (!z_chat_started) {
 			chatStartConversation();
 		}
-		w.show();
-		$('#chat_wrapper #chat_form #chat_text').focus();
+		w.addClass('chat-is-open')
+		$('#chat_text', w).focus();
 	}
 }
 
@@ -67,7 +68,7 @@ function chatStartConversation() {
 }
 
 $(function() {
-	if (z_chatbot.auto_start) {
+	if (z_chatbot.auto_start && !z_chat_started) {
 		setTimeout(chatOpenWindow, z_chatbot.auto_start_delay * 1000);
 	}
 });

@@ -4,44 +4,63 @@
 	right: 2rem;
 }
 
+#chat_messages,
+#chat_header,
+#chat_form {
+	padding: 1rem;
+}
+
+#chat_header {
+	background-color: blue;
+	color: white;
+}
+
 #chat_window {
 	display: none;
 	position: absolute;
 	right: 1rem;
 	bottom: 1rem;
 	background-color: white;
-	padding: 1rem;
 	border-radius: 0.5rem;
-	border: solid 1px blue;
+	box-shadow: 0 1px 8px 0 gray;
+	-webkit-box-shadow: 0 1px 8px 0 gray;
+}
+
+.chat-is-open #chat_window {
+	display: block;
 }
 
 #chat_form input {
-	width: 11.5rem;
+	width: 14.5rem;
 }
 
 #chat_messages {
-	height: 17rem;
-	width: 17rem;
+	height: 20rem;
+	width: 20rem;
 	overflow-x: hidden;
 	overflow-y: auto;
-	margin-bottom: 1rem;
+	padding: 1rem;
 }
 
-#chat_messages .message {
+#chat_messages .item {
+	width: auto;
+	margin-bottom: 0.5rem;
+}
+
+#chat_messages .item .message {
 	padding: 0.5rem;
-	margin: 0.5rem;
 	border-radius: 0.5rem;
 }
 
-#chat_messages .message.bot {
+#chat_messages .item.bot {
 	margin-right: 2rem;
 }
 
-#chat_messages .message.user {
+#chat_messages .item.user {
 	margin-left: 2rem;
 }
 
-#chat_icon {
+#chat_icon_wrapper {
 	display: block;
 	position: absolute;
 	width: 5rem;
@@ -53,6 +72,21 @@
 	background-color: blue;
 	text-align: center;
 	cursor: pointer;
+	box-shadow: 0 1px 8px 0 gray;
+	-webkit-box-shadow: 0 1px 8px 0 gray;
+}
+
+#chat_icon_wrapper .chat-icon {
+	background-image: url('chat.svg');
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: contain;
+	height: 1.8rem;
+	margin: 1.3rem auto;
+}
+
+.chat-is-open #chat_icon_wrapper .chat-icon {
+	background-image: url('send.svg');
 }
 
 #chat_close {
@@ -60,28 +94,17 @@
 	position: absolute;
 	top: -1rem;
 	left: -1rem;
+	width: 2rem;
+	height: 2rem;
 	border-radius: 50%;
 	border: solid 3px white;
 	background-color: blue;
 	text-align: center;
 	cursor: pointer;
-}
-
-#chat_close div {
-	width: 2rem;
-	height: 2rem;
-}
-
-#chat_close span {
-	display: inline;
-	line-height: 2rem;
-	vertical-align: middle;
-	font-weight: bold;
-	color: white;
-	font-size: 1rem;
-}
-
-#chat_icon img {
-	width: 3rem;
-	margin: 1.1rem auto;
+	background-image: url('close.svg');
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: 10px;
+	box-shadow: 0 1px 8px 0 gray;
+	-webkit-box-shadow: 0 1px 8px 0 gray;
 }
