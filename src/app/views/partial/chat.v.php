@@ -17,9 +17,12 @@
 		<div id="chat_messages">
 		</div>
 
-		<form id="chat_form" action="#" onsubmit="chatSendMessage(event)">
-			<input name="chat_text" id="chat_text" class="form-control" />
-		</form>
+		<div id="chat_form_wrapper">
+			<form id="chat_form" action="#" onsubmit="chatSendMessage(event)">
+					<input name="chat_text" id="chat_text" class="form-control" placeholder="<?=$this->z->chatbot->getConfigValue('placeholder', 'Write something...'); ?>" autocomplete="off" />
+			</form>
+		</div>
+
 	</div>
 
 	<a href="#" id="chat_icon_wrapper" onclick="chatOpenWindow(event)">

@@ -9,6 +9,8 @@
 
 		'slogan' => 'Company slogan goes here...',
 
+		'placeholder' => 'Write something...',
+
 		// if true, chat will start automatically
 		'auto_start' => true,
 
