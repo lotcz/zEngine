@@ -5,7 +5,7 @@
 */
 class chatbotModule extends zModule {
 
-	public $depends_on = ['resources'];
+	public $depends_on = ['resources', 'cookies'];
 	public $also_install = [];
 
 	public function onBeforeInit() {

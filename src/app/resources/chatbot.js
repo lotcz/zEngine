@@ -5,9 +5,24 @@ function chatAddChatMessage(sender, message) {
 	chat.stop();
 	let item = $('<div class="item ' + sender + '"><div class="avatar"></div><div class="message">' + message + '</div></div>');
 	chat.append(item);
-	chat.animate({
-		scrollTop: item.offset().top
-	}, 500, 'swing');
+	if (chat.animate) {
+		chat.animate({
+			scrollTop: item.offset().top
+		}, 500, 'swing');
+	} else {
+		chat.scrollTop(item.offset().top);
+	}
+}
+
+function chatGetUserID() {
+	var cookieName = (z_auth) ? z_auth.session_token_cookie_name : 'chatbot_user_id';
+	var cookieValue = getCookie(cookieName);
+	if (!(cookieValue.length > 0)) {
+		// create temporary user
+		cookieValue = new Date().getTime();
+		setCookie('chatbot_user_id', cookieValue, 1, '/');
+	}
+	return cookieValue;
 }
 
 function chatSendMessage(e) {
@@ -25,7 +40,7 @@ function chatSendMessage(e) {
 		$.post(
 			z_chatbot.url,
 			JSON.stringify({
-				sender: 'user',
+				sender: chatGetUserID(),
 				message: message
 			}),
 			function (data, status) {
