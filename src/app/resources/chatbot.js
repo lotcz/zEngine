@@ -44,7 +44,9 @@ function chatSendMessage(e) {
 				message: message
 			}),
 			function (data, status) {
-				chatAddChatMessage('bot', data[0].text);
+				for(var i = 0, max = data.length; i < max; i++) {
+					chatAddChatMessage('bot', data[i].text);
+				}
 			},
 			'json'
 		);
