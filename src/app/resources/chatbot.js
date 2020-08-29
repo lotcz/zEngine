@@ -1,24 +1,28 @@
-var z_chat_started = false;
-
 function chatAddChatMessage(sender, message) {
 	let chat = $('#chat_messages');
-	chat.stop();
+	if (chat.stop) {
+		chat.stop();
+	}
 	let item = $('<div class="item ' + sender + '"><div class="avatar"></div><div class="message">' + message + '</div></div>');
 	chat.append(item);
+
+	// scroll to message
+	let itemTop = chat.prop('scrollHeight');
+
 	if (chat.animate) {
 		chat.animate({
-			scrollTop: item.offset().top
+			scrollTop: itemTop
 		}, 500, 'swing');
 	} else {
-		chat.scrollTop(item.offset().top);
+		chat.scrollTop(itemTop);
 	}
 }
 
 function chatGetUserID() {
-	var cookieName = (z_auth) ? z_auth.session_token_cookie_name : 'chatbot_user_id';
-	var cookieValue = getCookie(cookieName);
+	let cookieName = (z_auth) ? z_auth.session_token_cookie_name : 'chatbot_user_id';
+	let cookieValue = getCookie(cookieName);
 	if (!(cookieValue.length > 0)) {
-		// create temporary user
+		// create fake temporary user
 		cookieValue = new Date().getTime();
 		setCookie('chatbot_user_id', cookieValue, 1, '/');
 	}
@@ -45,7 +49,10 @@ function chatSendMessage(e) {
 			}),
 			function (data, status) {
 				for(var i = 0, max = data.length; i < max; i++) {
-					chatAddChatMessage('bot', data[i].text);
+					let messages = data[i].text.split('<br/>');
+					for (message of messages) {
+						chatAddChatMessage('bot', message);
+					}
 				}
 			},
 			'json'
@@ -69,7 +76,7 @@ function chatOpenWindow(e) {
 		if (e) {
 			e.preventDefault();
 		}
-		if (!z_chat_started) {
+		if (!z_chatbot.started) {
 			chatStartConversation();
 		}
 		w.addClass('chat-is-open')
@@ -78,14 +85,17 @@ function chatOpenWindow(e) {
 }
 
 function chatStartConversation() {
-	if (!z_chat_started) {
-		z_chat_started = true;
-		chatAddChatMessage('bot', z_chatbot.start_message);
+	if (!z_chatbot.started) {
+		z_chatbot.started = true;
+		let messages = z_chatbot.start_message.split('<br/>');
+		for (message of messages) {
+			chatAddChatMessage('bot', message);
+		}
 	}
 }
 
 $(function() {
-	if (z_chatbot.auto_start && !z_chat_started) {
+	if (z_chatbot.auto_start && !z_chatbot.started) {
 		setTimeout(chatOpenWindow, z_chatbot.auto_start_delay * 1000);
 	}
 });
