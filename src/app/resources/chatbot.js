@@ -161,11 +161,20 @@ function chatOpenWindow(e) {
 }
 
 /**
+ * Auto starts chat if not started yet.
+ */
+function chatAutoStart() {
+	if (!z_chatbot.started) {
+		chatOpenWindow();
+	}
+}
+
+/**
  * Initialize chat.
  */
 $(function() {
 	if (z_chatbot.auto_start && !z_chatbot.started) {
 		// Start timer to open chat window automatically after some time.
-		setTimeout(chatOpenWindow, z_chatbot.auto_start_delay);
+		setTimeout(chatAutoStart, z_chatbot.auto_start_delay);
 	}
 });
