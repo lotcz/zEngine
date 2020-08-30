@@ -16,6 +16,7 @@ class chatbotModule extends zModule {
 				'z_chatbot' => [
 					'url' => $this->getConfigValue('url', $this->z->core->url('chatbot')),
 					'started' => false,
+					'messages_delay' => $this->getConfigValue('messages_delay', 1000),
 					'auto_start' => $this->getConfigValue('auto_start', false),
 					'auto_start_delay' => $this->getConfigValue('auto_start_delay', 0),
 					'start_message' => $this->getConfigValue('start_message', ''),
