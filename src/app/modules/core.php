@@ -55,7 +55,7 @@ class coreModule extends zModule {
 
 		$this->app_version = $this->getConfigValue('app_version', $this->app_version);
 		$this->require_z_version = intval($this->getConfigValue('require_z_version', $this->require_z_version));
-    $this->minimum_z_version = $this->getConfigValue('minimum_z_version', $this->minimum_z_version);
+		$this->minimum_z_version = $this->getConfigValue('minimum_z_version', $this->minimum_z_version);
 
 		if (intval($this->z->version) != $this->require_z_version) {
 			throw new Exception(sprintf('Application is for zEngine version %d. zEngine is version %s.', $this->require_z_version, $this->z->version));
