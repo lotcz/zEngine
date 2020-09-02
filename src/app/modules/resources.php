@@ -19,6 +19,12 @@ class resourcesModule extends zModule {
 			case 'js':
 				return 'application/javascript';
 				break;
+			case 'svg':
+				return 'image/svg+xml';
+				break;
+			case 'jpg':
+				return 'image/jpg';
+				break;
 			default:
 				return '';
 		}

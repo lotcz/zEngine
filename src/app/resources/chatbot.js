@@ -81,14 +81,22 @@ function chatQueueMessage(sender, text) {
  * @return {string} [description]
  */
 function chatGetUserID() {
-	let cookieName = (z_auth) ? z_auth.session_token_cookie_name : 'chatbot_user_id';
-	let cookieValue = getCookie(cookieName);
-	if (!(cookieValue.length > 0)) {
-		// create fake temporary user
-		cookieValue = new Date().getTime();
-		setCookie('chatbot_user_id', cookieValue, 1, '/');
+	if (!z_chatbot.session_id) {
+		let cookieValue = null;
+		if (z_auth) {
+			cookieValue = getCookie(z_auth.session_token_cookie_name);
+		}
+		if (!(cookieValue.length > 0)) {
+			cookieValue = getCookie('chatbot_user_id');
+		}
+		if (!(cookieValue.length > 0)) {
+			// create fake temporary user
+			cookieValue = new Date().getTime();
+			setCookie('chatbot_user_id', cookieValue, 1, '/');
+		}
+		z_chatbot.session_id = cookieValue;
 	}
-	return cookieValue;
+	return z_chatbot.session_id;
 }
 
 /**
