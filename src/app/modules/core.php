@@ -8,11 +8,10 @@
 class coreModule extends zModule {
 
 	public $depends_on = ['errorlog'];
-	//public $also_install = ['i18n'];
+	public $also_install = [];
 
 	public $app_version = 0.0;
-  public $require_z_version = 4;
-	public $minimum_z_version = 4;
+	public $minimum_z_version = 5.0;
 
 	//path to application directory
 	public $app_dir = null;
@@ -54,11 +53,12 @@ class coreModule extends zModule {
 		$this->not_found_path = $this->getConfigValue('not_found_path', $this->not_found_path);
 
 		$this->app_version = $this->getConfigValue('app_version', $this->app_version);
-		$this->require_z_version = intval($this->getConfigValue('require_z_version', $this->require_z_version));
 		$this->minimum_z_version = $this->getConfigValue('minimum_z_version', $this->minimum_z_version);
 
-		if (intval($this->z->version) != $this->require_z_version) {
-			throw new Exception(sprintf('Application is for zEngine version %d. zEngine is version %s.', $this->require_z_version, $this->z->version));
+		$require_z_major_version = intval(floor($this->minimum_z_version));
+		$actual_z_major_version = intval(floor($this->z->version));
+		if ($actual_z_major_version != $require_z_major_version) {
+			throw new Exception(sprintf('Application is for zEngine version %d! Actual zEngine version is %s.', $require_z_major_version, $this->z->version));
 		}
 
 		if ($this->z->version < $this->minimum_z_version) {
