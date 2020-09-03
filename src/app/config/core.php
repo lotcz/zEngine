@@ -6,11 +6,11 @@
 		// should be identical with GIT branch name
 		'app_version' => 0.0,
 
-    // required zEngine major version (integer value)
+		// required zEngine major version (integer value)
 		'require_z_version' => 4,
 
 		// this is minimum required zEngine version
-		'minimum_z_version' => 4.0,
+		'minimum_z_version' => 4.3,
 
 		'site_title' => 'Your site title',
 		'site_description' => 'Your site description.',

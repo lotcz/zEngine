@@ -1,9 +1,27 @@
 <?php
 
 /**
-* Module that handles sending of emails.
+* Module that handles sending of emails. All emails are sent after request ended.
 */
 class emailsModule extends zModule {
+
+	public static $after_shutdown = [];
+
+	public function onAfterRender() {
+		if (count(self::$after_shutdown) > 0) {
+			emailsModule::processQueue();
+		}
+	}
+
+	private static function queueMailAfterShutdown($to, $subject, $body, $headers) {
+		self::$after_shutdown[] = ['to' => $to, 'subject' => $subject, 'body' => $body, 'headers' => $headers];
+	}
+
+	public static function processQueue() {
+		foreach(self::$after_shutdown as $mail) {
+			mail($mail['to'], $mail['subject'], $mail['body'], $mail['headers']);
+		}
+	}
 
 	public function renderAndSend($to, $subject, $template_name, $data, $from = null) {
 		$email_body = $this->z->emails->renderEmailBody($template_name, $data);
@@ -24,7 +42,8 @@ class emailsModule extends zModule {
 		}
 		$headers = "From: $from;\r\n";
 		$headers .= "Content-Type: $content_type;charset=utf-8\r\n";
-		mail($to, $subject, $body, $headers);
+
+		emailsModule::queueMailAfterShutdown($to, $subject, $body, $headers);
 	}
 
 	public function renderEmailBody($template_name, $email_data) {
@@ -43,6 +62,5 @@ class emailsModule extends zModule {
 		include $master_template_path;
 		$master = ob_get_clean();
 		return $master;
-		
 	}
 }

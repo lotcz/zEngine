@@ -12,8 +12,14 @@ class dbModule extends zModule {
 	*/
 	private $connection = null;
 
+	/**
+	* a PDO connection type
+	*/
+	public $connection_type = null;
+
 	public function onEnabled() {
 		$this->requireConfig();
+		$this->connection_type = $this->getConfigValue('connection_type', 'mysql');
 	}
 
 	/**
@@ -21,17 +27,24 @@ class dbModule extends zModule {
 	*/
 	private function getConnection() {
 		if (!isset($this->connection)) {
-			$this->connection = new PDO(
-				sprintf('%s:host=%s;dbname=%s;charset=%s',
-					$this->getConfigValue('connection_type', 'mysql'),
+			if ($this->connection_type == 'sqlite') {
+				$connection_string = sprintf('sqlite:%s', $this->getConfigValue('hostname'));
+			} else {
+				$connection_string = sprintf('%s:host=%s;dbname=%s;charset=%s',
+					$this->connection_type,
 					$this->getConfigValue('hostname'),
 					$this->getConfigValue('database'),
 					$this->getConfigValue('charset', 'UTF8')
-				),
+				);
+			}
+			$this->connection = new PDO(
+				$connection_string,
 				$this->getConfigValue('user'),
 				$this->getConfigValue('password'),
 				$this->getConfigValue('options', [])
 			);
+			$this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+			$this->connection->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 		}
 		return $this->connection;
 	}
@@ -39,6 +52,16 @@ class dbModule extends zModule {
 	public function onBeforeRender() {
 		// reset connection before page rendering
 		$this->connection = null;
+	}
+
+	/**
+	* Executes sql query without using prepare - dangerous
+	* @param String $sql Sql query to execute.
+	* @return null
+	*/
+	public function executeQueryUnprepared($sql) {
+		$connection = $this->getConnection();
+		$connection->exec($sql);
 	}
 
 	/**
@@ -51,12 +74,16 @@ class dbModule extends zModule {
 	public function executeQuery($sql, $bindings = null, $types = null) {
 		$connection = $this->getConnection();
 		$stmt = $connection->prepare($sql);
+		if (!$stmt) {
+			throw new Exception(sprintf('Unknown error in query: %s.', $sql));
+		}
 		if (isset($bindings) && sizeof($bindings) > 0) {
 			for($i = 0, $max = sizeof($bindings); $i < $max; $i++) {
 				$stmt->bindValue($i+1, $bindings[$i], $types[$i]);
 			}
 		}
-	 	if ($stmt->execute()) {
+		$result = $stmt->execute();
+	 	if ($result) {
 			return $stmt;
 		} else {
 			$info = $stmt->errorInfo();
@@ -210,16 +237,29 @@ class dbModule extends zModule {
 	}
 
 	/**
-	* Executes sql file through command line and returns output.
+	* Executes sql file.
+	* Mysql will be executed through command line and returns output.
+	* For other db types file will be executed statement by statement. Separate statements by semicolon and new line (";\n")
 	* @return string
 	*/
 	public function executeFile($file_path, $db_user = null, $password = null, $db_name = null) {
-		$hostname = $this->config['hostname'];
-		$db_user = $db_user ?? $this->config['user'];
-		$password = $password ?? $this->config['password'];
-		$db_name = $db_name ?? $this->config['database'];
-		$command = "mysql --default-character-set=utf8 -h $hostname -D $db_name --user=$db_user --password=$password < $file_path";
-		return shell_exec($command);
+		if ($this->connection_type == 'mysql') {
+			$hostname = $this->config['hostname'];
+			$db_user = $db_user ?? $this->config['user'];
+			$password = $password ?? $this->config['password'];
+			$db_name = $db_name ?? $this->config['database'];
+			$command = "mysql --default-character-set=utf8 -h $hostname -D $db_name --user=$db_user --password=$password < $file_path";
+			return shell_exec($command);
+		} else {
+			$sql = file_get_contents($file_path);
+			$statements = explode(';\n', $sql);
+			foreach ($statements as $statement) {
+				if (strlen($statement) > 2) {
+					$this->executeQueryUnprepared($statement);
+				}
+			}
+			return 'OK';
+		}
 	}
 
 }

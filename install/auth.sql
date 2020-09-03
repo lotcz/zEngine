@@ -14,7 +14,7 @@ DROP TABLE IF EXISTS `user`;
 
 CREATE TABLE `user` (
   `user_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `user_state` TINYINT UNSIGNED NOT NULL default 0,  
+  `user_state` TINYINT UNSIGNED NOT NULL default 0,
   `user_email` VARCHAR(50),
   `user_login` VARCHAR(50),
   `user_name` VARCHAR(100),
@@ -38,7 +38,7 @@ DROP TABLE IF EXISTS `session`;
 CREATE TABLE `user_session` (
   `user_session_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `user_session_token_hash` VARCHAR(255) NOT NULL,
-  `user_session_user_id` INT(10) UNSIGNED NOT NULL,
+  `user_session_user_id` INT UNSIGNED NOT NULL,
   `user_session_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `user_session_expires` DATETIME NULL,
   `user_session_ip` VARCHAR(15),
@@ -54,7 +54,7 @@ DROP VIEW IF EXISTS `viewSessionsStats` ;
 CREATE VIEW viewSessionsStats AS
 	SELECT 'Anonymous' as n, COUNT(*) as c
     FROM user_session us
-    JOIN user u ON (u.user_id = us.user_session_user_id) 
+    JOIN user u ON (u.user_id = us.user_session_user_id)
     WHERE u.user_state = 0
 
     UNION

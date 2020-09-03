@@ -113,6 +113,10 @@ class zModel {
 		}
 	}
 
+	public function get($key, $default = null) {
+		return $this->val($key, $default);
+	}
+
 	public function ival($key, $default = null) {
 		return z::parseInt($this->val($key, $default));
 	}

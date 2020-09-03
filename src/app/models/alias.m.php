@@ -6,7 +6,7 @@ class AliasModel extends zModel {
 
 	public function loadByUrl($url) {
 		$filter = 'alias_url = ?';
-		$this->loadSingle($filter, [$url]);
+		$this->loadSingle($filter, [$url], [PDO::PARAM_STR]);
 	}
 
 	public function setUrl($url) {

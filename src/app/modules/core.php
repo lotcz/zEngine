@@ -55,7 +55,7 @@ class coreModule extends zModule {
 
 		$this->app_version = $this->getConfigValue('app_version', $this->app_version);
 		$this->require_z_version = intval($this->getConfigValue('require_z_version', $this->require_z_version));
-    $this->minimum_z_version = $this->getConfigValue('minimum_z_version', $this->minimum_z_version);
+		$this->minimum_z_version = $this->getConfigValue('minimum_z_version', $this->minimum_z_version);
 
 		if (intval($this->z->version) != $this->require_z_version) {
 			throw new Exception(sprintf('Application is for zEngine version %d. zEngine is version %s.', $this->require_z_version, $this->z->version));
@@ -84,10 +84,10 @@ class coreModule extends zModule {
 
 	public function installAllModules($db_login = null, $db_password = null, $db_name = null) {
 		$installed_modules = [];
-		foreach ($this->getConfigValue('modules', []) as $module_name) {
+		foreach ($this->getConfigValue('default_modules', []) as $module_name) {
 			$this->installModule($module_name, $installed_modules, $db_login, $db_password, $db_name);
 		}
-		foreach ($this->getConfigValue('also_install', []) as $module_name) {
+		foreach ($this->getConfigValue('also_install_modules', []) as $module_name) {
 			$this->installModule($module_name, $installed_modules, $db_login, $db_password, $db_name);
 		}
 	}
@@ -181,6 +181,10 @@ class coreModule extends zModule {
 
 	public function setPageTitle($page_title) {
 		$this->setData('page_title', $this->t($page_title));
+	}
+
+	public function getPageTitle() {
+		return $this->getData('page_title');
 	}
 
 	public function getFullPageTitle() {
@@ -404,19 +408,19 @@ class coreModule extends zModule {
 					}
 				break;
 				case 'link_js':
-					echo sprintf('<script src="%s"></script>' . z::$crlf, $incl[0]);
+					echo sprintf('<script src="%s?v=%s"></script>' . z::$crlf, $incl[0], $this->app_version);
 				break;
 				case 'link_css':
-					echo sprintf('<link rel="stylesheet" type="text/css" href="%s">' . z::$crlf, $incl[0]);
+					echo sprintf('<link rel="stylesheet" type="text/css" href="%s?v=%s">' . z::$crlf, $incl[0], $this->app_version);
 				break;
 				case 'print_css':
-					echo sprintf('<link rel="stylesheet" type="text/css" href="%s" media="print">' . z::$crlf, $incl[0]);
+					echo sprintf('<link rel="stylesheet" type="text/css" href="%s?v=%s" media="print">' . z::$crlf, $incl[0], $this->app_version);
 				break;
 				case 'link_less':
-					echo sprintf('<link rel="stylesheet/less" type="text/css" href="%s" />' . z::$crlf, $incl[0]);
+					echo sprintf('<link rel="stylesheet/less" type="text/css" href="%s?v=%s" />' . z::$crlf, $incl[0], $this->app_version);
 				break;
 				case 'favicon':
-					echo sprintf('<link rel="shortcut icon" type="image/x-icon" href="%s" />' . z::$crlf, $incl[0]);
+					echo sprintf('<link rel="shortcut icon" type="image/x-icon" href="%s?v=%s" />' . z::$crlf, $incl[0], $this->app_version);
 				break;
 				default:
 					throw new Exception(sprintf('Unknown include type: %s', $incl[1]));
@@ -484,7 +488,6 @@ class coreModule extends zModule {
 				if ($this->debug_mode) {
 					echo "Template for $type view not found: $default_template_path!";
 				} else {
-					//$this->setView($type, $template_name);
 					$this->redirect($this->not_found_path);
 				}
 			}
@@ -597,16 +600,13 @@ class coreModule extends zModule {
 	public function renderSecureEmailLink($email) {
 		$random_token = z::generateRandomToken(4);
 		$email_arr = explode('@', $email);
-			?>
-				<a id="<?=$random_token ?>"><?=$this->t('Turn on Javascript to see the e-email address.') ?></a>
-				<script>
+			?><a id="<?=$random_token ?>"><?=$this->t('Turn on Javascript to see the e-email address.') ?></a><script>
 					var addr = ['<?=$email_arr[0] ?>', '<?=$email_arr[1] ?>'].join('@');
 					var el = document.getElementById('<?=$random_token ?>');
 					el.href = 'mailto:' + addr;
 					el.textContent = addr;
 					el.title = addr;
-				</script>
-			<?php
+				</script><?php
 	}
 
 	/* META */
