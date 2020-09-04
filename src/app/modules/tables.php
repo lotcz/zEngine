@@ -111,7 +111,7 @@ class tablesModule extends zModule {
 														<td>
 															<?php
 																if (!isset($field->type)) {
-																	echo $row->val($field->name);
+																	echo $this->z->core->xssafe($row->val($field->name));
 																} elseif ($field->type == 'date') {
 																	echo $this->z->core->formatDate($row->dtval($field->name));
 																} elseif ($field->type == 'datetime') {

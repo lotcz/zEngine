@@ -280,7 +280,6 @@ class formsModule extends zModule {
 					<input type="hidden" name="<?=$field->name ?>" id="field_<?=$field->name ?>" value="<?=$field->value ?>" />
 				<?php
 			} elseif (z::startsWith($field->type, 'static')) {
-				$render_value = $field->value;
 				switch ($field->type) {
 					case 'staticdate' :
 					case 'static_date' :
@@ -290,10 +289,16 @@ class formsModule extends zModule {
 					case 'static_localized' :
 						$render_value = $this->z->core->t($field->value);
 					break;
+					case 'static_link':
+					case 'staticlink':
+						$render_value = $this->z->core->getLink($field->value, $field->value);
+					break;
 					case 'static_custom' :
 						$fn = $field->custom_function;
 						$render_value = $fn($field->value);
 					break;
+					default:
+						$render_value = $this->z->core->xssafe($field->value);
 				}
 				?>
 					<div id="<?=$field->name ?>_form_group" class="form-group">

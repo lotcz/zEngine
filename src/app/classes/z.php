@@ -82,8 +82,12 @@ class z {
 		return z::parseFloat(z::get($name, $def));
 	}
 
-	static function trim($s, $chrs = ' .,-*/1234567890') {
+	static function trim($s, $chrs = ' ') {
 		return trim($s, $chrs);
+	}
+
+	static function trimSpecial($s) {
+		return trim($s, ' .,-*/?!\'"');
 	}
 
 	static function trimSlashes($s) {
@@ -92,6 +96,10 @@ class z {
 
 	static function escapeSingleQuotes($str) {
 		return str_replace('\'', '\\\'', $str);
+	}
+
+	static function transliterate($str, $encoding = 'UTF-8') {
+		return iconv($encoding, "ASCII//TRANSLIT", $str);
 	}
 
 	/**
@@ -140,7 +148,7 @@ class z {
 	*/
 	static function xssafe($data, $encoding = 'UTF-8') {
 		if (is_string($data)) {
-	   		return htmlspecialchars($data, ENT_QUOTES | ENT_HTML401, $encoding);
+			return htmlspecialchars($data, ENT_QUOTES | ENT_HTML401, $encoding);
 		} else {
 			return $data;
 		}
