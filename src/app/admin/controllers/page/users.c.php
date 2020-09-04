@@ -6,7 +6,7 @@
 		[
 			[
 				'name' => 'user_name',
-				'label' => 'Full name'
+				'label' => 'Full Name'
 			],
 			[
 				'name' => 'user_login',
@@ -17,8 +17,9 @@
 				'label' => 'E-mail'
 			],
 			[
-				'name' => 'user_last_login',
-				'label' => 'Last Login'
+				'name' => 'user_last_access',
+				'label' => 'Last Visit',
+				'type' => 'datetime'
 			]
 		]
 	);

@@ -1,10 +1,20 @@
 .form-validation {
-  display: none;
-  color: red;
-  margin-top: 10px;
+    display: none;
+    color: red;
+    margin-top: 10px;
 }
 
 .form-inline input,
 .form-inline label {
-  margin-right: 10px;
+    margin-right: 10px;
+}
+
+textarea.wysiwyg,
+.tox-tinymce {
+    width: 100%;
+}
+
+#article_text_form_group textarea.wysiwyg,
+article_text_form_group .tox-tinymce {
+    height: 450px;
 }

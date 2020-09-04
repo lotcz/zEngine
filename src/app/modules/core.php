@@ -34,7 +34,7 @@ class coreModule extends zModule {
 		'site_title' => null
 	];
 
-	public $includes = ['head' => [], 'default' => [], 'bottom' => []];
+	public $includes = ['head' => [], 'default' => [], 'bottom' => [], 'admin.head' => [], 'admin.default' => [], 'admin.head' => []];
 
 	public $controllers = ['master' => 'default', 'main' => 'default', 'page' => 'default'];
 	public $templates = ['master' => null, 'main' => null, 'page' => null];

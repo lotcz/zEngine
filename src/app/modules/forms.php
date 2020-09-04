@@ -17,8 +17,8 @@ class formsModule extends zModule {
 	public function onEnabled() {
 		$this->xsrf_enabled = $this->getConfigValue('xsrf_enabled', $this->xsrf_enabled);
 		$this->xsrf_token_expires = $this->getConfigValue('xsrf_token_expires', $this->xsrf_token_expires);
-		$this->z->core->includeJS('resources/forms.js');
-		$this->z->core->includeCSS('resources/forms.css');
+		$this->z->core->includeJS('resources/forms.js', false, 'admin.bottom');
+		$this->z->core->includeCSS('resources/forms.css', false, 'admin.head');
 	}
 
 	public function pathParam() {
@@ -366,9 +366,9 @@ class formsModule extends zModule {
 										<?php
 										break;
 
-										case 'html' :
+										case 'wysiwyg' :
 										?>
-											<textarea id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> class="htmlarea"><?=$field->value ?></textarea>
+											<textarea id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> class="wysiwyg"><?=$field->value ?></textarea>
 										<?php
 										break;
 
@@ -380,7 +380,7 @@ class formsModule extends zModule {
 
 										case 'date' :
 										?>
-											<input type="datetime" id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> value="<?=$field->value ?>" class="form-control" />
+											<input type="datetime-local" id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> value="<?=$field->value ?>" class="form-control" />
 										<?php
 										break;
 

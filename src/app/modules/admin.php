@@ -77,6 +77,12 @@ class adminModule extends zModule {
 		$this->base_url = $this->getConfigValue('admin_area_base_url', $this->base_url);
 		$this->base_dir = $this->getConfigValue('admin_area_base_dir', $this->base_dir);
 		$this->login_url = $this->getConfigValue('login_page_url', $this->login_url);
+
+		// process default admin includes
+		$includes = $this->getConfigValue('includes', []);
+		foreach ($includes as $include) {
+			$this->z->core->addToIncludes(($include[1]) ? $include[0] : $this->z->core->url($include[0]), $include[2], $include[3]);
+		}
 	}
 
 	public function OnBeforeInit() {
@@ -117,7 +123,6 @@ class adminModule extends zModule {
 			if ($this->getConfigValue('show_default_menu', false)) {
 				$submenu = $menu->addSubmenu('Administration');
 				$submenu->addItem('admin/users', 'Users');
-				$submenu->addItem('admin/administrators', 'Administrators');
 				$submenu->addSeparator();
 				$submenu->addHeader('Advanced');
 				$submenu->addItem('admin/job-runner', 'Jobs');

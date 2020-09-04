@@ -78,6 +78,7 @@ $language_data['User Deactivated'] = 'Deaktivovaný uživatel';
 $language_data['Back'] = 'Zpět';
 $language_data['Save'] = 'Uložit';
 $language_data['Add'] = 'Přidat';
+$language_data['+ Add'] = '+ Přidat';
 $language_data['Cancel'] = 'Storno';
 $language_data['Delete'] = 'Smazat';
 $language_data['Edit'] = 'Upravit';

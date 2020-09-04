@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<meta charset="utf-8">		
-		<?php		
-			$this->renderIncludes('head');
-		?>				
+		<meta charset="utf-8">
+		<?php
+			$this->renderIncludes('admin.head');
+		?>
 	</head>
 
-	<body>	
+	<body>
 		<?php
 			$this->renderPageView();
-			$this->renderIncludes('default');
-			$this->renderIncludes('bottom');
+			$this->renderIncludes('admin.default');
+			$this->renderIncludes('admin.bottom');
 		?>
 	</body>
 </html>

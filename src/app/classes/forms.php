@@ -31,7 +31,7 @@ class zForm {
 		$this->method = $method;
 		$this->css = $css;
 		$this->ret = z::get('r');
-		$this->detail_page = str_replace('_', '-', $id);		
+		$this->detail_page = str_replace('_', '-', $id);
 	}
 
 	public function addField($field) {
@@ -83,6 +83,10 @@ class zForm {
 								$is_valid = false;
 							}
 						}
+					break;
+
+					case 'date':
+						$result[$field->name] = empty($data[$field->name]) ? null : $data[$field->name];
 					break;
 
 					default:

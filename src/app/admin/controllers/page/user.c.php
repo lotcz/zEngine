@@ -13,7 +13,7 @@
 			],
 			[
 				'name' => 'user_name',
-				'label' => 'Full name',
+				'label' => 'Full Name',
 				'type' => 'text'
 			],
 			[
