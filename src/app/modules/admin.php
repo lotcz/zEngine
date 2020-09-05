@@ -195,7 +195,7 @@ class adminModule extends zModule {
 		}
 		$this->z->tables->prepareTable($table);
 		$this->z->core->setData('table', $table);
-		$this->z->core->setPageTemplate('admin');
+		$this->z->core->setPageView('admin');
 	}
 
 	public function getAdminFormButtons($form, $model_class_name) {
@@ -251,7 +251,7 @@ class adminModule extends zModule {
 		);
 
 		$this->z->core->setData('form', $form);
-		$this->z->core->setPageTemplate('admin');
+		$this->z->core->setPageView('admin');
 	}
 
 	/**

@@ -520,6 +520,11 @@ class coreModule extends zModule {
 
 		if (!empty($selected_template_path)) {
 			// make data available to the view
+			foreach ($this->data as $data_key => $data_value) {
+				if (!isset($$data_key)) {
+					$$data_key = $data_value;
+				}
+			}
 			include $selected_template_path;
 		} else {
 			if ($this->debug_mode) {
@@ -552,17 +557,18 @@ class coreModule extends zModule {
 	}
 
 	public function renderPartialView($partial_name, $data = null) {
-		$template_path = $this->app_dir . 'views/partial/' .  $partial_name . '.v.php';
-		if (file_exists($template_path)) {
-			$this->setData("partials.$partial_name", $data);
+		$template_path = $this->findViewTemplatePath('partial', $partial_name);
+		if (!empty($template_path)) {
+			if (!empty($data)) {
+				foreach ($data as $data_key => $data_value) {
+					if (!isset($$data_key)) {
+						$$data_key = $data_value;
+					}
+				}
+			}
 			include $template_path;
 		} else {
-			$default_template_path = $this->default_app_dir . "views/partial/" .  $partial_name . '.v.php';
-			if (file_exists($default_template_path)) {
-				include $default_template_path;
-			} else {
-			echo "Template for partial view $partial_name not found: $template_path!";
-			}
+			echo "Template for partial view <strong>$partial_name</strong> not found!";
 		}
 	}
 
