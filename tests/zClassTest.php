@@ -80,13 +80,35 @@ final class zClassTest extends TestCase
 
 	public function testTrim(): void
     {
-		$str = ' .,-*/1234567890test.,-*/1234567890 ';
+		$str = '   test   ';
 		
         $this->assertEquals(			
 			z::trim($str),
             'test'
         );
 		
+    }
+
+    public function testTrimSpecial(): void
+    {
+        $str = ' .,-*/test.,-*/ ';
+
+        $this->assertEquals(
+            z::trimSpecial($str),
+            'test'
+        );
+
+    }
+
+    public function testTrimSlashes(): void
+    {
+        $str = '/test/';
+
+        $this->assertEquals(
+            z::trimSlashes($str),
+            'test'
+        );
+
     }
 
 }

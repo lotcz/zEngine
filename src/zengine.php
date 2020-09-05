@@ -127,8 +127,38 @@ class zEngine {
 			}
 
 			$this->core->runMasterController();
+
+			if (empty($this->core->findViewTemplate('master'))) {
+				if ($this->isDebugMode()) {
+					$view_name = $this->core->getViewName('master');
+					$this->fatalError("Template master file <strong>$view_name</strong> not found!");
+				} else {
+					$this->core->setMasterView('default');
+				}
+			}
+
 			$this->core->runMainController();
+
+			if (empty($this->core->findViewTemplate('main'))) {
+				if ($this->isDebugMode()) {
+					$view_name = $this->core->getViewName('main');
+					$this->fatalError("Template main file <strong>$view_name</strong> not found!");
+				} else {
+					$this->core->setMainView('default');
+				}
+			}
+
 			$this->core->runPageController();
+
+			if (empty($this->core->findViewTemplate('page'))) {
+				if ($this->isDebugMode()) {
+					$view_name = $this->core->getViewName('page');
+					$this->fatalError("Template page file <strong>$view_name</strong> not found!");
+				} else {
+					$this->core->setPageController($this->core->not_found_page);
+					$this->core->runPageController();
+				}
+			}
 
 			foreach ($this->modules as $module) {
 				if (method_exists($module, 'onBeforeRender')) {

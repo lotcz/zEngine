@@ -31,6 +31,10 @@
 		// only applies when debug_mode is off
 		'error_page' => 'error.html',
 
+		// display this when requested page is not found
+		// only applies when debug_mode is off
+		'not_found_page' => 'notfound',
+
 		// URL query variable name used for return paths
 		'return_path_name' => 'r',
 
