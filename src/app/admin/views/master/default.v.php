@@ -21,6 +21,7 @@
 
 		<?php
 			$this->renderAdminMenu();
+			$this->renderIncludes('admin.top');
 			$this->renderMainView();
 			$this->renderIncludes('admin.default');
 		?>

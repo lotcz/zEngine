@@ -34,7 +34,7 @@ class coreModule extends zModule {
 		'site_title' => null
 	];
 
-	public $includes = ['head' => [], 'default' => [], 'bottom' => [], 'admin.head' => [], 'admin.default' => [], 'admin.head' => []];
+	public $includes = ['head' => [], 'top' => [], 'default' => [], 'bottom' => [], 'admin.head' => [], 'admin.top' => [], 'admin.default' => [], 'admin.head' => []];
 
 	public $controllers = ['master' => 'default', 'main' => 'default', 'page' => 'default'];
 	public $views = ['master' => null, 'main' => null, 'page' => null];
@@ -354,6 +354,10 @@ class coreModule extends zModule {
 		$this->includes[$placement][] = [$content, $type];
 	}
 
+	public function includePartial($name, $placement = 'bottom') {
+		$this->addToIncludes($name, 'partial_view', $placement);
+	}
+
 	public function insertJS($js_content, $placement = 'head') {
 		$this->addToIncludes($js_content, 'inline_js', $placement);
 	}
@@ -363,10 +367,6 @@ class coreModule extends zModule {
 			$js_path = $this->url($js_path);
 		}
 		$this->addToIncludes($js_path, 'link_js', $placement);
-	}
-
-	public function includeJS_head($js_path, $abs = false) {
-		$this->includeJS($js_path, $abs, 'head');
 	}
 
 	public function includeFavicon($path = 'favicon.ico') {
@@ -398,6 +398,9 @@ class coreModule extends zModule {
 	public function renderIncludes($placement = 'default') {
 		foreach ($this->includes[$placement] as $incl) {
 			switch ($incl[1]) {
+				case 'partial_view':
+					$this->renderPartialView($incl[0]);
+				break;
 				case 'inline_js':
 					if (is_object($incl[0]) || is_array($incl[0])) {
 						echo '<script>';

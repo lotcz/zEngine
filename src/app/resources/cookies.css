@@ -1,0 +1,14 @@
+.cookies-warning, .cookies-disabled {
+	display: none;
+}
+
+.cookies-warning-body {
+	display: flex;
+	align-items: center;
+	padding: 1rem;
+}
+
+.cookies-warning-message {
+	flex: 1;
+	padding-right: 1rem;
+}

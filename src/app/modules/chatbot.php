@@ -8,7 +8,7 @@ class chatbotModule extends zModule {
 	public $depends_on = ['resources', 'cookies'];
 	public $also_install = [];
 
-	public function onBeforeInit() {
+	public function onBeforeRender() {
 		$this->z->core->includeCSS('resources/chat.css');
 		$this->z->core->includeJS('resources/chatbot.js');
 		$this->z->core->insertJS(
@@ -23,10 +23,7 @@ class chatbotModule extends zModule {
 				]
 			]
 		);
-	}
-
-	public function renderWidget() {
-		$this->z->core->renderPartialView('chat');
+		$this->z->core->includePartial('chat', 'bottom');
 	}
 
 }

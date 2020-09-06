@@ -108,4 +108,8 @@ $language_data['Total records'] = 'Celkem záznamů';
 /* MISC */
 $language_data['Turn on Javascript to see the e-email address.'] = 'Pro zobrazení e-mailové adresy zapněte Javascript.';
 
+/* COOKIES */
+$language_data['--cookies-disabled--'] = 'Tato stránka používá soubory cookies a bez nich nemusí fungovat správně. Povolte prosím soubory cookies ve Vašem prohlížeči.';
+$language_data['--cookies-warning--'] = 'Tato stránka používá soubory cookies třetích stran. Pokud máte obavy o své soukromí, můžete zakázat soubory cookies v nastavení Vašeho prohlížeče.';
+
 return $language_data;

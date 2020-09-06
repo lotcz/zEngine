@@ -1,18 +1,44 @@
 $(function() {
-	if (!checkCookies()) {
-		$('#cookies_disabled').show();
+	if (z_cookies.show_disabled) {
+		if (!cookiesEnabled()) {
+			$('#cookies_disabled').show();
+		}
+	}
+	if (z_cookies.show_warning) {
+		if (cookiesEnabled() && !cookiesWarningConfirmed()) {
+			$('#cookies_warning').show();
+		}
 	}
 });
+
+function cookiesConfirmWarning() {
+	$('#cookies_warning').hide();
+	setCookie(z_cookies.warning_confirmed_cookie_name, '1');
+	z_cookies.cookies_warning_confirmed = true;
+}
+
+function cookiesWarningConfirmed() {
+	if (z_cookies.cookies_warning_confirmed == null) {
+		let cookieVal = getCookie(z_cookies.warning_confirmed_cookie_name);
+		z_cookies.cookies_warning_confirmed = (cookieVal == '1');
+	}
+	return z_cookies.cookies_warning_confirmed;
+}
 
 /**
 * Check if browser supports cookies.
 */
-function checkCookies() {
-	if (navigator.cookieEnabled) return true;
-	document.cookie = "cookietest=1";
-	var ret = document.cookie.indexOf("cookietest=") != -1;
-	document.cookie = "cookietest=1; expires=Thu, 01-Jan-1970 00:00:01 GMT";
-	return ret;
+function cookiesEnabled() {
+	if (z_cookies.browser_cookies_enabled == null) {
+		if (navigator.cookieEnabled) {
+			z_cookies.browser_cookies_enabled = true;
+		} else {
+			document.cookie = "cookietest=1";
+			z_cookies.browser_cookies_enabled = document.cookie.indexOf("cookietest=") != -1;
+			document.cookie = "cookietest=1; expires=Thu, 01-Jan-1970 00:00:01 GMT";
+		}
+	}
+	return z_cookies.browser_cookies_enabled;
 }
 
 /**
