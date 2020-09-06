@@ -2,13 +2,15 @@
 	display: none;
 }
 
-.cookies-warning-body {
+.cookies-warning-body,
+.cookies-disabled-body {
 	display: flex;
 	align-items: center;
 	padding: 1rem;
 }
 
-.cookies-warning-message {
+.cookies-warning-message,
+.cookies-disabled-message {
 	flex: 1;
 	padding-right: 1rem;
 }

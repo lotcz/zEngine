@@ -17,6 +17,10 @@ function cookiesConfirmWarning() {
 	z_cookies.cookies_warning_confirmed = true;
 }
 
+function cookiesCloseDisabled() {
+	$('#cookies_disabled').hide();
+}
+
 function cookiesWarningConfirmed() {
 	if (z_cookies.cookies_warning_confirmed == null) {
 		let cookieVal = getCookie(z_cookies.warning_confirmed_cookie_name);

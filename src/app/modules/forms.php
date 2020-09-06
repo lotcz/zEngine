@@ -17,6 +17,8 @@ class formsModule extends zModule {
 	public function onEnabled() {
 		$this->xsrf_enabled = $this->getConfigValue('xsrf_enabled', $this->xsrf_enabled);
 		$this->xsrf_token_expires = $this->getConfigValue('xsrf_token_expires', $this->xsrf_token_expires);
+		$this->z->core->includeJS('resources/forms.js', false, 'bottom');
+		$this->z->core->includeCSS('resources/forms.css', false, 'head');
 		$this->z->core->includeJS('resources/forms.js', false, 'admin.bottom');
 		$this->z->core->includeCSS('resources/forms.css', false, 'admin.head');
 	}
