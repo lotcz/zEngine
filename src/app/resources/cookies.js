@@ -13,7 +13,7 @@ $(function() {
 
 function cookiesConfirmWarning() {
 	$('#cookies_warning').hide();
-	setCookie(z_cookies.warning_confirmed_cookie_name, '1');
+	setCookie(z_cookies.warning_confirmed_cookie_name, '1', 10*365, '/');
 	z_cookies.cookies_warning_confirmed = true;
 }
 
