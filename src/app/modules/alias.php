@@ -22,12 +22,12 @@ class aliasModule extends zModule {
 	}
 
 	public function slugify($str) {
-		$trimmed = z::trimSpecial($str);
-		$transliterated = z::transliterate($trimmed, $this->z->core->default_encoding);
-		$cleaned = preg_replace("/[^a-zA-Z0-9\/_| -]/", '', $transliterated);
-		$lowered = strtolower($cleaned);
-		$replaced = preg_replace("/[_| -]+/", '-', $lowered);
-		return $replaced;
+		$result = z::trimSpecial($str);
+		$result = strtolower($result);
+		$result = z::transliterate($result, $this->z->core->default_encoding);
+		$result = preg_replace("/[^a-zA-Z0-9\/_| -]/", '', $result);
+		$result = preg_replace("/[_| -]+/", '-', $result);
+		return $result;
 	}
 
 }

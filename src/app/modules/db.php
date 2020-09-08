@@ -44,7 +44,7 @@ class dbModule extends zModule {
 				$this->getConfigValue('options', [])
 			);
 			$this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-			$this->connection->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+			$this->connection->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
 		}
 		return $this->connection;
 	}

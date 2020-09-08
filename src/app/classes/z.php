@@ -98,8 +98,18 @@ class z {
 		return str_replace('\'', '\\\'', $str);
 	}
 
+	static $czech_transliteration = ['ě' => 'e', 'š' => 's', 'č' => 'c', 'ř' => 'r', 'ž' => 'z', 'ý' => 'y', 'á' => 'a', 'í' => 'i', 'é' => 'e', 'ú' => 'u', 'ů' => 'u', 'ď' => 'd', 'ť' => 't', 'ň' => 'n'];
+
+	static function transliterateCzech($str) {
+		$result = $str;
+		foreach (z::$czech_transliteration as $czech => $ascii) {
+			$result = str_replace($czech, $ascii, $result);
+		}
+		return $result;
+	}
+
 	static function transliterate($str, $encoding = 'UTF-8') {
-		return iconv($encoding, "ASCII//TRANSLIT", $str);
+		return iconv($encoding, "ASCII//TRANSLIT", z::transliterateCzech($str));
 	}
 
 	/**
