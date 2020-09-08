@@ -108,10 +108,6 @@ class zEngine {
 	public function run() {
 		try {
 
-			if (isset($_GET['path'])) {
-				$this->core->parseURL($_GET['path']);
-			}
-
 			foreach ($this->modules as $module) {
 				if (method_exists($module, 'onBeforeInit')) {
 					$module->onBeforeInit();

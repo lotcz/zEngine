@@ -40,8 +40,9 @@ class coreModule extends zModule {
 	public $views = ['master' => null, 'main' => null, 'page' => null];
 	public $view_templates = ['master' => null, 'main' => null, 'page' => null];
 
-	public $path = [];
+	public $raw_url = '';
 	public $raw_path = '';
+	public $path = [];
 
 	private $page_keywords = '';
 
@@ -81,6 +82,10 @@ class coreModule extends zModule {
 			$this->z->core->addToIncludes(($include[1]) ? $include[0] : $this->z->core->url($include[0]), $include[2], $include[3]);
 		}
 
+		if (isset($_GET['path'])) {
+			$this->raw_url = z::trimSlashes(strtolower($_GET['path']));
+			$this->parseURL($this->raw_url);
+		}
 	}
 
 	public function installAllModules($db_login = null, $db_password = null, $db_name = null) {
