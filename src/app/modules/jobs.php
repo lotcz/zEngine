@@ -15,7 +15,7 @@ class jobsModule extends zModule {
 		$this->security_token = $this->getConfigValue('security_token', $this->security_token);
 	}
 
-	public function OnBeforeInit() {
+	public function onBeforeInit() {
 		if ($this->z->core->getPath(0) == $this->base_url) {
 			$security_token = z::get('security_token', $this->z->core->getPath(-1));
 			if ($security_token == $this->security_token) {
@@ -30,6 +30,7 @@ class jobsModule extends zModule {
 				exit;
 
 			} else {
+				http_response_code(403);
 				die('Wrong security token.');
 			}
 		}

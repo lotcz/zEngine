@@ -7,7 +7,7 @@ require_once __DIR__ . '/../models/admin.m.php';
 */
 class adminModule extends zModule {
 
-	public $depends_on = ['auth', 'menu'];
+	public $depends_on = ['auth', 'menu', 'jobs'];
 	public $also_install = ['forms', 'tables'];
 
 	// url part defining admin protected area

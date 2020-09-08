@@ -40,7 +40,7 @@
 	}
 
 	function runJob(name) {
-		$.ajax({
+		$.get({
 			dataType: 'html',
 			url: '<?=$this->url('jobs') ?>',
 			data: {

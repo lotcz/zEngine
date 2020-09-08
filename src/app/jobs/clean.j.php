@@ -2,13 +2,13 @@
 	$this->requireModule('auth');
 
 	$sessions = UserSessionModel::select(
-		/* db */		$this->z->db,
-		/* table */		'user_session',
-		/* where */		'user_session_expires <= ?',
-		/* orderby */	null,
-		/* limit */	null,
-		/* bindings */	[z::mysqlTimestamp(time())],
-		/* types */		[PDO::PARAM_INT]
+		$this->z->db, /* db */
+		'user_session', /* table */
+		'user_session_expires <= ?', /* where */
+		null, /* orderby */
+		null, /* limit */
+		[z::mysqlTimestamp(time())], /* bindings */
+		[PDO::PARAM_INT] /* types */
 	);
 
 	foreach ($sessions as $session) {
