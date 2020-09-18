@@ -103,7 +103,15 @@ class tablesModule extends zModule {
 															$sort_url = $table->paging->getLinkUrl(0, null, $field->name, false, null);
 														}
 														?>
-															<a href="<?=$sort_url?>"><?=$field->label?></a>
+															<a href="<?=$sort_url?>"><?=$field->label?>
+																<?php
+																	if ($field->name == $table->paging->active_sorting) {
+																		?>
+																			<span class="caret <?=$table->paging->sorting_desc ? '' : 'caret-up' ?>">
+																		<?php
+																	}
+																?>
+															</a>
 														<?php
 													} else {
 														echo $this->z->core->t($field->label);
