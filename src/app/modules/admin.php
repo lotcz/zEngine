@@ -154,7 +154,7 @@ class adminModule extends zModule {
 	/**
 	* Render default table for administration area.
 	*/
-	public function renderAdminTable($entity_name, $fields, $filter_fields = null, $view_name = null) {
+	public function renderAdminTable($entity_name, $fields, $view_name = null, $sort_fields = null, $filter_fields = null) {
 		if (!isset($view_name)) {
 			$view_name = $entity_name;
 		}
@@ -184,7 +184,7 @@ class adminModule extends zModule {
 		}
 		$this->z->core->setData('form', $form);
 
-		$table = $this->z->tables->createTable($entity_name, $view_name, 'table-striped table-sm table-bordered table-hover mt-2');
+		$table = $this->z->tables->createTable($entity_name, $view_name, $sort_fields, 'table-striped table-sm table-bordered table-hover mt-2');
 		$table->id_field_name = $entity_name . '_id';
 		$table->edit_link = sprintf('admin/default/default/%s/edit/', $form->detail_page) . '%d';
 	 	$table->new_link = sprintf('admin/default/default/%s', $form->detail_page);

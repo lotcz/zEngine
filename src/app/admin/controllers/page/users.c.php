@@ -21,5 +21,7 @@
 				'label' => 'Last Visit',
 				'type' => 'datetime'
 			]
-		]
+		],
+		null,
+		['user_name', 'user_login', 'user_email', 'user_last_access']
 	);

@@ -1,7 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../classes/paging.php';
-require_once __DIR__ . '/../classes/tables.php';
+require_once __DIR__ . '/../classes/table.php';
 
 /**
 * Module that handles rendering of paged html tables.
@@ -19,9 +19,12 @@ class tablesModule extends zModule {
 		return new zPaging(0, $this->getConfigValue('page_size'), $this->getConfigValue('max_pages_links'));
 	}
 
-	public function createTable($entity_name = 'entity name', $view_name = null, $css = '') {
+	public function createTable($entity_name = 'entity name', $view_name = null, $sort_fields = null, $css = '') : zTable {
 		$table = new zTable($entity_name, $view_name, $css);
-		$table->paging = zPaging::getFromUrl(null, $this->getConfigValue('page_size'));
+		$default_paging = $this->createPaging();
+		$default_paging->allowed_sorting_items = $sort_fields;
+		$table->paging = zPaging::getFromUrl($default_paging);
+		$table->sort_fields = $sort_fields;
 		$table->detail_page = str_replace('_', '-', $entity_name);
 		return $table;
 	}
@@ -45,7 +48,7 @@ class tablesModule extends zModule {
 					}
 				}
 			}
-			if (count($where)) {
+			if (count($where) > 0) {
 				$table->where = implode($where, ' or ');
 			} else {
 				$table->where = null;
@@ -91,7 +94,22 @@ class tablesModule extends zModule {
 								<?php
 									foreach ($table->fields as $field) {
 										?>
-											<th><?=$this->z->core->t($field->label) ?></th>
+											<th>
+												<?php
+													if (in_array($field->name, $table->sort_fields)) {
+														if ($field->name == $table->paging->active_sorting) {
+															$sort_url = $table->paging->getLinkUrl(null, null, $field->name, !$table->paging->sorting_desc, null);
+														} else {
+															$sort_url = $table->paging->getLinkUrl(0, null, $field->name, false, null);
+														}
+														?>
+															<a href="<?=$sort_url?>"><?=$field->label?></a>
+														<?php
+													} else {
+														echo $this->z->core->t($field->label);
+													}
+												?>
+											</th>
 										<?php
 									}
 								?>
@@ -100,7 +118,6 @@ class tablesModule extends zModule {
 
 						<tbody>
 							<?php
-
 								foreach ($table->data as $row) {
 									$item_url = $this->z->core->url(sprintf($table->edit_link, $row->val($table->id_field_name)), $this->z->core->raw_path);
 									?>

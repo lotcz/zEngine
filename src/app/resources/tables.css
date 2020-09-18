@@ -1,3 +1,7 @@
 .table-hover tbody tr {
   cursor:pointer;
 }
+
+ul.pagination {
+  margin:0;
+}

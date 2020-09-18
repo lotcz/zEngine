@@ -2,7 +2,7 @@
 
 	return [
 
-		'page_size' => 20,
+		'page_size' => 10,
 
 		'max_pages_links' => 20,
 
