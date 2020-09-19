@@ -339,7 +339,7 @@ class coreModule extends zModule {
 		$this->z->admin->renderAdminMenu();
 	}
 
-	public function renderAdminTable($entity_name, $fields, $view_name = null, $sort_fields = null, $default_sort = null, $filter_fields = null) {
+	public function renderAdminTable($entity_name, $fields, $view_name = null, $sort_fields = [], $default_sort = null, $filter_fields = null) {
 		$this->z->admin->renderAdminTable($entity_name, $fields, $view_name, $sort_fields, $default_sort, $filter_fields);
 	}
 

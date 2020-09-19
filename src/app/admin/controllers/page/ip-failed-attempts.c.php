@@ -20,5 +20,7 @@
 				'name' => 'ip_failed_attempt_last',
 				'label' => 'Last failed attempt'
 			]
-		]
+		],
+		null,
+		['ip_failed_attempt_ip', 'ip_failed_attempt_count', 'ip_failed_attempt_first', 'ip_failed_attempt_last']
 	);

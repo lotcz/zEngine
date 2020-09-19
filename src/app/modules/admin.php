@@ -154,7 +154,7 @@ class adminModule extends zModule {
 	/**
 	* Render default table for administration area.
 	*/
-	public function renderAdminTable($entity_name, $fields, $view_name = null, $sort_fields = null, $default_sort = null, $filter_fields = null) {
+	public function renderAdminTable($entity_name, $fields, $view_name = null, $sort_fields = [], $default_sort = null, $filter_fields = null) {
 		if (!isset($view_name)) {
 			$view_name = $entity_name;
 		}

@@ -19,7 +19,7 @@ class tablesModule extends zModule {
 		return new zPaging(0, $this->getConfigValue('page_size'), $this->getConfigValue('max_pages_links'));
 	}
 
-	public function createTable($entity_name = 'entity name', $view_name = null, $sort_fields = null, $default_sort = null, $css = '') : zTable {
+	public function createTable($entity_name = 'entity name', $view_name = null, $sort_fields = [], $default_sort = null, $css = '') : zTable {
 		$table = new zTable($entity_name, $view_name, $css);
 		$default_paging = $this->createPaging();
 		$default_paging->allowed_sorting_items = $sort_fields;
