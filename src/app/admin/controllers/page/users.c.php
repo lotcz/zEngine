@@ -23,5 +23,6 @@
 			]
 		],
 		null,
-		['user_name', 'user_login', 'user_email', 'user_last_access']
+		['user_id', 'user_name', 'user_login', 'user_email', 'user_last_access'],
+		'user_id'
 	);

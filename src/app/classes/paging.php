@@ -213,7 +213,7 @@ class zPaging {
 
 		if (count($links) > 0) {
 			?>
-				<div class="m-2">
+				<div class="mb-2">
 					<nav>
 						<ul class="pagination">
 							<?php
