@@ -40,6 +40,9 @@ class coreModule extends zModule {
 	public $views = ['master' => null, 'main' => null, 'page' => null];
 	public $view_templates = ['master' => null, 'main' => null, 'page' => null];
 
+	public $require_main_view = true;
+	public $require_page_view = true;
+
 	public $raw_url = '';
 	public $raw_path = '';
 	public $path = [];

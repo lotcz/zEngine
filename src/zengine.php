@@ -9,7 +9,7 @@ require_once __DIR__ . '/app/classes/module.php';
 */
 class zEngine {
 
-	public $version = 6.00;
+	public $version = 6.01;
 	public $app_dir = '';
 	public $modules = [];
 
@@ -135,24 +135,28 @@ class zEngine {
 
 			$this->core->runMainController();
 
-			if (empty($this->core->findViewTemplate('main'))) {
-				if ($this->isDebugMode()) {
-					$view_name = $this->core->getViewName('main');
-					$this->fatalError("Template main file <strong>$view_name</strong> not found!");
-				} else {
-					$this->core->setMainView('default');
+			if ($this->core->require_main_view) {
+				if (empty($this->core->findViewTemplate('main'))) {
+					if ($this->isDebugMode()) {
+						$view_name = $this->core->getViewName('main');
+						$this->fatalError("Template main file <strong>$view_name</strong> not found!");
+					} else {
+						$this->core->setMainView('default');
+					}
 				}
 			}
 
 			$this->core->runPageController();
 
-			if (empty($this->core->findViewTemplate('page'))) {
-				if ($this->isDebugMode()) {
-					$view_name = $this->core->getViewName('page');
-					$this->fatalError("Template page file <strong>$view_name</strong> not found!");
-				} else {
-					$this->core->setPageController($this->core->not_found_page);
-					$this->core->runPageController();
+			if ($this->core->require_page_view) {
+				if (empty($this->core->findViewTemplate('page'))) {
+					if ($this->isDebugMode()) {
+						$view_name = $this->core->getViewName('page');
+						$this->fatalError("Template page file <strong>$view_name</strong> not found!");
+					} else {
+						$this->core->setPageController($this->core->not_found_page);
+						$this->core->runPageController();
+					}
 				}
 			}
 
