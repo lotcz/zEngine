@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /**
 * Module that handles images. Mostly image uploading and resizing.
@@ -11,12 +11,12 @@ class imagesModule extends zModule {
 
 	function onEnabled() {
 		$this->requireConfig();
-		
+
 		$this->root_images_disk_path = $this->getConfigValue('images_disk_path', $this->root_images_disk_path);
-		$this->root_images_url = $this->config['images_url'];   
-		$this->formats = $this->config['formats'];   
+		$this->root_images_url = $this->config['images_url'];
+		$this->formats = $this->config['formats'];
 	}
-	
+
 	public function getImagePath($image, $format = null ) {
 		if (isset($format)) {
 			$path_parts = pathinfo( $image );
@@ -37,20 +37,20 @@ class imagesModule extends zModule {
 		}
 	}
 
-	public function prepareImage($image, $format = null ) {		
+	public function prepareImage($image, $format = null ) {
 		if (!$this->exists($image, $format)) {
 			if (!is_dir($this->root_images_disk_path . $format)) {
 				mkdir($this->root_images_disk_path . $format, 0777, true);
 			}
-			$original_path = $this->getImagePath( $image );
-			$resized_path = $this->getImagePath( $image, $format );
-			
+			$original_path = $this->getImagePath($image);
+			$resized_path = $this->getImagePath($image, $format);
+
 			if (file_exists($original_path)) {
-				
+
 				$info = getimagesize($original_path);
 				$mime = $info['mime'];
 
-				switch ($mime) {	
+				switch ($mime) {
 
 					case 'image/png':
 						$image_create_func = 'imagecreatefrompng';
@@ -68,16 +68,16 @@ class imagesModule extends zModule {
 						$image_create_func = 'imagecreatefromjpeg';
 						$image_save_func = 'imagejpeg';
 						$new_image_ext = 'jpg';
-						break;							
+						break;
 				}
-				
+
 				$format_width = $this->formats[$format]['width'];
 				$format_height = $this->formats[$format]['height'];
-				
-				$img = $image_create_func($original_path);				
-				
+
+				$img = $image_create_func($original_path);
+
 				list($width, $height) = getimagesize($original_path);
-								
+
 				if ($width > $format_width) {
 					$newHeight = ($height / $width) * $format_width;
 					$newWidth = $format_width;
@@ -85,41 +85,45 @@ class imagesModule extends zModule {
 					$newHeight = $height;
 					$newWidth = $width;
 				}
-				
+
 				if ($newHeight > $format_height) {
 					$newWidth = ($newWidth / $newHeight) * $format_height;
 					$newHeight = $format_height;
 				}
 
 				$tmp = imagecreatetruecolor($newWidth, $newHeight);
-				
+
 				switch ($new_image_ext)
 					{
 						case "png":
+
 							// integer representation of the color black (rgb: 0,0,0)
 							$background = imagecolorallocate($tmp, 0, 0, 0);
+
 							// removing the black from the placeholder
 							imagecolortransparent($tmp, $background);
 
-							// turning off alpha blending (to ensure alpha channel information 
-							// is preserved, rather than removed (blending with the rest of the 
+							// turning off alpha blending (to ensure alpha channel information
+							// is preserved, rather than removed (blending with the rest of the
 							// image in the form of black))
 							imagealphablending($tmp, false);
 
-							// turning on alpha channel information saving (to ensure the full range 
+							// turning on alpha channel information saving (to ensure the full range
 							// of transparency is preserved)
 							imagesavealpha($tmp, true);
 
 							break;
 						case "gif":
+
 							// integer representation of the color black (rgb: 0,0,0)
 							$background = imagecolorallocate($tmp, 0, 0, 0);
+
 							// removing the black from the placeholder
 							imagecolortransparent($tmp, $background);
 
 							break;
 					}
-					
+
 				imagecopyresampled($tmp, $img, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
 
 				if (file_exists($resized_path)) {
@@ -129,9 +133,9 @@ class imagesModule extends zModule {
 
 				imagedestroy($img);
 				imagedestroy($tmp);
-				
+
 			} else {
-				//throw new Exception("Image $original_path not found. Cannot resize.");
+				throw new Exception("Image $original_path not found. Cannot resize.");
 			}
 		}
 	}
@@ -144,7 +148,7 @@ class imagesModule extends zModule {
 			}
 		}
 	}
-	
+
 	public function deleteImage($image) {
 		$this->deleteImageCache($image);
 		$original_path = $this->getImagePath( $image );
@@ -156,32 +160,36 @@ class imagesModule extends zModule {
 	public function exists($image, $format = null ) {
 		return file_exists($this->getImagePath($image, $format));
 	}
-	
+
 	public function img($image, $format = null) {
 		$this->prepareImage($image, $format );
 		return $this->getImageURL($image, $format );
 	}
-	
+
 	public function renderImage($image, $format = 'thumb', $alt = '', $css = '') {
 		if (isset($image) && strlen($image) > 0) {
-			$url = $this->img($image, $format);			
+			$url = $this->img($image, $format);
 		}
 		if (!isset($url)) {
 			$url = $this->img('no-image.png', $format);
 		}
-		
+
 		echo sprintf('<img src="%s" class="%s" alt="%s" />', $url, $css, $alt);
 	}
-	
+
 	public function uploadImage($name) {
 		$image = null;
 		if (isset($_FILES[$name]) && strlen($_FILES[$name]['name']) > 0) {
 			$image = basename($_FILES[$name]['name']);
-			$target_file = $this->root_images_disk_path . '/originals/' . $image;
+			$target_path = $this->root_images_disk_path . '/originals/';
+			if (!is_dir($target_path)) {
+				mkdir($target_path, 0777, true);
+			}
+			$target_file = $target_path . $image;
 			$uploadOk = true;
 			$imageFileType = pathinfo($target_file,PATHINFO_EXTENSION);
-			
-			// Check if image file is a actual image or fake image		
+
+			// Check if image file is a actual image or fake image
 			$check = getimagesize($_FILES[$name]['tmp_name']);
 			if($check !== false) {
 				$uploadOk = true;
@@ -189,7 +197,7 @@ class imagesModule extends zModule {
 				$uploadOk = false;
 				$this->z->messages->add('File is not image.', 'warning');
 			}
-			
+
 			if (move_uploaded_file($_FILES[$name]['tmp_name'], $target_file)) {
 				$uploadOk = true;
 			} else {
@@ -197,7 +205,7 @@ class imagesModule extends zModule {
 				$this->z->messages->add(sprintf('Cannot upload image to %s',$target_file), 'warning');
 			}
 		}
-		
+
 		return ($uploadOk) ? $image : null;
 	}
 }
