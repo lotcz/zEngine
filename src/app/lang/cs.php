@@ -74,6 +74,7 @@
 	$language_data['Payment Type'] = 'Způsob platby';
 	$language_data['Payment Types'] = 'Způsoby platby';
 	$language_data['User Deactivated'] = 'Deaktivovaný uživatel';
+	$language_data['Banned IP Addresses'] = 'Zakázané IP adresy';
 
 	/* FORMS */
 	$language_data['Back'] = 'Zpět';

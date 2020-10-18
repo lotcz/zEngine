@@ -7,6 +7,10 @@ class z {
 
 	static $crlf = "\r\n";
 
+	static function getClientIP() {
+		 return $_SERVER['REMOTE_ADDR'];
+	}
+
 	/**
 	* Redirect to a new URL.
 	*/

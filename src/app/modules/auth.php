@@ -2,15 +2,13 @@
 
 require_once __DIR__ . '/../models/user.m.php';
 require_once __DIR__ . '/../models/session.m.php';
-require_once __DIR__ . '/../models/ip_failed.m.php';
 
 /**
 * Module that handles user authentication.
 */
 class authModule extends zModule {
 
-	public $depends_on = ['resources', 'db', 'i18n', 'cookies', 'messages'];
-	//public $also_install = [];
+	public $depends_on = ['resources', 'db', 'i18n', 'cookies', 'messages', 'security'];
 
 	private $authentication_checked = false;
 
@@ -57,8 +55,9 @@ class authModule extends zModule {
 	}
 
 	public function createSession($user) {
-		$ip = $_SERVER['REMOTE_ADDR'];
-		// TODO: check if IP address has too many sessions already
+		$ip = z::getClientIP();
+
+		// TODO: check if IP address has too many sessions already and if it not banned
 
 		$this->user = $user;
 		$this->session_token = $this->generateSessionToken();
@@ -107,10 +106,9 @@ class authModule extends zModule {
 			} else {
 				$user->data['user_failed_attempts'] += 1;
 				$user->save();
-				IpFailedAttemptModel::saveFailedAttempt($this->z->db);
+				$this->z->security->saveFailedAttempt();
 				return false;
 			}
-
 		} else {
 			return false;
 		}

@@ -18,7 +18,7 @@ class zForm {
 	public $is_valid = true;
 	public $render_wrapper = false;
 	public $images_module = null;
-	public $xsrf_enabled = false;
+	public $protection_enabled = false;
 
 	public $onBeforeUpdate = null;
 	public $onAfterUpdate = null;
@@ -128,9 +128,14 @@ class zForm {
 				} elseif ($field->type == 'foreign_key_link') {
 					$filter = sprintf('%s = ?', $field->link_id_field);
 					$result = zModel::select($db, $field->link_table, $filter, null, null, [$this->data->val($field->name)], [PDO::PARAM_STR]);
-					$entity = $result[0];
-					$field->link_label = $entity->val($field->link_label_field);
-					$field->link_url = sprintf($field->link_template, $entity->val($field->link_id_field));
+					if (count($result) > 0) {
+						$entity = $result[0];
+						$field->link_label = $entity->val($field->link_label_field);
+						$field->link_url = sprintf($field->link_template, $entity->val($field->link_id_field));
+					} else {
+						$field->link_label = null;
+						$field->link_url = null;
+					}
 				}
 			}
 		}

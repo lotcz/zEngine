@@ -131,7 +131,10 @@ class adminModule extends zModule {
 				}
 				$submenu->addItem('admin/languages', 'Languages');
 				$submenu->addItem('admin/currencies', 'Currencies');
-				$submenu->addItem('admin/ip-failed-attempts', 'Failed Login Attempts');
+				if ($this->z->isModuleEnabled('security')) {
+					$submenu->addItem('admin/ip-failed-attempts', 'Failed Login Attempts');
+					$submenu->addItem('admin/banned-ips', 'Banned IP Addresses');
+				}
 				$submenu->addItem('admin/info', 'PHP-info');
 				$submenu->addItem('admin/about', 'About');
 			}

@@ -1,7 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../classes/forms.php';
-require_once __DIR__ . '/../models/xsrf.m.php';
+require_once __DIR__ . '/../models/form_protection_token.m.php';
 
 /**
 * Module that simplifies rendering and processing of forms.
@@ -11,12 +11,14 @@ class formsModule extends zModule {
 	public $depends_on = ['db', 'messages', 'resources'];
 	public $also_install = ['auth'];
 
-	private $xsrf_enabled = false;
-	private $xsrf_token_expires = 60*60;
+	private $protection_enabled = true;
+	private $protection_token_min_delay = 3;
+	private $protection_token_expires = 60*60;
 
 	public function onEnabled() {
-		$this->xsrf_enabled = $this->getConfigValue('xsrf_enabled', $this->xsrf_enabled);
-		$this->xsrf_token_expires = $this->getConfigValue('xsrf_token_expires', $this->xsrf_token_expires);
+		$this->protection_enabled = $this->getConfigValue('protection_enabled', $this->protection_enabled);
+		$this->protection_token_min_delay = $this->getConfigValue('protection_token_min_delay', $this->protection_token_min_delay);
+		$this->protection_token_expires = $this->getConfigValue('protection_token_expires', $this->protection_token_expires);
 		$this->z->core->includeJS('resources/forms.js', false, 'bottom');
 		$this->z->core->includeCSS('resources/forms.css', false, 'head');
 		$this->z->core->includeJS('resources/forms.js', false, 'admin.bottom');
@@ -67,36 +69,69 @@ class formsModule extends zModule {
 		return $is_valid;
 	}
 
-	public function createXSRFTokenHash($form_name) {
+	/*
+		Create and save protection token and then return the hash to be stored in the form.
+	 */
+	public function createProtectionTokenHash($form_name) {
+		$ip = z::getClientIP();
+
+		$user_session_id = null;
+		if ($this->z->isModuleEnabled('auth') && $this->z->auth->isAuth()) {
+			$user_session_id = $this->z->auth->session->ival('user_session_id');
+		}
+
 		$token_value = z::generateRandomToken(50);
 		$token_hash = z::createHash($token_value);
-		$expires = time() + $this->xsrf_token_expires;
-		if ($this->z->auth->isAuth()){
-			$user_session_id = $this->z->auth->session->ival('user_session_id');
-			$ip = $this->z->auth->session->val('user_session_ip');
-		} else {
-			throw new Exception('There is no session! Cannot create form token.');
-		}
-		$token = FormXSRFTokenModel::createToken($this->z->db, $user_session_id, $ip, $form_name, $token_hash, $expires);
-		return sprintf('%d-%s', $token->ival('form_xsrf_token_id'), $token_value);
+		$token = FormProtectionTokenModel::createToken($this->z->db, $user_session_id, $ip, $form_name, $token_hash);
+		return sprintf('%d-%s', $token->ival('form_protection_token_id'), $token_value);
 	}
 
-	public function verifyXSRFTokenHash($form_name, $token_raw_value) {
-		if ($this->z->auth->isAuth()) {
+	/**
+	 * Verify if token hash is valid and if it is, then delete it
+	 * @param  [type] $form_name       [description]
+	 * @param  [type] $token_raw_value [description]
+	 * @return bool True if token is valid.
+	 */
+	public function verifyProtectionTokenHash($form_name, $token_raw_value) {
+		$ip = z::getClientIP();
+
+		$user_session_id = null;
+		if ($this->z->isModuleEnabled('auth') && $this->z->auth->isAuth()) {
 			$user_session_id = $this->z->auth->session->ival('user_session_id');
-			$ip = $this->z->auth->session->val('user_session_ip');
-		} else {
-			return false;
 		}
 
 		$arr = explode('-', $token_raw_value);
-		if (count($arr) == 2) {
-			$token_id = intval($arr[0]);
-			$token_value = $arr[1];
-			return FormXSRFTokenModel::verifyToken($this->z->db, $token_id, $user_session_id, $ip, $form_name, $token_value);
-		} else {
+		if (count($arr) != 2) {
 			return false;
 		}
+
+		$token_id = intval($arr[0]);
+		$token_value = $arr[1];
+
+		$token = new FormProtectionTokenModel($this->z->db, $token_id);
+		if (!$token->is_loaded) {
+			return false;
+		}
+
+		$token_created = $token->dtval('form_protection_token_created');
+		$valid_from = $token_created + $this->protection_token_min_delay;
+		$valid_to = $token_created + $this->protection_token_expires;
+
+		$token_time_ok = ($valid_from < time()) && ($valid_to > time());
+
+		$session_ok = ($user_session_id == null) || ($token->ival('form_protection_token_user_session_id') == $user_session_id);
+
+		$token_attrs_ok = ($token->val('form_protection_token_ip') == $ip) && ($token->val('form_protection_token_form_name') == $form_name);
+
+		$token_hash_ok = z::verifyHash($token_value, $token->val('form_protection_token_hash'));
+
+		$token_verified = $token_time_ok && $session_ok && $token_attrs_ok && $token_hash_ok;
+
+		if ($token_verified) {
+			$token->delete();
+		}
+
+		return $token_verified;
 	}
 
 	public function processForm($form, $model_class_name) {
@@ -108,15 +143,13 @@ class formsModule extends zModule {
 			}
 
 			if ($form->processInput($_POST)) {
+				$form_protection_ok = true;
 
-				//XSS protection
-				$xsrf_ok = true;
-
-				if ($this->xsrf_enabled || $form->xsrf_enabled) {
-					$xsrf_ok = $this->verifyXSRFTokenHash($form->id, z::get('form_token'));
+				if ($this->protection_enabled || $form->protection_enabled) {
+					$form_protection_ok = $this->verifyProtectionTokenHash($form->id, z::get('form_token'));
 				}
 
-				if ($xsrf_ok) {
+				if ($form_protection_ok) {
 
 					foreach ($form->processed_input as $key => $value) {
 						$form->processed_input[$key] = $this->z->core->xssafe($value);
@@ -144,11 +177,14 @@ class formsModule extends zModule {
 							$this->z->messages->error($e->getMessage());
 						}
 					} else {
-						$this->z->messages->error('Some fields in the form don\'t validate! Form cannot be saved.');
+						$this->z->messages->error('Some field values in the form are not valid! Form cannot be saved.');
 						$model->setData($form->processed_input);
 					}
 				} else {
-					$this->z->messages->error('Repeated form submit attempt was detected! Cannot process form. Please refresh the page and try to submit form again.');
+					if ($this->z->isModuleEnabled('security')) {
+						$this->z->security->saveFailedAttempt();
+					}
+					$this->z->messages->error('Form protection breach was detected! Cannot process form. Please refresh the page and try to submit form again.');
 					$model->setData($form->processed_input);
 				}
 
@@ -176,12 +212,12 @@ class formsModule extends zModule {
 
 		$form->prepare($this->z->db, $model);
 
-		// add XSRF token
-		if ($this->xsrf_enabled || $form->xsrf_enabled) {
+		// add protection token
+		if ($this->protection_enabled || $form->protection_enabled) {
 			$form->addField([
 				'name' => 'form_token',
 				'type' => 'hidden',
-				'value' => $this->createXSRFTokenHash($form->id)
+				'value' => $this->createProtectionTokenHash($form->id)
 			]);
 		}
 
@@ -374,8 +410,9 @@ class formsModule extends zModule {
 										break;
 
 										case 'wysiwyg' :
+										case 'tinymce' :
 										?>
-											<textarea id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> class="wysiwyg"><?=$field->value ?></textarea>
+											<textarea id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> class="wysiwyg tinymce"><?=$field->value ?></textarea>
 										<?php
 										break;
 
@@ -422,10 +459,12 @@ class formsModule extends zModule {
 											?>
 												<p class="form-control-static">
 													<?php
-														$this->z->core->renderLink(
-															$field->link_url,
-															$field->link_label
-														);
+														if ($field->link_url != null && $field->link_label != null) {
+															$this->z->core->renderLink(
+																$field->link_url,
+																$field->link_label
+															);
+														}
 													?>
 												</p>
 											<?php
