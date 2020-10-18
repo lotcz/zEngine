@@ -94,24 +94,27 @@ class authModule extends zModule {
 		$user = new UserModel($this->z->db);
 		$user->loadByLoginOrEmail($loginoremail);
 
-		if (isset($user) && $user->is_loaded) {
-			if ($user->val('user_failed_attempts') > $this->getConfigValue('max_attempts')) {
-				$this->z->messages->add($this->z->core->t('Max. number of login attempts exceeded. Please ask for new password.'), 'error');
-				return false;
-			}
-			if (Self::verifyPassword($password, $user->val('user_password_hash'))) {
-				// success - create new session
-				$this->createSession($user);
-				return true;
-			} else {
-				$user->data['user_failed_attempts'] += 1;
-				$user->save();
-				$this->z->security->saveFailedAttempt();
-				return false;
-			}
-		} else {
+		if (!(isset($user) && $user->is_loaded)) {
+			$this->z->security->saveFailedAttempt();
 			return false;
 		}
+
+		if ($user->val('user_failed_attempts') > $this->getConfigValue('max_attempts')) {
+			$this->z->messages->add($this->z->core->t('Max. number of login attempts exceeded. Please ask for new password.'), 'error');
+			return false;
+		}
+
+		if (Self::verifyPassword($password, $user->val('user_password_hash'))) {
+			// success - create new session
+			$this->createSession($user);
+			return true;
+		} else {
+			$user->data['user_failed_attempts'] += 1;
+			$user->save();
+			$this->z->security->saveFailedAttempt();
+			return false;
+		}
+
 	}
 
 	/**
