@@ -4,6 +4,10 @@
     margin-top: 10px;
 }
 
+.bot-protection {
+    display: none;
+}
+
 .form-inline input,
 .form-inline label {
     margin-right: 10px;

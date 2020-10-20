@@ -177,6 +177,10 @@ class z {
 		return $length === 0 || (substr($haystack, -$length) === $needle);
 	}
 
+	static function contains($str, $sub) {
+		return (strpos($str, $sub) !== false);
+	}
+
 	static function debug($var) {
 		var_dump($var);
 		die();
