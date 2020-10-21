@@ -29,9 +29,9 @@
 		<footer class="container-fluid spaced">
 			<hr>
 			<p>
-				&copy; Karel Zavadil 2018. zEngine v. <strong><?=$this->z->version ?></strong>.
-				Application version <strong><?=$this->z->core->app_version ?></strong>.
-				Go to <a href="<?=$this->url('') ?>">home</a> page.
+				Application <a href="<?=$this->url('') ?>"><?=$this->z->core->getConfigValue('site_title')?></a> version <strong><?=$this->z->core->app_version ?></strong><br>
+ 				zEngine version <strong><?=$this->z->version ?></strong><br>
+				&copy; Karel Zavadil <?=date('Y')?>
 			</p>
 		</footer>
 

@@ -62,7 +62,7 @@
 	$language_data['User'] = 'Uživatel';
 	$language_data['Administrators'] = 'Správci';
 	$language_data['Last Visit'] = 'Poslední návštěva';
-	$language_data['Failed Login Attempts'] = 'Neúspěsná přihlášení';
+	$language_data['Failed Attempts'] = 'Neúspěsné pokusy';
 	$language_data['Customers'] = 'Zákazníci';
 	$language_data['Languages'] = 'Jazyky';
 	$language_data['Language'] = 'Jazyk';
