@@ -86,6 +86,15 @@ class z {
 		return z::parseFloat(z::get($name, $def));
 	}
 
+	static function shorten($str, $len, $ellipsis = "...") {
+		if (strlen($str) > $len) {
+			$length = $len - strlen($ellipsis);
+			return substr($str, 0, $length) . $ellipsis;
+		} else {
+			return $str;
+		}
+	}
+
 	static function trim($s, $chrs = ' ') {
 		return trim($s, $chrs);
 	}

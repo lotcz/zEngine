@@ -4,6 +4,8 @@
 
 		// TinyMCE configuration, will be serialized to JSON.
 		'tinymce_conf' => [
+			'autoresize' => false,
+			'resize' => true,
 			'branding' => false,
 			'menubar' => false,
 			'plugins' => "wordcount link lists paste image code",

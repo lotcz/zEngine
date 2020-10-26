@@ -3,19 +3,12 @@
 /**
 * Module for TinyMCe wysiwyg editor integration.
 * Use tinymce form field type or textarea with .tinymce class.
-* Then call $this->z->tinymce->include();
 */
 class tinymceModule extends zModule {
 
-	public function include($tinymce_config = null, $placement = null) {
-
-		if ($tinymce_config == null) {
-			$tinymce_config = $this->getConfigValue('tinymce_conf', []);
-		}
-
-		if ($placement == null) {
-			$placement = $this->getConfigValue('default_placement', []);
-		}
+	public function onEnabled() {
+		$tinymce_config = $this->getConfigValue('tinymce_conf', []);
+		$placement = $this->getConfigValue('default_placement', []);
 
 		// process default tinymce includes
 		$includes = $this->getConfigValue('includes', []);
