@@ -9,12 +9,17 @@ class imagesModule extends zModule {
 	public $root_images_disk_path = '';
 	public $root_images_url = '';
 
+	public $no_image = 'no-image.jpg';
+	public $image_not_found = 'image-not-found.jpg';
+
 	function onEnabled() {
 		$this->requireConfig();
 
 		$this->root_images_disk_path = $this->getConfigValue('images_disk_path', $this->root_images_disk_path);
 		$this->root_images_url = $this->config['images_url'];
 		$this->formats = $this->config['formats'];
+		$this->no_image = $this->getConfigValue('no_image', $this->no_image);
+		$this->image_not_found = $this->getConfigValue('image_not_found', $this->image_not_found);
 	}
 
 	public function getImagePath($image, $format = null ) {
@@ -168,10 +173,13 @@ class imagesModule extends zModule {
 
 	public function renderImage($image, $format = 'thumb', $alt = '', $css = '') {
 		if (isset($image) && strlen($image) > 0) {
-			$url = $this->img($image, $format);
-		}
-		if (!isset($url)) {
-			$url = $this->img('no-image.png', $format);
+			if ($this->exists($image)) {
+				$url = $this->img($image, $format);
+			} else {
+				$url = $this->img($this->image_not_found, $format);
+			}
+		} else {
+			$url = $this->img($this->no_image, $format);
 		}
 
 		echo sprintf('<img src="%s" class="%s" alt="%s" />', $url, $css, $alt);

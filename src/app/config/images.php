@@ -12,5 +12,9 @@
 		'images_disk_path' => 'C:\\images\\path\\',
 
 		// base url for images src, no trailing slash
-		'images_url' => 'http://images.url'
+		'images_url' => 'http://images.url',
+
+		'no_image' => 'no-image.jpg',
+
+		'image_not_found' => 'image-not-found.jpg',
 	];
