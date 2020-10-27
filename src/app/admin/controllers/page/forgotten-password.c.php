@@ -1,6 +1,8 @@
 <?php
 	$this->setPageTitle('Forgotten Password');
 
+	$this->requireModule('emails');
+
 	if (z::isPost()) {
 		$user = new UserModel($this->z->db);
 		$user->loadByLoginOrEmail(z::get('email'));

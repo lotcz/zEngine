@@ -24,8 +24,8 @@ class imagesModule extends zModule {
 
 	public function getImagePath($image, $format = null ) {
 		if (isset($format)) {
-			$path_parts = pathinfo( $image );
-			return $this->root_images_disk_path . $format . '/' . $path_parts['filename'] . '-' . $format . '.' . $path_parts['extension'];
+			$path_parts = pathinfo($image);
+			return $this->root_images_disk_path . $format . '/' . $path_parts['filename'] . '.' . $path_parts['extension'];
 		} else {
 			return $this->root_images_disk_path . 'originals/' . $image;
 		}
@@ -34,8 +34,8 @@ class imagesModule extends zModule {
 	public function getImageURL($image, $format = null ) {
 		if ($this->exists($image, $format)) {
 			if (isset($format)) {
-				$path_parts = pathinfo( $image );
-				return $this->root_images_url . '/' . $format . '/' . $path_parts['filename'] . '-' . $format . '.' . $path_parts['extension'];
+				$path_parts = pathinfo($image);
+				return $this->root_images_url . '/' . $format . '/' . $path_parts['filename'] . '.' . $path_parts['extension'];
 			} else {
 				return $this->root_images_url . '/originals/' . $image;
 			}
@@ -185,19 +185,24 @@ class imagesModule extends zModule {
 		echo sprintf('<img src="%s" class="%s" alt="%s" />', $url, $css, $alt);
 	}
 
+	private function transformFileName($filename) {
+		$path_parts = pathinfo($filename);
+		return z::slugify($path_parts['filename'], $this->z->core->default_encoding) . '.' . $path_parts['extension'];
+	}
+
 	public function uploadImage($name) {
 		$image = null;
 		if (isset($_FILES[$name]) && strlen($_FILES[$name]['name']) > 0) {
-			$image = basename($_FILES[$name]['name']);
+			$image = $this->transformFileName($_FILES[$name]['name']);
 			$target_path = $this->root_images_disk_path . '/originals/';
 			if (!is_dir($target_path)) {
 				mkdir($target_path, 0777, true);
 			}
 			$target_file = $target_path . $image;
-			$uploadOk = true;
-			$imageFileType = pathinfo($target_file,PATHINFO_EXTENSION);
 
-			// Check if image file is a actual image or fake image
+			$uploadOk = true;
+
+			// Check if image file is an actual image
 			$check = getimagesize($_FILES[$name]['tmp_name']);
 			if($check !== false) {
 				$uploadOk = true;
@@ -210,7 +215,7 @@ class imagesModule extends zModule {
 				$uploadOk = true;
 			} else {
 				$uploadOk = false;
-				$this->z->messages->add(sprintf('Cannot upload image to %s',$target_file), 'warning');
+				$this->z->messages->add(sprintf('Cannot upload image to %s', $target_file), 'warning');
 			}
 		}
 

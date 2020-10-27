@@ -18,12 +18,7 @@ class aliasModule extends zModule {
 	}
 
 	public function slugify($str) {
-		$result = z::trimSpecial($str);
-		$result = strtolower($result);
-		$result = z::transliterate($result, $this->z->core->default_encoding);
-		$result = preg_replace("/[^a-zA-Z0-9\/_| -]/", '', $result);
-		$result = preg_replace("/[_| -]+/", '-', $result);
-		return $result;
+		return z::slugify($str, $this->z->core->default_encoding);
 	}
 
 	/*

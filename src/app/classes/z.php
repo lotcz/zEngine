@@ -87,9 +87,9 @@ class z {
 	}
 
 	static function shorten($str, $len, $ellipsis = "...") {
-		if (strlen($str) > $len) {
-			$length = $len - strlen($ellipsis);
-			return substr($str, 0, $length) . $ellipsis;
+		if (mb_strlen($str) > $len) {
+			$length = $len - mb_strlen($ellipsis);
+			return mb_substr($str, 0, $length) . $ellipsis;
 		} else {
 			return $str;
 		}
@@ -123,6 +123,15 @@ class z {
 
 	static function transliterate($str, $encoding = 'UTF-8') {
 		return iconv($encoding, "ASCII//TRANSLIT", z::transliterateCzech($str));
+	}
+
+	static function slugify($str, $encoding = 'UTF-8') {
+		$result = z::trimSpecial($str);
+		$result = strtolower($result);
+		$result = z::transliterate($result, $encoding);
+		$result = preg_replace("/[^a-zA-Z0-9\/_| -]/", '', $result);
+		$result = preg_replace("/[_| -]+/", '-', $result);
+		return $result;
 	}
 
 	/**
@@ -178,16 +187,16 @@ class z {
 	}
 
 	static function startsWith($haystack, $needle)	{
-		 return (substr($haystack, 0, strlen($needle)) === $needle);
+		 return (mb_substr($haystack, 0, strlen($needle)) === $needle);
 	}
 
 	static function endsWith($haystack, $needle) {
-		$length = strlen($needle);
+		$length = mb_strlen($needle);
 		return $length === 0 || (substr($haystack, -$length) === $needle);
 	}
 
 	static function contains($str, $sub) {
-		return (strpos($str, $sub) !== false);
+		return (mb_strpos($str, $sub) !== false);
 	}
 
 	static function debug($var) {
@@ -216,7 +225,7 @@ class z {
 	*/
 	static function toHtmlEntities($string) {
 		$convmap = array(0, 0xffffff, 0, 0xffffff);
-	  return mb_encode_numericentity($string, $convmap);
+		return mb_encode_numericentity($string, $convmap);
 	}
 
 	/**

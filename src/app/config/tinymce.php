@@ -6,6 +6,7 @@
 		'tinymce_conf' => [
 			'autoresize' => false,
 			'resize' => true,
+			'height' => 500,
 			'branding' => false,
 			'menubar' => false,
 			'plugins' => "wordcount link lists paste image code",
