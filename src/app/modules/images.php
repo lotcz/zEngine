@@ -140,7 +140,7 @@ class imagesModule extends zModule {
 				imagedestroy($tmp);
 
 			} else {
-				throw new Exception("Image $original_path not found. Cannot resize.");
+				throw new Exception("Image original $original_path not found. Cannot resize.");
 			}
 		}
 	}
@@ -185,40 +185,43 @@ class imagesModule extends zModule {
 		echo sprintf('<img src="%s" class="%s" alt="%s" />', $url, $css, $alt);
 	}
 
-	private function transformFileName($filename) {
-		$path_parts = pathinfo($filename);
-		return z::slugify($path_parts['filename'], $this->z->core->default_encoding) . '.' . $path_parts['extension'];
-	}
-
 	public function uploadImage($name) {
-		$image = null;
-		if (isset($_FILES[$name]) && strlen($_FILES[$name]['name']) > 0) {
-			$image = $this->transformFileName($_FILES[$name]['name']);
-			$target_path = $this->root_images_disk_path . '/originals/';
-			if (!is_dir($target_path)) {
-				mkdir($target_path, 0777, true);
-			}
-			$target_file = $target_path . $image;
-
-			$uploadOk = true;
-
-			// Check if image file is an actual image
-			$check = getimagesize($_FILES[$name]['tmp_name']);
-			if($check !== false) {
-				$uploadOk = true;
-			} else {
-				$uploadOk = false;
-				$this->z->messages->add('File is not image.', 'warning');
-			}
-
-			if (move_uploaded_file($_FILES[$name]['tmp_name'], $target_file)) {
-				$uploadOk = true;
-			} else {
-				$uploadOk = false;
-				$this->z->messages->add(sprintf('Cannot upload image to %s', $target_file), 'warning');
-			}
+		if (!(isset($_FILES[$name]) && strlen($_FILES[$name]['name']) > 0))
+		{
+			$this->z->messages->add('No uploaded file detected!', 'error');
+			return null;
 		}
 
-		return ($uploadOk) ? $image : null;
+		$filename_parts = pathinfo($_FILES[$name]['name']);
+		$file_name = z::slugify($filename_parts['filename'], $this->z->core->default_encoding);
+		$file_extension = $filename_parts['extension'];
+
+		$target_path = $this->root_images_disk_path . '/originals/';
+		if (!is_dir($target_path)) {
+			mkdir($target_path, 0777, true);
+		}
+
+		$image = $file_name . '.' . $file_extension;
+		$i = 0;
+		while ($this->exists($image)) {
+			$i++;
+			$image = $file_name . '_' . $i . '.' . $file_extension;
+		}
+		$target_file = $target_path . $image;
+		$uploadOk = true;
+
+		// Check if image file is an actual image
+		$check = getimagesize($_FILES[$name]['tmp_name']);
+		if($check === false) {
+			$this->z->messages->add('Uploaded file is not an image!', 'error');
+			return null;
+		}
+
+		if (!move_uploaded_file($_FILES[$name]['tmp_name'], $target_file)) {
+			$this->z->messages->add(sprintf('Cannot upload image to %s', $target_file), 'error');
+			return null;
+		}
+
+		return $image;
 	}
 }
