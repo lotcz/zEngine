@@ -5,7 +5,7 @@ require_once __DIR__ . '/app/classes/module.php';
 
 /**
 * zEngine himself - this is the main class of zEngine.
-* All you have to do is create instance of this class and call method run().
+* All you have to do is create an instance of this class and call method run().
 */
 class zEngine {
 
