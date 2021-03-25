@@ -1,4 +1,4 @@
-$(function() {
+document.onload = function() {
 	if (z_cookies.show_disabled) {
 		if (!cookiesEnabled()) {
 			$('#cookies_disabled').show();
@@ -9,7 +9,7 @@ $(function() {
 			$('#cookies_warning').show();
 		}
 	}
-});
+};
 
 function cookiesConfirmWarning() {
 	$('#cookies_warning').hide();

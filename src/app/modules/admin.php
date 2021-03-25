@@ -42,6 +42,10 @@ class adminModule extends zModule {
 		return isset($this->admin);
 	}
 
+	public function isSuperUser() {
+		return $this->isAuth() && $this->admin->isSuperUser();
+	}
+
 	/**
 	* Verifies if there is an admin logged in.
 	* Call this only once in the beginning of request processing and then call to isAuth() method to check whether admin is authenticated.
@@ -119,10 +123,21 @@ class adminModule extends zModule {
 			//custom menu from app's admin config
 			$menu->loadItemsFromArray($this->getConfigValue('custom_menu'));
 
-			//standard admin menu
-			if ($this->getConfigValue('show_default_menu', false)) {
-				$submenu = $menu->addSubmenu('Administration');
+			// SUPERUSER - standard admin menu
+			if ($this->admin->isSuperUser() || $this->getConfigValue('show_default_menu', false)) {
+				$submenu = $menu->addRightSubmenu('Administration');
 				$submenu->addItem('admin/users', 'Users');
+
+				// SHOP
+				$submenu->addSeparator();
+				$submenu->addHeader('Shop');
+				if ($this->z->isModuleEnabled('shop')) {
+					$submenu->addItem('admin/products', 'Products');
+					$submenu->addItem('admin/orders', 'Orders');
+					$submenu->addItem('admin/customers', 'Customers');
+				}
+
+				// ADVANCED
 				$submenu->addSeparator();
 				$submenu->addHeader('Advanced');
 				$submenu->addItem('admin/job-runner', 'Jobs');
@@ -136,17 +151,15 @@ class adminModule extends zModule {
 					$submenu->addItem('admin/banned-ips', 'Banned IP Addresses');
 				}
 				$submenu->addItem('admin/info', 'PHP-info');
-				$submenu->addItem('admin/about', 'About');
+				$submenu->addItem('admin/about', 'About + Sessions');
 			}
+
 			$user = $this->z->auth->user;
 			$usermenu = $menu->addRightSubmenu($user->getLabel());
 			$usermenu->addItem('admin/default/default/user/edit/' . $user->val('user_id'), 'User Profile');
 			$usermenu->addItem('admin/change-password', 'Change Password');
 			$usermenu->addItem('admin/logout', 'Log Out');
-		} else if (!$this->is_login_page) {
-			//$menu->addRightItem($this->getAdminAreaURL($this->login_url), 'Log in');
 		}
-
 		$this->menu = $menu;
 	}
 

@@ -120,7 +120,7 @@ class dbModule extends zModule {
 			$limitSQL = sprintf('LIMIT %s', $limit);
 		}
 
-		$sql = sprintf('SELECT %s FROM %s %s %s %s', implode(',', $columns), $table_name, $whereSQL, $orderbySQL, $limitSQL);
+		$sql = sprintf('SELECT %s FROM `%s` %s %s %s', implode(',', $columns), $table_name, $whereSQL, $orderbySQL, $limitSQL);
 		return $this->executeQuery($sql, $bindings, $types);
 	}
 
@@ -141,7 +141,7 @@ class dbModule extends zModule {
 			$columnsSQL[] = $column . ' = ?';
 		}
 
-		$sql = sprintf('UPDATE %s SET %s %s', $table_name, implode(',', $columnsSQL), $whereSQL);
+		$sql = sprintf('UPDATE `%s` SET %s %s', $table_name, implode(',', $columnsSQL), $whereSQL);
 		return $this->executeQuery($sql, $bindings, $types);
 	}
 
@@ -160,7 +160,7 @@ class dbModule extends zModule {
 			$values[] = '?';
 		}
 
-		$sql = sprintf('INSERT INTO %s (%s) VALUES (%s)', $table_name, implode(',', $columns), implode(',', $values));
+		$sql = sprintf('INSERT INTO `%s` (%s) VALUES (%s)', $table_name, implode(',', $columns), implode(',', $values));
 		return $this->executeQuery($sql, $bindings, $types);
 	}
 
@@ -185,7 +185,7 @@ class dbModule extends zModule {
 			$whereSQL = sprintf('WHERE %s', $where);
 		}
 
-		$sql = sprintf('DELETE FROM %s %s', $table_name, $whereSQL);
+		$sql = sprintf('DELETE FROM `%s` %s', $table_name, $whereSQL);
 		return $this->executeQuery($sql, $bindings, $types);
 	}
 

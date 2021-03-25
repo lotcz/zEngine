@@ -5,8 +5,6 @@
 */
 class shopModule extends zModule {
 
-	public function onBeforeRender() {
-
-	}
+	public $depends_on = ['db', 'images', 'tinymce'];
 
 }

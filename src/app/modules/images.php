@@ -140,7 +140,9 @@ class imagesModule extends zModule {
 				imagedestroy($tmp);
 
 			} else {
-				throw new Exception("Image original $original_path not found. Cannot resize.");
+				$message = "Image original $original_path not found. Cannot resize.";
+				$this->z->errorlog->write($message);
+				$this->z->messages->error($message);
 			}
 		}
 	}

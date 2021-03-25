@@ -19,6 +19,7 @@
 	$language_data['Total'] = 'Celkem';
 	$language_data['About Us'] = 'O nás';
 	$language_data['Help'] = 'Nápověda';
+	$language_data['Contact'] = 'Kontakt';
 
 	/* AUTHENTICATION */
 	$language_data['Login or E-mail'] = 'Login nebo e-mail';
@@ -76,6 +77,15 @@
 	$language_data['User Deactivated'] = 'Deaktivovaný uživatel';
 	$language_data['Banned IP Addresses'] = 'Zakázané IP adresy';
 
+	/* SHOP */
+	$language_data['Shop'] = 'Obchod';
+	$language_data['Product'] = 'Produkt';
+	$language_data['Products'] = 'Produkty';
+	$language_data['Order'] = 'Objednávka';
+	$language_data['Orders'] = 'Objednávky';
+	$language_data['Price'] = 'Cena';
+	$language_data['Category'] = 'Kategorie';
+
 	/* FORMS */
 	$language_data['Back'] = 'Zpět';
 	$language_data['Save'] = 'Uložit';
@@ -84,6 +94,8 @@
 	$language_data['Cancel'] = 'Storno';
 	$language_data['Delete'] = 'Smazat';
 	$language_data['Edit'] = 'Upravit';
+	$language_data['Send'] = 'Odeslat';
+	$language_data['Please enter valid decimal number.'] = 'Prosím vložte platné desetinné číslo.';
 	$language_data['Max value is %s.'] = 'Maximální hodnota je %s.';
 	$language_data['%d - %d of %d'] = '<b>%d</b> až <b>%d</b> z celkových <b>%d</b>.';
 	$language_data['Value must be at least %s characters long.'] = 'Hodnota musí být alespoň %s znaků dlouhá.';

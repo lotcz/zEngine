@@ -11,4 +11,8 @@ class AdminModel extends zModel {
 		$this->loadSingle($where, $bindings, $types);
 	}
 
+	public function isSuperUser() {
+		return $this->is_loaded && $this->ival('admin_id') === 1;
+	}
+
 }

@@ -184,7 +184,7 @@ class formsModule extends zModule {
 					if ($this->z->isModuleEnabled('security')) {
 						$this->z->security->saveFailedAttempt();
 					}
-					$this->z->messages->error('Form protection breach was detected! Cannot process form. Please refresh the page and try to submit form again.');
+					$this->z->messages->error('Timeout! Cannot process form. Please try to submit form again. You can also try to refresh the page.');
 					$model->setData($form->processed_input);
 				}
 
@@ -288,6 +288,18 @@ class formsModule extends zModule {
 				?>
 			</select>
 		<?php
+	}
+
+	public function renderForeignKeyLink($name, $link_table, $link_template, $link_id_field, $link_label_field, $value) {
+		$result = $this->z->db->executeSelectQuery($link_table, $columns = [$link_label_field], sprintf('%s = ?', $link_id_field), null, 1, [$value], [PDO::PARAM_INT]);
+		if ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+			$label = $row[$link_label_field];
+			$this->z->core->renderLink(
+				sprintf($link_template, $value),
+				$label
+			);
+		}
+		$result->closeCursor();
 	}
 
 	public function renderForm($form) {
@@ -436,7 +448,7 @@ class formsModule extends zModule {
 
 										case 'image' :
 											if (isset($field->value)) {
-												$this->z->images->renderImage($field->value, 'mini-thumb');
+												$this->z->images->renderImage($field->value, isset($field->image_size) ? $field->image_size : 'mini-thumb');
 											}
 										?>
 											<input type="hidden" name="<?=$field->name ?>" id="field_<?=$field->name ?>" value="<?=$field->value ?>" />
@@ -456,6 +468,17 @@ class formsModule extends zModule {
 										break;
 
 										case 'foreign_key_link' :
+											$this->renderForeignKeyLink(
+												$field->name,
+												$field->link_table,
+												$field->link_template,
+												$field->link_id_field,
+												$field->link_label_field,
+												$field->value
+											);
+										break;
+
+										case 'link' :
 											?>
 												<p class="form-control-static">
 													<?php

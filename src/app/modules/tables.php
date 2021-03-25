@@ -36,7 +36,7 @@ class tablesModule extends zModule {
 			$filter_values = $table->filter_form->processed_input;
 			$where = [];
 			$table->bindings = [];
-			$table->types = '';
+			$table->types = [];
 			foreach ($table->filter_form->fields as $field) {
 				if ($field->type == 'text') {
 					foreach ($field->filter_fields as $filter_field) {
@@ -44,7 +44,7 @@ class tablesModule extends zModule {
 						if (strlen($filter_values[$field->name]) > 0) {
 							$where[] = sprintf('%s like ?', $filter_field);
 							$table->bindings[] = '%' . $filter_values[$field->name] . '%';
-							$table->types .= 's';
+							$table->types[] = PDO::PARAM_STR;
 						}
 					}
 				}
@@ -104,11 +104,12 @@ class tablesModule extends zModule {
 															$sort_url = $table->paging->getLinkUrl(0, null, $field->name, false, null);
 														}
 														?>
-															<a href="<?=$sort_url?>"><?=$field->label?>
+															<a href="<?=$sort_url?>">
 																<?php
+																	echo $this->z->core->t($field->label);
 																	if ($field->name == $table->paging->active_sorting) {
 																		?>
-																			<span class="caret <?=$table->paging->sorting_desc ? '' : 'caret-up' ?>">
+																			<span class="caret <?=$table->paging->sorting_desc ? '' : 'caret-up' ?>"/>
 																		<?php
 																	}
 																?>

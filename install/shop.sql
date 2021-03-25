@@ -57,13 +57,14 @@ CREATE VIEW viewProductCategories AS
     LEFT OUTER JOIN alias a ON (a.alias_id = c.product_category_alias_id);
 
 DROP TABLE IF EXISTS `product`;
-  
+
 CREATE TABLE IF NOT EXISTS `product` (
   `product_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `product_visible` BOOL DEFAULT 1 NOT NULL,
   `product_product_category_id` INT UNSIGNED NOT NULL,
   `product_alias_id` INT UNSIGNED NULL,
   `product_name` NVARCHAR(255) NOT NULL,
+  `product_slug` NVARCHAR(255) NOT NULL,
   `product_price` DECIMAL(10,2) UNSIGNED NOT NULL,
   `product_stock` INT UNSIGNED NOT NULL DEFAULT 0,
   `product_image` VARCHAR(255) NULL,
@@ -75,7 +76,8 @@ CREATE TABLE IF NOT EXISTS `product` (
   CONSTRAINT `product_alias_fk`
     FOREIGN KEY (`product_alias_id`)
     REFERENCES `alias` (`alias_id`)
-    ON DELETE SET NULL
+    ON DELETE SET NULL,
+  UNIQUE INDEX `product_slug_unique` (`product_slug` ASC)
 ) ENGINE = InnoDB;
 
 DROP VIEW IF EXISTS `viewProducts`;
