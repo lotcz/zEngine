@@ -12,4 +12,58 @@ class ProductModel extends zModel {
 		return sprintf('default/default/product/%d', $id);
 	}
 
+	public function loadPrevious() {
+		$result = ProductModel::select(
+			$this->db,
+			ProductModel::getTableName(),
+			'product_id < ? and product_product_category_id = ?',
+			'product_id DESC',
+			1,
+			[$this->ival('product_id'), $this->ival('product_product_category_id')],
+			[PDO::PARAM_INT, PDO::PARAM_INT]
+		);
+
+		if (count($result) > 0)
+			return $result[0];
+
+		// load last
+		$result = ProductModel::select(
+			$this->db,
+			ProductModel::getTableName(),
+			'product_product_category_id = ?',
+			'product_id DESC',
+			1,
+			[$this->ival('product_product_category_id')],
+			[PDO::PARAM_INT]
+		);
+		return $result[0];
+	}
+
+	public function loadNext() {
+		$result = ProductModel::select(
+			$this->db,
+			ProductModel::getTableName(),
+			'product_id > ? and product_product_category_id = ?',
+			'product_id ASC',
+			1,
+			[$this->ival('product_id'), $this->ival('product_product_category_id')],
+			[PDO::PARAM_INT, PDO::PARAM_INT]
+		);
+
+		if (count($result) > 0)
+			return $result[0];
+
+		// load fist
+		$result = ProductModel::select(
+			$this->db,
+			ProductModel::getTableName(),
+			'product_product_category_id = ?',
+			'product_id ASC',
+			1,
+			[$this->ival('product_product_category_id')],
+			[PDO::PARAM_INT]
+		);
+		return $result[0];
+	}
+
 }

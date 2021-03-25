@@ -1,5 +1,9 @@
 <?php
 
+require_once __DIR__ . '/../models/product.m.php';
+require_once __DIR__ . '/../models/product_category.m.php';
+require_once __DIR__ . '/../models/order.m.php';
+
 /**
 * e-shop
 */
