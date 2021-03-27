@@ -9,6 +9,6 @@ require_once __DIR__ . '/../models/order.m.php';
 */
 class shopModule extends zModule {
 
-	public $depends_on = ['db', 'images', 'tinymce'];
+	public $depends_on = ['db', 'images'];
 
 }

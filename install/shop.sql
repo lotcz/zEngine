@@ -62,6 +62,7 @@ CREATE TABLE IF NOT EXISTS `product` (
   `product_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `product_visible` BOOL DEFAULT 1 NOT NULL,
   `product_product_category_id` INT UNSIGNED NOT NULL,
+  `product_gallery_id` INT UNSIGNED;
   `product_alias_id` INT UNSIGNED NULL,
   `product_name` NVARCHAR(255) NOT NULL,
   `product_slug` NVARCHAR(255) NOT NULL,
@@ -77,6 +78,10 @@ CREATE TABLE IF NOT EXISTS `product` (
     FOREIGN KEY (`product_alias_id`)
     REFERENCES `alias` (`alias_id`)
     ON DELETE SET NULL,
+  CONSTRAINT `product_gallery_fk`
+    FOREIGN KEY (`product_gallery_id`)
+	REFERENCES `gallery` (`gallery_id`)
+	ON DELETE SET NULL,
   UNIQUE INDEX `product_slug_unique` (`product_slug` ASC)
 ) ENGINE = InnoDB;
 

@@ -8,7 +8,7 @@ class tinymceModule extends zModule {
 
 	public function onEnabled() {
 		$tinymce_config = $this->getConfigValue('tinymce_conf', []);
-		$placement = $this->getConfigValue('default_placement', []);
+		$placement = $this->getConfigValue('default_placement', 'admin.head');
 
 		// process default tinymce includes
 		$includes = $this->getConfigValue('includes', []);

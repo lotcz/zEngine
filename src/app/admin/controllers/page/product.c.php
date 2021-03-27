@@ -4,6 +4,7 @@
 	require_once __DIR__ . '/../../../models/product_category.m.php';
 
 	$this->requireModule('tinymce');
+	$this->requireModule('gallery');
 
 	//fill in slug value before update
 	$onBeforeUpdate = function($z, $form, $data) {
@@ -12,6 +13,12 @@
 		// remember old image
 		$product = new ProductModel($z->db, $data->ival('product_id'));
 		$form->productOldImage = $product->val('product_image');
+
+		// create gallery
+		if ($data->ival('product_gallery_id') <= 0) {
+			$gallery = $this->z->gallery->createGallery();
+			$data->set('product_gallery_id', $gallery->ival('gallery_id'));
+		}
 	};
 
 	//save slug as alias and delete old image after update
@@ -70,15 +77,20 @@
 				'validations' => [['type' => 'price']]
 			],
 			[
-				'name' => 'product_description',
-				'label' => 'Description',
-				'type' => 'tinymce'
-			],
-			[
 				'name' => 'product_image',
 				'label' => 'Image',
 				'type' => 'image',
 				'image_size' => 'thumb'
+			],
+			[
+				'name' => 'product_gallery_id',
+				'label' => 'Gallery',
+				'type' => 'gallery'
+			],
+			[
+				'name' => 'product_description',
+				'label' => 'Description',
+				'type' => 'tinymce'
 			]
 		],
 		$onBeforeUpdate,

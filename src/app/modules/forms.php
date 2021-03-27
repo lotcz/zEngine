@@ -456,6 +456,19 @@ class formsModule extends zModule {
 										<?php
 										break;
 
+										case 'gallery' :
+											if (z::parseInt($field->value) > 0) {
+												$this->z->gallery->renderGalleryForm($field->value);
+												?>
+													<input type="hidden" name="<?=$field->name ?>" id="<?=$field->name ?>" value="<?=$field->value ?>" />
+												<?php
+											} else {
+												?>
+													<span><?=$this->z->core->t('You must save the form first before adding to gallery.')?></span>
+												<?php
+											}
+										break;
+
 										case 'select' :
 											$this->renderSelect(
 												$field->name,

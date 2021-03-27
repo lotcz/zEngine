@@ -129,12 +129,19 @@ class adminModule extends zModule {
 				$submenu->addItem('admin/users', 'Users');
 
 				// SHOP
-				$submenu->addSeparator();
-				$submenu->addHeader('Shop');
 				if ($this->z->isModuleEnabled('shop')) {
+					$submenu->addSeparator();
+					$submenu->addHeader('Shop');
 					$submenu->addItem('admin/products', 'Products');
 					$submenu->addItem('admin/orders', 'Orders');
 					$submenu->addItem('admin/customers', 'Customers');
+				}
+
+				// GALLERY
+				if ($this->z->isModuleEnabled('gallery')) {
+					$submenu->addSeparator();
+					$submenu->addHeader('Gallery');
+					$submenu->addItem('admin/galleries', 'Galleries');
 				}
 
 				// ADVANCED

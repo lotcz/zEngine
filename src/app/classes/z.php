@@ -68,7 +68,11 @@ class z {
 	* Return true if current http request is POST which in most cases means that a form was submitted.
 	*/
 	static function isPost() {
-		return ($_SERVER['REQUEST_METHOD'] === 'POST');
+		return z::isMethod('POST');
+	}
+
+	static function isMethod($method) {
+		return ($_SERVER['REQUEST_METHOD'] == $method);
 	}
 
 	/**
