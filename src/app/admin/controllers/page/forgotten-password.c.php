@@ -22,7 +22,7 @@
 			}
 		} else {
 			// increase ip address failed attempts
-			IpFailedAttemptModel::saveFailedAttempt($this->z->db);
+			$this->z->security->saveFailedAttempt();
 			$this->message('E-mail address not found!','error');
 		}
 	}

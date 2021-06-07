@@ -1,5 +1,6 @@
 <?php
 
+require_once __DIR__ . '/../models/admin_role.m.php';
 require_once __DIR__ . '/../models/admin.m.php';
 
 /**
@@ -34,6 +35,11 @@ class adminModule extends zModule {
 
 	public $admin = null;
 
+	public function hasRole($role) {
+		if (!$this->isAuth()) return;
+		return $this->admin->ival('user_admin_role_id') == $role;
+    }
+
 	/**
 	* Return true if an admin is authenticated.
 	*/
@@ -43,8 +49,12 @@ class adminModule extends zModule {
 	}
 
 	public function isSuperUser() {
-		return $this->isAuth() && $this->admin->isSuperUser();
+		return $this->hasRole(AdminRoleModel::role_superuser);
 	}
+
+	public function isAdmin() {
+    		return $this->hasRole(AdminRoleModel::role_admin);
+    	}
 
 	/**
 	* Verifies if there is an admin logged in.
@@ -124,9 +134,12 @@ class adminModule extends zModule {
 			$menu->loadItemsFromArray($this->getConfigValue('custom_menu'));
 
 			// SUPERUSER - standard admin menu
-			if ($this->admin->isSuperUser() || $this->getConfigValue('show_default_menu', false)) {
+			if ($this->isSuperUser() || $this->isAdmin()) {
 				$submenu = $menu->addRightSubmenu('Administration');
-				$submenu->addItem('admin/users', 'Users');
+
+				$submenu->addHeader('Users');
+				//$submenu->addItem('admin/users', 'Users');
+				$submenu->addItem('admin/admins', 'Administrators');
 
 				// SHOP
 				if ($this->z->isModuleEnabled('shop')) {
@@ -144,21 +157,23 @@ class adminModule extends zModule {
 					$submenu->addItem('admin/galleries', 'Galleries');
 				}
 
-				// ADVANCED
-				$submenu->addSeparator();
-				$submenu->addHeader('Advanced');
-				$submenu->addItem('admin/job-runner', 'Jobs');
-				if ($this->z->isModuleEnabled('alias')) {
-					$submenu->addItem('admin/aliases', 'Aliases');
+				if ($this->isSuperUser()) {
+					// ADVANCED
+					$submenu->addSeparator();
+					$submenu->addHeader('Advanced');
+					$submenu->addItem('admin/job-runner', 'Jobs');
+					if ($this->z->isModuleEnabled('alias')) {
+						$submenu->addItem('admin/aliases', 'Aliases');
+					}
+					$submenu->addItem('admin/languages', 'Languages');
+					$submenu->addItem('admin/currencies', 'Currencies');
+					if ($this->z->isModuleEnabled('security')) {
+						$submenu->addItem('admin/ip-failed-attempts', 'Failed Attempts');
+						$submenu->addItem('admin/banned-ips', 'Banned IP Addresses');
+					}
+					$submenu->addItem('admin/info', 'PHP-info');
+					$submenu->addItem('admin/about', 'About + Sessions');
 				}
-				$submenu->addItem('admin/languages', 'Languages');
-				$submenu->addItem('admin/currencies', 'Currencies');
-				if ($this->z->isModuleEnabled('security')) {
-					$submenu->addItem('admin/ip-failed-attempts', 'Failed Attempts');
-					$submenu->addItem('admin/banned-ips', 'Banned IP Addresses');
-				}
-				$submenu->addItem('admin/info', 'PHP-info');
-				$submenu->addItem('admin/about', 'About + Sessions');
 			}
 
 			$user = $this->z->auth->user;

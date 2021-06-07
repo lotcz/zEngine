@@ -3,7 +3,7 @@ DROP TABLE IF EXISTS `gallery`;
 CREATE TABLE `gallery` (
 	`gallery_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
 	`gallery_name` VARCHAR(255),
-	PRIMARY KEY (`gallery_id`),
+	PRIMARY KEY (`gallery_id`)
 ) ENGINE = InnoDB;
 
 DROP TABLE IF EXISTS `image`;

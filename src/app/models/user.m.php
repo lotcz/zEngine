@@ -42,7 +42,7 @@ class UserModel extends zModel {
 	}
 
 	public static function getUserStatusLabel($state) {
-		switch ($state) {
+		switch (z::parseInt($state)) {
 			case Self::user_state_anonymous:
 				return 'Anonymous';
 			break;

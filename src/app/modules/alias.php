@@ -32,6 +32,14 @@ class aliasModule extends zModule {
 			$alias->set('alias_path', $path);
 			$alias->save();
 		}
+		return $alias;
+	}
+
+	/*
+		Create alias if given URL alias not exists yet.
+	 */
+	public function createIfNotExists($url, $path) {
+		return $this->createUrlIfNotExists($url, $path);
 	}
 
 	/*

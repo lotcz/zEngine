@@ -23,9 +23,17 @@
 
 	//save slug as alias and delete old image after update
 	$onAfterUpdate = function($z, $form, $data) {
+
+		// ALIAS
 		$product_slug = $data->val('product_slug');
 		$product_path = ProductModel::getProductPath($data->val('product_id'));
-		$z->alias->createUrlIfNotExists($product_slug, $product_path);
+		$alias = $z->alias->createUrlIfNotExists($product_slug, $product_path);
+		if ($alias->ival('alias_id') != $data->ival('product_alias_id')) {
+			// save alias FK
+			$product = new ProductModel($z->db, $data->ival('product_id'));
+			$product->set('product_alias_id', $alias->ival('alias_id'));
+			$product->save();
+		}
 
 		// delete old image
 		if ((!empty($form->productOldImage)) && ($form->productOldImage != $data->val('product_image')))

@@ -423,6 +423,9 @@ class coreModule extends zModule {
 				case 'link_js':
 					echo sprintf('<script src="%s?v=%s"></script>' . z::$crlf, $incl[0], $this->app_version);
 				break;
+				case 'link_js_module':
+					echo sprintf('<script type="module" src="%s?v=%s"></script>' . z::$crlf, $incl[0], $this->app_version);
+				break;
 				case 'link_css':
 					echo sprintf('<link rel="stylesheet" type="text/css" href="%s?v=%s">' . z::$crlf, $incl[0], $this->app_version);
 				break;

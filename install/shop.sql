@@ -138,28 +138,30 @@ FOR EACH ROW
 	END //
 DELIMITER ;
 
-CREATE TABLE IF NOT EXISTS `cart` (
-  `cart_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `cart_customer_id` INT UNSIGNED NOT NULL,
-  `cart_product_id` INT UNSIGNED NOT NULL,
-  `cart_count` INT UNSIGNED NOT NULL DEFAULT 1,
-  PRIMARY KEY (`cart_id`),
-  CONSTRAINT `cart_product_fk`
-    FOREIGN KEY (`cart_product_id`)
+CREATE TABLE IF NOT EXISTS `cart_item` (
+  `cart_item_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `cart_item_customer_id` INT UNSIGNED NOT NULL,
+  `cart_item_product_id` INT UNSIGNED NOT NULL,
+  `cart_item_quantity` INT UNSIGNED NOT NULL DEFAULT 1,
+  PRIMARY KEY (`cart_item_id`),
+  CONSTRAINT `cart_item_product_fk`
+    FOREIGN KEY (`cart_item_product_id`)
     REFERENCES `product` (`product_id`)
     ON DELETE CASCADE,
-  CONSTRAINT `cart_customer_fk`
-    FOREIGN KEY (`cart_customer_id`)
+  CONSTRAINT `cart_item_customer_fk`
+    FOREIGN KEY (`cart_item_customer_id`)
     REFERENCES `customer` (`customer_id`)
-    ON DELETE CASCADE
+    ON DELETE CASCADE,
+  CONSTRAINT `cart_item_unique`
+    UNIQUE KEY (`cart_item_customer_id`, `cart_item_product_id`)
 ) ENGINE = InnoDB;
 
 DROP VIEW IF EXISTS `viewProductsInCart` ;
 
 CREATE VIEW viewProductsInCart AS
 	SELECT *
-    FROM cart c
-    LEFT OUTER JOIN product p ON (c.cart_product_id = p.product_id)
+    FROM cart_item c
+    LEFT OUTER JOIN product p ON (c.cart_item_product_id = p.product_id)
     LEFT OUTER JOIN alias a ON (a.alias_id = p.product_alias_id);
 
 CREATE TABLE IF NOT EXISTS `order_state` (
@@ -230,6 +232,14 @@ CREATE TABLE IF NOT EXISTS `order` (
   `order_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `order_last_status_change` TIMESTAMP NULL,
 
+  `order_invoicing_identification` VARCHAR(50),
+  `order_invoicing_name` VARCHAR(50),
+  `order_invoicing_street` VARCHAR(50),
+  `order_invoicing_city` VARCHAR(50),
+  `order_invoicing_zip` INT,
+
+  `order_use_shipping_address` BOOL NOT NULL DEFAULT 0,
+
   `order_shipping_name` VARCHAR(50),
   `order_shipping_street` VARCHAR(50),
   `order_shipping_city` VARCHAR(50),
@@ -266,7 +276,7 @@ CREATE TABLE IF NOT EXISTS `order_product` (
   `order_product_product_id` INT UNSIGNED NULL,
   `order_product_name` VARCHAR(255) NOT NULL,
   `order_product_price` DECIMAL(10,2) UNSIGNED NOT NULL,
-  `order_product_count` INT UNSIGNED NOT NULL DEFAULT 1,
+  `order_product_quantity` INT UNSIGNED NOT NULL DEFAULT 1,
   `order_product_total_price` DECIMAL(10,2) UNSIGNED NOT NULL,
 
   PRIMARY KEY (`order_product_id`),

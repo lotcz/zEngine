@@ -1,8 +1,8 @@
 <?php
 
-	$this->setPageTitle('Users');
+	$this->setPageTitle('Administrators');
 	$this->renderAdminTable(
-		'user',
+		'admin',
 		[
 			[
 				'name' => 'user_name',
@@ -17,10 +17,8 @@
 				'label' => 'E-mail'
 			],
 			[
-				'name' => 'user_state',
-				'label' => 'State',
-				'type' => 'custom',
-				'custom_function' => 'UserModel::getUserStatusLabel'
+				'name' => 'admin_role_name',
+				'label' => 'Role'
 			],
 			[
 				'name' => 'user_last_access',
@@ -28,7 +26,7 @@
 				'type' => 'datetime'
 			]
 		],
-		null,
-		['user_id', 'user_name', 'user_login', 'user_email', 'user_last_access'],
+		'viewAdministrators',
+		['user_id', 'user_name', 'user_login', 'user_email', 'user_last_access', 'admin_role_name'],
 		'user_id'
 	);
