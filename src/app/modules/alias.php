@@ -35,6 +35,15 @@ class aliasModule extends zModule {
 		return $alias;
 	}
 
+	public function createOrUpdateUrl($url, $path) {
+		$alias = new AliasModel($this->z->db);
+		$alias->loadByUrl($url);
+		$alias->set('alias_url', $url);
+		$alias->set('alias_path', $path);
+		$alias->save();
+		return $alias;
+	}
+
 	/*
 		Create alias if given URL alias not exists yet.
 	 */

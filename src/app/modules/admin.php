@@ -206,6 +206,9 @@ class adminModule extends zModule {
 				['type' => 'link', 'label' => '+ Add', 'css' => 'btn btn-success mr-2' , 'link_url' => $this->base_url . '/' . $form->detail_page . '?r=' . $this->z->core->raw_path]
 			]
 		]);
+
+		$filter = null;
+
 		if (isset($filter_fields)) {
 			$form->add($filter_fields);
 			$form->addField([
@@ -216,10 +219,16 @@ class adminModule extends zModule {
 					['type' => 'link', 'label' => 'Reset', 'css' => 'btn btn-default mr-2', 'link_url' => $this->z->core->raw_path]
 				]
 			]);
+
+			if (z::isPost()) {
+				$form->processInput($_POST);
+			} else {
+				$form->processed_input['search_text'] = z::get('f');
+				$form->fields['search_text']->value = z::get('f');
+			}
+			$filter = $form->processed_input['search_text'];
 		}
-		if (z::isPost()) {
-			$form->processInput($_POST);
-		}
+
 		$this->z->core->setData('form', $form);
 
 		$table = $this->z->tables->createTable($entity_name, $view_name, $sort_fields, $default_sort, 'table-striped table-sm table-bordered table-hover mb-2');
@@ -228,9 +237,15 @@ class adminModule extends zModule {
 	 	$table->new_link = sprintf('admin/default/default/%s', $form->detail_page);
 
 		$table->add($fields);
+
 		if (isset($filter_fields)) {
 			$table->filter_form = $form;
+			$table->paging->filter = $filter;
+			if (z::isPost()) {
+				$table->paging->offset = 0;
+			}
 		}
+
 		$this->z->tables->prepareTable($table);
 		$this->z->core->setData('table', $table);
 		$this->z->core->setPageView('admin');

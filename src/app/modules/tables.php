@@ -32,7 +32,7 @@ class tablesModule extends zModule {
 
 	public function prepareTable($table) {
 		// filtering
-		if (isset($table->filter_form) && z::isPost()) {
+		if (isset($table->filter_form) && $table->filter_form->is_valid) {
 			$filter_values = $table->filter_form->processed_input;
 			$where = [];
 			$table->bindings = [];

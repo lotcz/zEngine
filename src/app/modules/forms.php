@@ -11,7 +11,7 @@ class formsModule extends zModule {
 	public $depends_on = ['db', 'messages', 'resources'];
 	public $also_install = ['auth'];
 
-	private $protection_enabled = true;
+	private $protection_enabled = false;
 	private $protection_token_min_delay = 3;
 	private $protection_token_expires = 60*60;
 
@@ -361,7 +361,7 @@ class formsModule extends zModule {
 					<div id="<?=$field->name ?>_form_group" class="form-group">
 						<div class="form-check">
 							<input type="checkbox" id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> value="1" <?=($field->value) ? 'checked' : '' ?> class="form-check-input" />
-							<label for="<?=$field->name ?>" class="<?=$label_css ?> form-check-label"><?=$this->z->core->t($field->label) ?>:</label>
+							<label for="<?=$field->name ?>" class="<?=$label_css ?> form-check-label"><?=$this->z->core->t($field->label) ?></label>
 						</div>
 					</div>
 				<?php

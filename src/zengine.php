@@ -27,7 +27,13 @@ class zEngine {
 	public function enableModule($module_name) {
 		try {
 			if (!$this->isModuleEnabled($module_name)) {
-				require_once __DIR__ . "/app/modules/$module_name.php";
+				$core_modules_path = __DIR__ . "/app/modules/$module_name.php";
+				$app_modules_path = $this->app_dir . "modules/$module_name.php";
+				if (file_exists($app_modules_path)) {
+					require_once $app_modules_path;
+				} else {
+					require_once $core_modules_path;
+				}
 				$module_class = $module_name . 'Module';
 				$module = new $module_class($this);
 				$module->name = $module_name;

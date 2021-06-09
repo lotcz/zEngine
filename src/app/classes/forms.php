@@ -59,7 +59,7 @@ class zForm {
 		$result = [];
 		$is_valid = true;
 		foreach ($this->fields as $field) {
-			if (isset($field->name) && isset($data[$field->name]) && !isset($field->disabled) && !(z::startsWith($field->type, 'static'))) {
+			if (isset($field->name) && !isset($field->disabled) && !(z::startsWith($field->type, 'static')) && ($field->type !== 'buttons')) {
 				switch ($field->type) {
 					case 'bool':
 						$result[$field->name] = isset($data[$field->name]) ? 1 : 0;
@@ -67,7 +67,11 @@ class zForm {
 
 					case 'integer':
 					case 'select':
-						$result[$field->name] = z::parseInt($data[$field->name]);
+						if (isset($data[$field->name])) {
+							$result[$field->name] = z::parseInt($data[$field->name]);
+						} else {
+							$is_valid = false;
+						}
 					break;
 
 					case 'image': /* upload image */
@@ -90,7 +94,11 @@ class zForm {
 					break;
 
 					default:
-						$result[$field->name] = $data[$field->name];
+						if (isset($data[$field->name])) {
+							$result[$field->name] = $data[$field->name];
+						} else {
+							$is_valid = false;
+						}
 				}
 			}
 		}
