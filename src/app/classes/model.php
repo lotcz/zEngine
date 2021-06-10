@@ -171,6 +171,11 @@ class zModel {
 		return $list;
 	}
 
+	public function getId() {
+		$class_name = get_called_class();
+		return $this->ival($class_name::getIdName());
+	}
+
 	public function save() {
 		$class_name = get_called_class();
 		$id = $this->ival($class_name::getIdName());
@@ -198,6 +203,15 @@ class zModel {
 		}
 
 		return true;
+	}
+
+	public function updateMultiReference($table, $ref_id_field, $other_ref_id_field, $values) {
+		$id = $this->getId();
+		$this->db->executeDeleteQuery($table, sprintf('%s = ?', $ref_id_field), [$id], [PDO::PARAM_INT]);
+		foreach ($values as $value) {
+			$val = z::parseInt($value);
+			$this->db->executeInsertQuery($table, [$ref_id_field, $other_ref_id_field], [$id, $val], [PDO::PARAM_INT, PDO::PARAM_INT]);
+		}
 	}
 
 	public function delete(int $id = null) {
@@ -288,5 +302,6 @@ class zModel {
 		}
 		return $result;
 	}
+
 
 }

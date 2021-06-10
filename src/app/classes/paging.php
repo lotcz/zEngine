@@ -64,6 +64,9 @@ class zPaging {
 				}
 			}
 		}
+		if (isset($_GET[$this->filter_url_name])) {
+			$this->filter = $_GET[$this->filter_url_name];
+		}
 	}
 
 	public function getLinkUrl($offset = null, $limit = null, $sorting = null, $sorting_desc = null, $filter = null) {

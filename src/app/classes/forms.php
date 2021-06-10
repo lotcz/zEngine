@@ -57,22 +57,22 @@ class zForm {
 
 	public function processInput($data) {
 		$result = [];
-		$is_valid = true;
+		$this->is_valid = true;
 		foreach ($this->fields as $field) {
 			if (isset($field->name) && !isset($field->disabled) && !(z::startsWith($field->type, 'static')) && ($field->type !== 'buttons')) {
 				switch ($field->type) {
 					case 'bool':
 						$result[$field->name] = isset($data[$field->name]) ? 1 : 0;
-					break;
+						break;
 
 					case 'integer':
 					case 'select':
 						if (isset($data[$field->name])) {
 							$result[$field->name] = z::parseInt($data[$field->name]);
 						} else {
-							$is_valid = false;
+							$this->is_valid = false;
 						}
-					break;
+						break;
 
 					case 'image': /* upload image */
 						if (!isset($this->images_module)) {
@@ -84,26 +84,33 @@ class zForm {
 							if (isset($image) && strlen($image) > 0) {
 								$result[$field->name] = $image;
 							} else {
-								$is_valid = false;
+								$this->is_valid = false;
 							}
 						}
-					break;
+						break;
 
 					case 'date':
 						$result[$field->name] = empty($data[$field->name]) ? null : $data[$field->name];
-					break;
+						break;
+
+					case 'multiselect':
+						$field->selected_items = [];
+						if (!empty($data[$field->name])) {
+							$field->selected_items = $data[$field->name];
+						}
+						break;
 
 					default:
 						if (isset($data[$field->name])) {
 							$result[$field->name] = $data[$field->name];
 						} else {
-							$is_valid = false;
+							$this->is_valid = false;
 						}
 				}
 			}
 		}
 		$this->processed_input = $result;
-		return ($is_valid) ? $result : false;
+		return ($this->is_valid) ? $result : false;
 	}
 
 	public function prepare($db, $data) {
@@ -114,17 +121,15 @@ class zForm {
 				$field->value = $this->data->val($field->name);
 
 				if (($field->type == 'select') && (!isset($field->select_data))) {
-
 					// prepare select filter
-
 					$field->select_data = zModel::select(
 						$db,
 						$field->select_table, /* table */
 						null, /* where */
-						null, /* bindings */
-						null, /* types */
-						null, /* paging */
-						$field->select_label_field /* orderby */
+						$field->select_label_field,
+						null,
+						null,
+						null /* types */
 					);
 
 					if (isset($field->empty_option_name) && strlen($field->empty_option_name) > 0) {
@@ -144,6 +149,27 @@ class zForm {
 						$field->link_label = null;
 						$field->link_url = null;
 					}
+				} elseif ($field->type == 'multiselect') {
+					// prepare select filter
+					$field->select_data = zModel::select(
+						$db,
+						$field->select_table, /* table */
+						null, /* where */
+						$field->select_label_field, /* orderby */
+						null,/* limit */
+						null, /* bindings */
+						null /* types */
+					);
+					$selected = zModel::select(
+						$db,
+						$field->multi_ref_table, /* table */
+						sprintf('%s = ?', $field->multi_fk_id_field), /* where */
+						null,
+						null,
+						[$data->ival($field->multi_id_field)], /* bindings */
+						[PDO::PARAM_INT] /* types */
+					);
+					$field->selected_items = zModel::columnAsArray($selected, $field->multi_fk_other_id_field, 'i');
 				}
 			}
 		}
@@ -220,7 +246,7 @@ class zForm {
 		return Self::validate_length($value, 4)
 			&& Self::validate_integer($value, false)
 			&& Self::validate_min($value, 10000)
-			&& Self::validate_max($max, 99999);
+			&& Self::validate_max($value, 99999);
 	}
 
 }

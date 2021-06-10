@@ -139,7 +139,7 @@ class z {
 	}
 
 	/**
-	* Convert mysql Datetime to php Datetime
+	* Convert mysql Datetime to php time (int)
 	*/
 	static function phpDatetime($mysqldate) {
 		if (isset($mysqldate) && (strlen($mysqldate) > 0)) {
@@ -168,6 +168,14 @@ class z {
 			return date('Y-m-d H:i:s', $time);
 		} else {
 			return null;
+		}
+	}
+
+	static function formatDateForHtml($time) {
+		if (isset($time) && $time != null) {
+			return z::shorten(date_format(date_timestamp_set(new DateTime(), $time), 'c'), 19, "");
+		} else {
+			return '';
 		}
 	}
 

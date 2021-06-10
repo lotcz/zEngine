@@ -136,6 +136,13 @@ class formsModule extends zModule {
 
 	public function processForm($form, $model_class_name) {
 		$model = new $model_class_name($this->z->db);
+		// DEFAULT VALUES
+		foreach ($form->fields as $field) {
+			if (isset($field->value)) {
+				$model->set($field->name, $field->value);
+			}
+		}
+
 		if (z::isPost()) {
 
 			if ($this->z->isModuleEnabled('images')) {
@@ -168,6 +175,11 @@ class formsModule extends zModule {
 						}
 						try {
 							$model->save();
+							foreach ($form->fields as $field) {
+								if ($field->type == 'multiselect') {
+									$model->updateMultiReference($field->multi_ref_table, $field->multi_fk_id_field, $field->multi_fk_other_id_field, $field->selected_items);
+								}
+							}
 							if ($form->onAfterUpdate !== null) {
 								$onAfterUpdate = $form->onAfterUpdate;
 								$onAfterUpdate($this->z, $form, $model);
@@ -287,6 +299,25 @@ class formsModule extends zModule {
 					}
 				?>
 			</select>
+		<?php
+	}
+
+	public function renderMultiSelect($name, $items, $selected_items, $select_id_field, $select_label_field) {
+		?>
+		<select name="<?=$name ?>[]" class="form-control chosen" multiple="multiple" data-placeholder="Vyberte kategorie">
+			<?php
+			for ($i = 0, $max = count($items); $i < $max; $i++) {
+				$id = $items[$i]->ival($select_id_field);
+				$selected = '';
+				if (in_array($id, $selected_items)) {
+					$selected = 'selected';
+				}
+				?>
+					<option value="<?=$id ?>" <?=$selected ?> ><?=$items[$i]->val($select_label_field) ?></option>
+				<?php
+			}
+			?>
+		</select>
 		<?php
 	}
 
@@ -436,7 +467,7 @@ class formsModule extends zModule {
 
 										case 'date' :
 										?>
-											<input type="datetime-local" id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> value="<?=$field->value ?>" class="form-control" />
+											<input type="datetime-local" id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> value="<?=z::formatDateForHtml(z::phpDatetime($field->value)) ?>" class="form-control" />
 										<?php
 										break;
 
@@ -477,6 +508,16 @@ class formsModule extends zModule {
 												$field->select_label_field,
 												$field->select_label_localized,
 												$field->value
+											);
+										break;
+
+										case 'multiselect' :
+											$this->renderMultiSelect(
+												$field->name,
+												$field->select_data,
+												$field->selected_items,
+												$field->select_id_field,
+												$field->select_label_field
 											);
 										break;
 
