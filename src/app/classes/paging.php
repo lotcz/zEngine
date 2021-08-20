@@ -59,9 +59,7 @@ class zPaging {
 			$sort = $_GET[$this->sorting_url_name];
 			if (in_array($sort, $this->allowed_sorting_items)) {
 				$this->active_sorting = $_GET[$this->sorting_url_name];
-				if (isset($_GET[$this->sorting_desc_url_name])) {
-					$this->sorting_desc = true;
-				}
+				$this->sorting_desc = isset($_GET[$this->sorting_desc_url_name]);
 			}
 		}
 		if (isset($_GET[$this->filter_url_name])) {
@@ -226,7 +224,7 @@ class zPaging {
 									<?php
 								}
 							?>
-							<li><div class="d-inline-block p-2"><?=sprintf('%d / %d', $this->current_page, $this->total_pages);?></div></li>
+							<li><div class="d-inline-block p-2"><?=sprintf('%d / %d [%d]', $this->current_page, $this->total_pages, $this->total_records);?></div></li>
 						</ul>
 					</nav>
 				</div>

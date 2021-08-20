@@ -165,6 +165,18 @@ class dbModule extends zModule {
 	}
 
 	/**
+	 * Executes insert query.
+	 * @param String $procedure_name Name of the procedure.
+	 * @param Array $parameters Array of values to be subject to parameter binding.
+	 * @param Array $types Array of PDO type specifications for binding values.
+	 * @return PDOStatement
+	 */
+	public function executeStoredProcedure($procedure_name, $parameters, $types)
+	{
+		return $this->executeQuery(sprintf('call %s(?);', $procedure_name), $parameters, $types);
+	}
+
+	/**
 	* @return string
 	*/
 	public function lastInsertId() {

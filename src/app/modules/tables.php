@@ -23,7 +23,13 @@ class tablesModule extends zModule {
 		$table = new zTable($entity_name, $view_name, $css);
 		$default_paging = $this->createPaging();
 		$default_paging->allowed_sorting_items = $sort_fields;
-		$default_paging->active_sorting = $default_sort;
+		if ($default_sort) {
+			$sorting_arr = explode(' ', $default_sort);
+			$default_paging->active_sorting = $sorting_arr[0];
+			if (count($sorting_arr) > 1) {
+				$default_paging->sorting_desc = ($sorting_arr[1] == 'desc');
+			}
+		}
 		$table->paging = zPaging::getFromUrl($default_paging);
 		$table->sort_fields = $sort_fields;
 		$table->detail_page = str_replace('_', '-', $entity_name);

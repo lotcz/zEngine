@@ -67,6 +67,7 @@ class zForm {
 
 					case 'integer':
 					case 'select':
+					case 'alias_link':
 						if (isset($data[$field->name])) {
 							$result[$field->name] = z::parseInt($data[$field->name]);
 						} else {
@@ -83,6 +84,21 @@ class zForm {
 							$image = $this->images_module->uploadImage($name);
 							if (isset($image) && strlen($image) > 0) {
 								$result[$field->name] = $image;
+							} else {
+								$this->is_valid = false;
+							}
+						}
+						break;
+
+					case 'file': /* upload file */
+						if (!isset($this->files_module)) {
+							throw new Exception('Files module is not enabled, cannot upload file!');
+						}
+						$name = $field->name . '_file_input';
+						if (isset($_FILES[$name]) && strlen($_FILES[$name]['name'])) {
+							$file = $this->files_module->uploadFile($name);
+							if (isset($file) && strlen($file) > 0) {
+								$result[$field->name] = $file;
 							} else {
 								$this->is_valid = false;
 							}

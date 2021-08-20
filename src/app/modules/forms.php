@@ -136,6 +136,7 @@ class formsModule extends zModule {
 
 	public function processForm($form, $model_class_name) {
 		$model = new $model_class_name($this->z->db);
+
 		// DEFAULT VALUES
 		foreach ($form->fields as $field) {
 			if (isset($field->value)) {
@@ -147,6 +148,10 @@ class formsModule extends zModule {
 
 			if ($this->z->isModuleEnabled('images')) {
 				$form->images_module = $this->z->images;
+			}
+
+			if ($this->z->isModuleEnabled('files')) {
+				$form->files_module = $this->z->files;
 			}
 
 			if ($form->processInput($_POST)) {
@@ -304,7 +309,7 @@ class formsModule extends zModule {
 
 	public function renderMultiSelect($name, $items, $selected_items, $select_id_field, $select_label_field) {
 		?>
-		<select name="<?=$name ?>[]" class="form-control chosen" multiple="multiple" data-placeholder="Vyberte kategorie">
+		<select name="<?=$name ?>[]" class="form-control chosen" multiple="multiple">
 			<?php
 			for ($i = 0, $max = count($items); $i < $max; $i++) {
 				$id = $items[$i]->ival($select_id_field);
@@ -331,6 +336,17 @@ class formsModule extends zModule {
 			);
 		}
 		$result->closeCursor();
+	}
+
+	public function renderAliasLink($name, $value) {
+		$alias = new AliasModel($this->z->db, $value);
+		if ($alias->is_loaded) {
+			$url = $alias->val('alias_url');
+			$this->z->core->renderLink($url, $url);
+		}
+		?>
+			<input type="hidden" name="<?=$name?>" value="<?=$value ?>" />
+		<?php
 	}
 
 	public function renderForm($form) {
@@ -394,6 +410,14 @@ class formsModule extends zModule {
 							<input type="checkbox" id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> value="1" <?=($field->value) ? 'checked' : '' ?> class="form-check-input" />
 							<label for="<?=$field->name ?>" class="<?=$label_css ?> form-check-label"><?=$this->z->core->t($field->label) ?></label>
 						</div>
+
+						<?php
+							if (isset($field->hint)) {
+								?>
+									<small class="text-muted"><?=$this->z->core->t($field->hint) ?></small>
+								<?php
+							}
+						?>
 					</div>
 				<?php
 			} elseif ($field->type == 'begin_group') {
@@ -473,7 +497,9 @@ class formsModule extends zModule {
 
 										case 'file' :
 										?>
-											<input type="file" id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> class="form-control-file" />
+											<span><?=$field->value?></span>
+											<input type="hidden" name="<?=$field->name ?>" id="field_<?=$field->name ?>" value="<?=$field->value ?>" />
+											<input type="file" id="<?=$field->name ?>" name="<?=$field->name ?>_file_input" <?=$disabled ?> class="form-control-file" />
 										<?php
 										break;
 
@@ -531,6 +557,10 @@ class formsModule extends zModule {
 												$field->value
 											);
 										break;
+
+										case 'alias_link' :
+											$this->renderAliasLink($field->name, $field->value);
+											break;
 
 										case 'link' :
 											?>
