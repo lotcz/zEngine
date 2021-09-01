@@ -137,6 +137,18 @@ class formsModule extends zModule {
 	public function processForm($form, $model_class_name) {
 		$model = new $model_class_name($this->z->db);
 
+		if ($this->z->isModuleEnabled('images')) {
+			$form->images_module = $this->z->images;
+		}
+
+		if ($this->z->isModuleEnabled('files')) {
+			$form->files_module = $this->z->files;
+		}
+
+		if ($this->z->isModuleEnabled('openinghours')) {
+			$form->openinghours_module = $this->z->openinghours;
+		}
+
 		// DEFAULT VALUES
 		foreach ($form->fields as $field) {
 			if (isset($field->value)) {
@@ -145,15 +157,6 @@ class formsModule extends zModule {
 		}
 
 		if (z::isPost()) {
-
-			if ($this->z->isModuleEnabled('images')) {
-				$form->images_module = $this->z->images;
-			}
-
-			if ($this->z->isModuleEnabled('files')) {
-				$form->files_module = $this->z->files;
-			}
-
 			if ($form->processInput($_POST)) {
 				$form_protection_ok = true;
 
@@ -298,9 +301,9 @@ class formsModule extends zModule {
 						if ($localized) {
 							$label_text = $this->z->core->t($items[$i]->val($label_name));
 						}
-							?>
-								<option value="<?=$items[$i]->val($id_name) ?>" <?=$selected ?> ><?=$label_text ?></option>
-							<?php
+						?>
+							<option value="<?=$items[$i]->val($id_name) ?>" <?=$selected ?> ><?=$label_text ?></option>
+						<?php
 					}
 				?>
 			</select>
@@ -309,20 +312,20 @@ class formsModule extends zModule {
 
 	public function renderMultiSelect($name, $items, $selected_items, $select_id_field, $select_label_field) {
 		?>
-		<select name="<?=$name ?>[]" class="form-control chosen" multiple="multiple">
-			<?php
-			for ($i = 0, $max = count($items); $i < $max; $i++) {
-				$id = $items[$i]->ival($select_id_field);
-				$selected = '';
-				if (in_array($id, $selected_items)) {
-					$selected = 'selected';
-				}
-				?>
-					<option value="<?=$id ?>" <?=$selected ?> ><?=$items[$i]->val($select_label_field) ?></option>
+			<select name="<?=$name ?>[]" class="form-control chosen" multiple="multiple">
 				<?php
-			}
-			?>
-		</select>
+					for ($i = 0, $max = count($items); $i < $max; $i++) {
+						$id = $items[$i]->ival($select_id_field);
+						$selected = '';
+						if (in_array($id, $selected_items)) {
+							$selected = 'selected';
+						}
+						?>
+							<option value="<?=$id ?>" <?=$selected ?> ><?=$items[$i]->val($select_label_field) ?></option>
+						<?php
+					}
+				?>
+			</select>
 		<?php
 	}
 
@@ -454,6 +457,8 @@ class formsModule extends zModule {
 						?>
 					</div>
 				<?php
+			} elseif ($field->type == 'opening_hours') {
+				$this->z->openinghours->renderFormField($field);
 			} else {
 				?>
 					<div id="<?=$field->name ?>_form_group" class="form-group <?=($form->type) == 'horizontal' ? 'row' : '' ?>">
@@ -496,11 +501,11 @@ class formsModule extends zModule {
 										break;
 
 										case 'file' :
-										?>
-											<span><?=$field->value?></span>
-											<input type="hidden" name="<?=$field->name ?>" id="field_<?=$field->name ?>" value="<?=$field->value ?>" />
-											<input type="file" id="<?=$field->name ?>" name="<?=$field->name ?>_file_input" <?=$disabled ?> class="form-control-file" />
-										<?php
+											?>
+												<span><?=$field->value?></span>
+												<input type="hidden" name="<?=$field->name ?>" id="field_<?=$field->name ?>" value="<?=$field->value ?>" />
+												<input type="file" id="<?=$field->name ?>" name="<?=$field->name ?>_file_input" <?=$disabled ?> class="form-control-file" />
+											<?php
 										break;
 
 										case 'image' :
@@ -535,7 +540,7 @@ class formsModule extends zModule {
 												$field->select_label_localized,
 												$field->value
 											);
-										break;
+											break;
 
 										case 'multiselect' :
 											$this->renderMultiSelect(

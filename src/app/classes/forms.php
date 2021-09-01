@@ -67,11 +67,19 @@ class zForm {
 
 					case 'integer':
 					case 'select':
-					case 'alias_link':
 						if (isset($data[$field->name])) {
 							$result[$field->name] = z::parseInt($data[$field->name]);
 						} else {
 							$this->is_valid = false;
+						}
+						break;
+
+					case 'alias_link':
+					case 'gallery':
+						if (isset($data[$field->name])) {
+							$result[$field->name] = z::parseInt($data[$field->name]);
+						} else {
+							$result[$field->name] = null;
 						}
 						break;
 
@@ -107,6 +115,16 @@ class zForm {
 
 					case 'date':
 						$result[$field->name] = empty($data[$field->name]) ? null : $data[$field->name];
+						break;
+
+					case 'opening_hours':
+						for ($d = 1; $d <= 7; $d++) {
+							$day_name = $this->openinghours_module->getDayName($d);
+							$from = $field->prefix . $day_name . '_from';
+							$to = $field->prefix . $day_name . '_to';
+							$result[$from] = $this->openinghours_module->getTime($data, $from);
+							$result[$to] = $this->openinghours_module->getTime($data, $to);
+						}
 						break;
 
 					case 'multiselect':
@@ -186,6 +204,15 @@ class zForm {
 						[PDO::PARAM_INT] /* types */
 					);
 					$field->selected_items = zModel::columnAsArray($selected, $field->multi_fk_other_id_field, 'i');
+				} elseif ($field->type == 'opening_hours') {
+					$field->value = [];
+					for ($d = 1; $d <= 7; $d++) {
+						$day_name = $this->openinghours_module->getDayName($d);
+						$from = $field->prefix . $day_name . '_from';
+						$to = $field->prefix . $day_name . '_to';
+						$field->value[$from] = $data->val($from);
+						$field->value[$to] = $data->val($to);
+					}
 				}
 			}
 		}

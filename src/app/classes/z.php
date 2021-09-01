@@ -134,7 +134,7 @@ class z {
 		$result = strtolower($result);
 		$result = z::transliterate($result, $encoding);
 		$result = preg_replace("/[^a-zA-Z0-9\/_| -]/", '', $result);
-		$result = preg_replace("/[_| -]+/", '-', $result);
+		$result = preg_replace("/[_| -\/]+/", '-', $result);
 		return $result;
 	}
 
@@ -249,6 +249,14 @@ class z {
 	*/
 	static function mergeAssocArrays($array_seed, $array_addition) {
 		return array_merge($array_seed, $array_addition);
+	}
+
+	/**
+	 * Return array of file names in given directory.
+	 * @param $path
+	 */
+	static function listFiles($path) {
+		return array_diff(scandir($path), array('.', '..'));
 	}
 
 	/*

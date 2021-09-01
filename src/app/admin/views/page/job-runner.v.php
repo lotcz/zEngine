@@ -1,17 +1,15 @@
-<form class="form-inline p-2">
-	<div class="form-row">
-		<div class="form-group col-12">
-			<button type="button" onclick="javascript:runJob('clean');" class="btn btn-primary"><?=$this->t('Clean') ?></button>
-		</div>
-	</div>
-</form>
-<form class="form-inline p-2">
-	<div class="form-row">
-	  <div class="form-group">
-	    <label for="custom">Custom:</label>
-	    <input type="text" class="form-control" id="custom" name="custom" >
-	  	<button type="button" onclick="javascript:runCustomJob();" class="btn btn-primary"><?=$this->t('Run') ?></button>
-		</div>
+<form class="form">
+	<div class="jobs">
+		<?php
+			foreach ($jobs as $job) {
+				?>
+					<div class="my-1">
+							<button type="button" onclick="javascript:runJob('<?=$job?>');" class="btn btn-primary mr-1"><?=$job ?></button>
+							<span><?=$this->z->jobs->getJobUrl($job) ?></span>
+					</div>
+				<?php
+			}
+		?>
 	</div>
 </form>
 

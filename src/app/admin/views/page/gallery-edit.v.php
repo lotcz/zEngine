@@ -4,7 +4,7 @@
 			<input type="hidden" name="gallery_id" value="<?=$gallery_id?>" />
 			<div class="gallery-upload">
 				<input id="gallery_image_file" name="image_file" type="file" class="form-control-file" />
-				<label for="gallery_image_file">Upload new image</label>
+				<label for="gallery_image_file"><?=$this->t('Upload Image'); ?></label>
 			</div>
 		</form>
 	</div>

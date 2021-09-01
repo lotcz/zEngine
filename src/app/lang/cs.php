@@ -126,4 +126,9 @@
 	$language_data['--cookies-disabled--'] = 'Tato stránka používá soubory cookies a bez nich nemusí fungovat správně. Povolte prosím soubory cookies ve Vašem prohlížeči.';
 	$language_data['--cookies-warning--'] = 'Tato stránka používá soubory cookies třetích stran. Pokud máte obavy o své soukromí, můžete zakázat soubory cookies v nastavení Vašeho prohlížeče.';
 
+	/* GALLERY */
+	$language_data['Gallery'] = 'Galerie';
+	$language_data['You must save the form first before adding to gallery.'] = 'Musíte nejprve uložit formulář, aby bylo možné nahrávat obrázky do galerie.';
+	$language_data['Upload Image'] = 'Nahrát obrázek';
+
 	return $language_data;

@@ -36,4 +36,24 @@ class jobsModule extends zModule {
 		}
 	}
 
+	public function listJobs() {
+		$core_job_files = z::listFiles(__DIR__ . '/../jobs');
+		$app_dir = $this->z->app_dir . 'jobs';
+		if (file_exists($app_dir)) {
+			$app_job_files = z::listFiles($app_dir);
+		} else {
+			$app_job_files = [];
+		}
+		$all_job_files = z::mergeAssocArrays($core_job_files, $app_job_files);
+		$jobs = [];
+		foreach ($all_job_files as $job_file) {
+			$jobs[] = substr($job_file, 0,strlen($job_file) - 6);
+		}
+		return $jobs;
+	}
+
+	public function getJobUrl($name) {
+		return $this->z->core->url('jobs?job=' . $name . '&security_token=' . $this->security_token);
+	}
+
 }
