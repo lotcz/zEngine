@@ -22,33 +22,32 @@ class imagesModule extends zModule {
 		$this->image_not_found = $this->getConfigValue('image_not_found', $this->image_not_found);
 	}
 
-	public function getImagePath($image, $format = null ) {
-		if (isset($format)) {
-			$path_parts = pathinfo($image);
-			return $this->root_images_disk_path . $format . '/' . $path_parts['filename'] . '.' . $path_parts['extension'];
-		} else {
-			return $this->root_images_disk_path . 'originals/' . $image;
+	public function getImagePath($image, $format = null) {
+		if (!isset($format)) {
+			return $this->getImagePath($image, 'originals');
 		}
+		return $this->root_images_disk_path . $format . '/' . $image;
 	}
 
-	public function getImageURL($image, $format = null ) {
-		if ($this->exists($image, $format)) {
-			if (isset($format)) {
-				$path_parts = pathinfo($image);
-				return $this->root_images_url . '/' . $format . '/' . $path_parts['filename'] . '.' . $path_parts['extension'];
-			} else {
-				return $this->root_images_url . '/originals/' . $image;
-			}
+	public function getImageURL($image, $format = null) {
+		if (!isset($format)) {
+			return $this->getImageURL($image, 'originals');
 		}
+		return $this->root_images_url . '/' . $format . '/' . $image;
 	}
 
 	public function prepareImage($image, $format = null ) {
 		if (!$this->exists($image, $format)) {
-			if (!is_dir($this->root_images_disk_path . $format)) {
-				mkdir($this->root_images_disk_path . $format, 0777, true);
-			}
 			$original_path = $this->getImagePath($image);
 			$resized_path = $this->getImagePath($image, $format);
+			$resized_dir = pathinfo($resized_path)['dirname'];
+			if (!is_dir($resized_dir)) {
+				mkdir($resized_dir, 0777, true);
+			}
+			if (!isset($this->formats[$format])) {
+				$this->z->errorlog->write(sprintf('Format \'%s\' doesn\'t exist', $format));
+				return;
+			}
 
 			if (file_exists($original_path)) {
 
@@ -76,25 +75,59 @@ class imagesModule extends zModule {
 						break;
 				}
 
-				$format_width = $this->formats[$format]['width'];
-				$format_height = $this->formats[$format]['height'];
+				$format_conf = $this->formats[$format];
+				$format_width = $format_conf['width'];
+				$format_height = $format_conf['height'];
+				$format_mode = isset($format_conf['mode']) ? $format_conf['mode'] : 'fit';
 
 				$img = $image_create_func($original_path);
 
 				list($width, $height) = getimagesize($original_path);
+				
+				$src_x = 0;
+				$src_y = 0;
+				$src_width = $width;
+				$src_height = $height;
 
-				if ($width > $format_width) {
-					$newHeight = ($height / $width) * $format_width;
-					$newWidth = $format_width;
-				} else {
-					$newHeight = $height;
-					$newWidth = $width;
-				}
+				switch ($format_mode) {
+					case 'scale':
+						$newHeight = $format_height;
+						$newWidth = $format_width;
+						break;
 
-				if ($newHeight > $format_height) {
-					$newWidth = ($newWidth / $newHeight) * $format_height;
-					$newHeight = $format_height;
-				}
+					case 'crop':						
+						$original_aspect = $width / $height;
+						$new_aspect = $format_width / $format_height;
+
+						if ($original_aspect > $new_aspect) {
+							$src_width = $height * $new_aspect;		
+							$src_x = ($width - $src_width) / 2;
+						} else {
+							$src_height = $width / $new_aspect;
+							$src_y = ($height - $src_height) / 2;
+						}
+
+						$newHeight = $format_height;
+						$newWidth = $format_width;
+
+						break;
+
+					case 'fit':
+					default:
+						if ($width > $format_width) {
+							$newHeight = ($height / $width) * $format_width;
+							$newWidth = $format_width;
+						} else {
+							$newHeight = $height;
+							$newWidth = $width;
+						}
+		
+						if ($newHeight > $format_height) {
+							$newWidth = ($newWidth / $newHeight) * $format_height;
+							$newHeight = $format_height;
+						}
+						break;
+				}		
 
 				$tmp = imagecreatetruecolor($newWidth, $newHeight);
 
@@ -129,7 +162,7 @@ class imagesModule extends zModule {
 							break;
 					}
 
-				imagecopyresampled($tmp, $img, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+				imagecopyresampled($tmp, $img, 0, 0, $src_x, $src_y, $newWidth, $newHeight, $src_width, $src_height);
 
 				if (file_exists($resized_path)) {
 					unlink($resized_path);
@@ -149,7 +182,7 @@ class imagesModule extends zModule {
 
 	public function deleteImageCache($image) {
 		foreach ($this->formats as $key => $format) {
-			$resized_path = $this->getImagePath( $image, $key );
+			$resized_path = $this->getImagePath($image, $key);
 				if (file_exists($resized_path)) {
 					unlink($resized_path);
 			}
@@ -165,26 +198,25 @@ class imagesModule extends zModule {
 	}
 
 	public function exists($image, $format = null ) {
+		if (!(isset($image) && strlen($image) > 0)) {
+			return false;
+		}
 		return file_exists($this->getImagePath($image, $format));
 	}
 
 	public function img($image, $format = null) {
-		$this->prepareImage($image, $format );
-		return $this->getImageURL($image, $format );
+		if (!(isset($image) && strlen($image) > 0)) {
+			$image = $this->no_image;
+		}
+		if (!$this->exists($image)) {
+			$image = $this->image_not_found;
+		}
+		$this->prepareImage($image, $format);
+		return $this->getImageURL($image, $format);
 	}
 
 	public function renderImage($image, $format = 'thumb', $alt = '', $css = '') {
-		if (isset($image) && strlen($image) > 0) {
-			if ($this->exists($image)) {
-				$url = $this->img($image, $format);
-			} else {
-				$url = $this->img($this->image_not_found, $format);
-			}
-		} else {
-			$url = $this->img($this->no_image, $format);
-		}
-
-		echo sprintf('<img src="%s" class="%s" alt="%s" />', $url, $css, $alt);
+		echo sprintf('<img src="%s" class="%s" alt="%s" />',  $this->img($image, $format), $css, $alt);
 	}
 
 	public function uploadImage($name) {

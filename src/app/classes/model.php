@@ -303,5 +303,4 @@ class zModel {
 		return $result;
 	}
 
-
 }

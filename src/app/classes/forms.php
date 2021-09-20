@@ -59,7 +59,7 @@ class zForm {
 		$result = [];
 		$this->is_valid = true;
 		foreach ($this->fields as $field) {
-			if (isset($field->name) && !isset($field->disabled) && !(z::startsWith($field->type, 'static')) && ($field->type !== 'buttons')) {
+			if (isset($field->name) && (!(isset($field->disabled) && $field->disabled)) && (!z::startsWith($field->type, 'static')) && ($field->type !== 'buttons')) {
 				switch ($field->type) {
 					case 'bool':
 						$result[$field->name] = isset($data[$field->name]) ? 1 : 0;

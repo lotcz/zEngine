@@ -48,7 +48,7 @@ class formsModule extends zModule {
 	}
 
 	public function fieldValidation($validation_type, $value, $param = null) {
-		$method = 'zForm::validate_' .$validation_type;
+		$method = 'zForm::validate_' . $validation_type;
 		return $method($value, $param);
 	}
 
@@ -470,6 +470,7 @@ class formsModule extends zModule {
 									switch ($field->type) {
 
 										case 'text' :
+										case 'integer' :
 										?>
 											<input type="text" id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> <?=$required ?> value="<?=$field->value ?>" class="form-control" />
 										<?php

@@ -1,5 +1,13 @@
 <?php
 
+	/*
+		MODE
+
+		fit (default value) - image will preserve aspect and always be the same or smaller than given size 
+		crop - image will be cropped to be exactly the given size
+		scale - scale to new format without preserving aspect
+	*/
+
 	return [
 		// available formats for image resizing
 		'formats' => [
