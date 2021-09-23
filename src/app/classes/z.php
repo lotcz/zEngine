@@ -240,6 +240,17 @@ class z {
 		return mb_encode_numericentity($string, $convmap);
 	}
 
+	static function stripHtmlTags($text) {
+		if (!$text) {
+			return '';
+		}
+
+		$string = preg_replace("/&lt;[^&]+&gt;/", "", $text);
+		$string = strip_tags($string);
+
+		return $string;
+	}
+
 	/**
 	* Takes seed array and replaces keys that exist in addition array with values from addition array.
 	* Used for example when merging module config files.

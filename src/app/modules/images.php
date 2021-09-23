@@ -51,7 +51,6 @@ class imagesModule extends zModule {
 			if (!is_dir($resized_dir)) {
 				mkdir($resized_dir, 0777, true);
 			}
-			
 
 			if (file_exists($original_path)) {
 
@@ -70,6 +69,12 @@ class imagesModule extends zModule {
 						$image_create_func = 'imagecreatefromgif';
 						$image_save_func = 'imagegif';
 						$new_image_ext = 'gif';
+						break;
+
+					case 'image/webp':
+						$image_create_func = 'imagecreatefromwebp';
+						$image_save_func = 'imagewebp';
+						$new_image_ext = 'webp';
 						break;
 
 					default: //case 'image/jpeg':
@@ -138,6 +143,7 @@ class imagesModule extends zModule {
 				switch ($new_image_ext)
 					{
 						case "png":
+						case "webp":
 
 							// integer representation of the color black (rgb: 0,0,0)
 							$background = imagecolorallocate($tmp, 0, 0, 0);
