@@ -37,6 +37,13 @@ class imagesModule extends zModule {
 	}
 
 	public function prepareImage($image, $format = null ) {
+		if (!isset($this->formats[$format])) {
+			$message = sprintf('Format \'%s\' doesn\'t exist', $format);
+			$this->z->errorlog->write($message);
+			$this->z->messages->error($message);
+			return;
+		}
+
 		if (!$this->exists($image, $format)) {
 			$original_path = $this->getImagePath($image);
 			$resized_path = $this->getImagePath($image, $format);
@@ -44,10 +51,7 @@ class imagesModule extends zModule {
 			if (!is_dir($resized_dir)) {
 				mkdir($resized_dir, 0777, true);
 			}
-			if (!isset($this->formats[$format])) {
-				$this->z->errorlog->write(sprintf('Format \'%s\' doesn\'t exist', $format));
-				return;
-			}
+			
 
 			if (file_exists($original_path)) {
 

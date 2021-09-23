@@ -4,5 +4,6 @@
 	<?php
 		$this->renderMessages();
 		$this->renderPageView();
+		$this->renderMessages();
 	?>
 </div>

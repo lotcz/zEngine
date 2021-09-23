@@ -170,7 +170,7 @@ class zForm {
 						$empty_option = new	zModel();
 						$empty_option->set($field->select_id_field, null);
 						$empty_option->set($field->select_label_field, $field->empty_option_name);
-						$field->select_data[] = $empty_option;
+						array_splice($field->select_data, 0, 0, [$empty_option]);
 					}
 				} elseif ($field->type == 'foreign_key_link') {
 					$filter = sprintf('%s = ?', $field->link_id_field);

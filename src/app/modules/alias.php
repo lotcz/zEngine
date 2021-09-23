@@ -17,8 +17,12 @@ class aliasModule extends zModule {
 		}
 	}
 
-	public function slugify($str) {
-		return z::slugify($str, $this->z->core->default_encoding);
+	public function slugify($str) {		
+		$slug = z::slugify($str, $this->z->core->default_encoding);
+		if (strlen($slug) === 0) {
+			return 'empty';
+		}
+		return $slug;
 	}
 
 	public function insertAlias($url, $path) {

@@ -13,7 +13,7 @@
 	</div>
 </form>
 
-<div id="console">
+<div id="console" class="mt-2">
 	<div id="console_inner">
 	</div>
 </div>
@@ -38,6 +38,7 @@
 	}
 
 	function runJob(name) {
+		addToConsole(`Running job ${name}...`);
 		$.get({
 			dataType: 'html',
 			url: '<?=$this->url('jobs') ?>',
