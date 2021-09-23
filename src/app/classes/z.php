@@ -251,6 +251,19 @@ class z {
 		return array_merge($array_seed, $array_addition);
 	}
 
+	/***
+	 * select random element, remove it from the array and return it
+	 */
+	static function extractRandomElement(&$array) {
+		if ($array === null || count($array) === 0) {
+			return null;
+		}
+		$index = rand(0, count($array) - 1);
+		$element = $array[$index];
+		array_splice($array, $index, 1);
+		return $element;
+	}
+
 	/**
 	 * Return array of file names in given directory.
 	 * @param $path
