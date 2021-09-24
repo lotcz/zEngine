@@ -190,9 +190,9 @@ class z {
 	/**
 	* Remove dangerous characters from string. Crucial for XSS protection.
 	*/
-	static function xssafe($data, $encoding = 'UTF-8') {
+	static function xssafe($data) {
 		if (is_string($data)) {
-			return htmlspecialchars($data, ENT_QUOTES | ENT_HTML401, $encoding);
+			return z::stripHtmlTags($data);
 		} else {
 			return $data;
 		}
@@ -240,15 +240,11 @@ class z {
 		return mb_encode_numericentity($string, $convmap);
 	}
 
-	static function stripHtmlTags($text) {
+	static function stripHtmlTags($text, $allowed_tags = '<br><i><b><p>') {
 		if (!$text) {
 			return '';
 		}
-
-		$string = preg_replace("/&lt;[^&]+&gt;/", "", $text);
-		$string = strip_tags($string);
-
-		return $string;
+		return strip_tags($text, $allowed_tags);
 	}
 
 	/**

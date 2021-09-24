@@ -38,7 +38,7 @@ class imagesModule extends zModule {
 
 	public function prepareImage($image, $format = null ) {
 		if (!isset($this->formats[$format])) {
-			$message = sprintf('Format \'%s\' doesn\'t exist', $format);
+			$message = sprintf('Preparing \'%s\'. Format \'%s\' doesn\'t exist.', $image, $format);
 			$this->z->errorlog->write($message);
 			$this->z->messages->error($message);
 			return;
@@ -221,7 +221,9 @@ class imagesModule extends zModule {
 		if (!$this->exists($image)) {
 			$image = $this->image_not_found;
 		}
-		$this->prepareImage($image, $format);
+		if ($format !== null) {
+			$this->prepareImage($image, $format);
+		}
 		return $this->getImageURL($image, $format);
 	}
 

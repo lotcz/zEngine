@@ -79,6 +79,9 @@ class coreModule extends zModule {
 			$this->requireModule($module_name);
 		}
 
+		$this->includeJS('resources/z.js', false, 'head');
+		$this->includeJS('resources/z.js', false, 'admin.head');
+
 		// process default includes
 		$includes = $this->getConfigValue('includes',[]);
 		foreach ($includes as $include) {
@@ -331,7 +334,7 @@ class coreModule extends zModule {
 	}
 
 	public function xssafe($data) {
-	   return z::xssafe($data, $this->default_encoding);
+	   return z::xssafe($data);
 	}
 
 	/*

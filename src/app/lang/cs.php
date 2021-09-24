@@ -32,6 +32,7 @@
 	$language_data['Reset Password'] = 'Resetovat heslo';
 	$language_data['Confirm Password'] = 'Potvrdit heslo';
 	$language_data['Passwords don\'t match.'] = 'Hesla se neshodují.';
+	$language_data['Please enter your login name or e-mail.'] = 'Prosím vložte Vaše přihlašovací jméno nebo e-mail.';
 	$language_data['Please enter your password.'] = 'Prosím vložte Vaše heslo.';
 	$language_data['Register'] = 'Registrovat';
 	$language_data['Registration'] = 'Registrace';
@@ -106,7 +107,8 @@
 	$language_data['ZIP'] = 'PSČ';
 	$language_data['Back to cart'] = 'Zpět do košíku';
 	$language_data['Continue'] = 'Pokračovat';
-	$language_data['Please enter your whole name.'] = 'Prosím vložte Vaše celé jméno.';
+	$language_data['Please enter your whole name.'] = 'Vložte prosím Vaše celé jméno.';
+	$language_data['Please enter your email address.'] = 'Vložte prosím Vaši emailovou adresu.';	
 	$language_data['Required.'] = 'Vyžadováno.';
 	$language_data['Please enter valid ZIP code.'] = 'Prosím vložte platné PSČ.';
 	$language_data['Some fields in the form don\'t validate! Form cannot be saved.'] = 'Některá pole formuláře neprošla ověřením! Formulář nelze uložit.';
