@@ -192,7 +192,11 @@ class formsModule extends zModule {
 								$onAfterUpdate = $form->onAfterUpdate;
 								$onAfterUpdate($this->z, $form, $model);
 							}
-							$this->z->core->redirectBack($form->ret);
+							if ($form->suppress_return) {
+								$this->z->messages->success($this->z->i18n->translate('Form was successfully saved.'));
+							} else {
+								$this->z->core->redirectBack($form->ret);
+							}
 						} catch (Exception $e) {
 							$this->z->messages->error($e->getMessage());
 						}
@@ -367,7 +371,8 @@ class formsModule extends zModule {
 
 		if ($this->z->core->return_path) {
 			?>
-				<input type="hidden" name="r" value="<?=$this->z->core->return_path ?>" />
+				<input type="hidden" id="return_url" name="r" value="<?=$this->z->core->return_path ?>" />
+				<input type="hidden" id="suppress_return" name="suppress_return" value="false" />
 			<?php
 		}
 
@@ -630,7 +635,7 @@ class formsModule extends zModule {
 		?>
 
 			<script>
-				function validateForm_<?=$form->id ?>(e) {
+				function validateForm_<?=$form->id ?>(e, noret) {
 					e.preventDefault();
 					var frm = new formValidation('form_<?=$form->id ?>');
 						<?php
@@ -644,7 +649,7 @@ class formsModule extends zModule {
 								}
 							}
 						?>
-					frm.submit();
+					frm.submit(noret);
 				}
 			</script>
 

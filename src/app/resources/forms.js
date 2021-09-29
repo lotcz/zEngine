@@ -83,12 +83,18 @@ function formValidation(form_id) {
 	this.is_valid = true;
 	this.fields = [];
 
-	this.submit = function() {
+	this.submit = function(noret) {
 		this.is_valid = true;
 		for (var i = 0, max = this.fields.length; i < max; i++) {
 			this.is_valid = this.validateField(this.fields[i]) && this.is_valid;
-		}
+		}		
 		if (this.is_valid) {
+			if (noret == true) {
+				const input = z.getById('suppress_return');
+				if (input) {
+					input.value = 'true';
+				}
+			}
 			this.frm.submit();
 		}
 		return this.is_valid;

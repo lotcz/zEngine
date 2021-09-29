@@ -272,6 +272,25 @@ class zModel {
 	}
 
 	/**
+	* Sort by array values in a single column.
+	* @return Array
+	*/
+	static function sort($arr, $field) {
+		$result = [];
+		$min = null;
+		for ($i = 0; $i < count($arr); $i++) {
+			for ($i2 = $i; $i2 < count($arr); $i2++) {
+				if ($min === null || $min->val($field) > $arr[$i2]->val($field)) {
+					$min = $arr[$i2];
+				}				
+			}
+			$result[] = $min;
+			$min = null;
+		}
+		return $result;
+	}
+
+	/**
 	* Will accept array of models, column name and type.
 	* @return Array array of values from selected column.
 	*/

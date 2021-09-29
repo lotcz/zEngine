@@ -104,4 +104,49 @@ class openinghoursModule extends zModule {
 		}
 	}
 
+	function company_hasOpeningHoursForDay($company, $day) {
+		$day_name = $this->getDayName($day);
+		return $this->isset($company->val(sprintf('company_%s_from', $day_name))) && $this->isset($company->val(sprintf('company_%s_to', $day_name)));
+	}
+
+	/**
+	 * Return true if property has opening hours defined
+	 * @param  [type]  $item database record from pgm_custom_companies
+	 * @return boolean       Return true if opening hours are defined for at least one day of a week.
+	 */
+	function company_hasOpeningHours($company) {
+		for ($i = 0; $i < 7; $i++) {
+			if ($this->company_hasOpeningHoursForDay($company, $i)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Return true if property is open right now.
+	 * @param  [type]  $item database record from pgm_custom_companies
+	 * @return boolean       If opening hours are not defined, return null. Otherwise use current date and time to decide whether it is open or not.
+	 */
+	function company_isOpen($company) {
+		$current_day = intval(date('w'));
+		$day_name = $this->getDayName($current_day);
+		$current_time = date('H:i:s');
+		$today_opens = $company->val('company_' . $day_name . '_from');
+		$today_closes = $company->val('company_' . $day_name . '_to');
+
+		/* is open in today's standard hours? */
+		$open_today = ($this->company_hasOpeningHoursForDay($company, $current_day) && $today_opens < $current_time) && (($today_closes > $current_time) || ($today_opens > $today_closes));
+
+		if ($open_today) {
+			return true;
+		} else if ($this->company_hasOpeningHoursForDay($company, $current_day - 1)) {
+			$yesterday_name = $this->getDayName($current_day - 1);
+			$yesterday_opens = $company->val('company_' . $yesterday_name . '_from');
+			$yesterday_closes = $company->val('company_' . $yesterday_name . '_to');
+			/* is still open since yesterday? (night bars etc...) */
+			return ($yesterday_opens > $yesterday_closes) && ($current_time < $yesterday_closes);
+		}
+	}
+
 }

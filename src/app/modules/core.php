@@ -34,10 +34,13 @@ class coreModule extends zModule {
 		'site_title' => null
 	];
 
-	public $includes = ['head' => [], 'top' => [], 'default' => [], 'bottom' => [], 'admin.head' => [], 'admin.top' => [], 'admin.default' => [], 'admin.head' => []];
+	public $includes = ['head' => [], 'top' => [], 'default' => [], 'bottom' => [], 'admin.head' => [], 'admin.top' => [], 'admin.default' => [], 'admin.bottom' => []];
 
+	// controller names
 	public $controllers = ['master' => 'default', 'main' => 'default', 'page' => 'default'];
+	// view names
 	public $views = ['master' => null, 'main' => null, 'page' => null];
+	// view template paths
 	public $view_templates = ['master' => null, 'main' => null, 'page' => null];
 
 	public $require_main_view = true;
@@ -478,6 +481,7 @@ class coreModule extends zModule {
 
 	public function setView($type, $view_name) {
 		$this->views[$type] = $view_name;
+		$this->setTemplate($type, null);
 	}
 
 	public function setPageView($view_name) {

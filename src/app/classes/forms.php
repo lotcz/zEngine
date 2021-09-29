@@ -31,6 +31,7 @@ class zForm {
 		$this->method = $method;
 		$this->css = $css;
 		$this->ret = z::get('r');
+		$this->suppress_return = (z::get('suppress_return', 'false') === 'true');
 		$this->detail_page = str_replace('_', '-', $id);
 	}
 
@@ -229,11 +230,11 @@ class zForm {
 	*/
 
 	static function validate_length($value, $param) {
-		return (isset($value) && (strlen($value) >= z::parseInt($param)));
+		return (isset($value) && (mb_strlen($value) >= z::parseInt($param)));
 	}
 
 	static function validate_maxlen($value, $param) {
-		return (strlen($value) <= z::parseInt($param));
+		return (mb_strlen($value) <= z::parseInt($param));
 	}
 
 	static function validate_match($value, $param) {

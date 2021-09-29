@@ -90,6 +90,27 @@ class z {
 		return z::parseFloat(z::get($name, $def));
 	}
 
+	/**
+	 * safely get ids array to prevent SQL injection
+	*/ 
+	static function getIntArray($name, $def = null) {
+		$value = z::get($name);
+		if (is_array($value)) {
+			$str_array = $value;
+		} else {
+			if ($value === null || strlen($value) === 0) {
+				return $def;
+			}
+			$str_array = explode(',', $value);
+		}
+		
+		$result_array = [];
+		foreach ($str_array as $str) {
+			$result_array[] = z::parseInt($str);
+		}
+		return $result_array;
+	}
+
 	static function shorten($str, $len, $ellipsis = "...") {
 		if (mb_strlen($str) > $len) {
 			$length = $len - mb_strlen($ellipsis);
@@ -100,7 +121,11 @@ class z {
 	}
 
 	static function trim($s, $chrs = ' ') {
-		return trim($s, $chrs);
+		$result = trim($s, $chrs);
+		if (strlen($result) === 0) {
+			return null;
+		}
+		return $result;
 	}
 
 	static function trimSpecial($s) {

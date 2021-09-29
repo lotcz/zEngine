@@ -90,6 +90,7 @@
 	/* FORMS */
 	$language_data['Back'] = 'Zpět';
 	$language_data['Save'] = 'Uložit';
+	$language_data['Save &amp; Return'] = 'Uložit &amp Zpět';
 	$language_data['Add'] = 'Přidat';
 	$language_data['+ Add'] = '+ Přidat';
 	$language_data['Cancel'] = 'Storno';
@@ -115,6 +116,7 @@
 	$language_data['This field is required. Cannot be left empty.'] = 'Toto pole je povinné. Nesmí zůstat prázdné.';
 	$language_data['Please enter whole number.'] = 'Vložte prosím celé číslo';
 	$language_data['Repeated form submit attempt was detected! Cannot process form. Please refresh the page and try to submit form again.'] = 'Byl detekován pokus o opakované odeslání formuláře! Formulář nelze zpracovat. Prosím zkuste obnovit stránku a znovu potvrdit formulář.';
+	$language_data['Form was successfully saved.'] = 'Formulář byl úspěšně uložen.';
 
 	/* TABLES */
 	$language_data['No records were found.'] = 'Nebyly nalezeny žádné položky.';
