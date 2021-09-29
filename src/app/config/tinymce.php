@@ -10,7 +10,7 @@
 			'branding' => false,
 			'menubar' => false,
 			'plugins' => "wordcount link lists paste image code",
-			'toolbar' => "undo redo | styleselect | bold italic underline strikethrough | alignleft | bullist numlist | image | link unlink | pastetext code | wordcount",
+			'toolbar' => "undo redo | styleselect | bold italic underline strikethrough | alignleft aligncenter alignright | bullist numlist | image | link unlink | pastetext code | wordcount",
 			'paste_as_text' => true,
 			'image_caption' => true,
 			'image_advtab' => true,

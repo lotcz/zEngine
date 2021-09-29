@@ -165,11 +165,11 @@ class formsModule extends zModule {
 				}
 
 				if ($form_protection_ok) {
-
+/*
 					foreach ($form->processed_input as $key => $value) {
 						$form->processed_input[$key] = $this->z->core->xssafe($value);
 					}
-
+*/
 					//VALIDATION
 					if ($this->validateForm($form, $form->processed_input)) {
 						$entity_id_value = z::parseInt($_POST[$model_class_name::getIdName()]);
