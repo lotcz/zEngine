@@ -200,10 +200,12 @@ class imagesModule extends zModule {
 	}
 
 	public function deleteImage($image) {
-		$this->deleteImageCache($image);
-		$original_path = $this->getImagePath( $image );
-		if (file_exists($original_path)) {
-			unlink($original_path);
+		if ($image !== null && strlen($image) > 0) {
+			$this->deleteImageCache($image);
+			$original_path = $this->getImagePath( $image );
+			if (file_exists($original_path)) {
+				unlink($original_path);
+			}
 		}
 	}
 
