@@ -2,15 +2,13 @@
 
 require_once __DIR__ . '/../models/user.m.php';
 require_once __DIR__ . '/../models/session.m.php';
-require_once __DIR__ . '/../models/ip_failed.m.php';
 
 /**
 * Module that handles user authentication.
 */
 class authModule extends zModule {
 
-	public $depends_on = ['resources', 'db', 'i18n', 'cookies', 'messages'];
-	//public $also_install = [];
+	public $depends_on = ['resources', 'db', 'i18n', 'cookies', 'messages', 'security'];
 
 	private $authentication_checked = false;
 
@@ -57,8 +55,9 @@ class authModule extends zModule {
 	}
 
 	public function createSession($user) {
-		$ip = $_SERVER['REMOTE_ADDR'];
-		// TODO: check if IP address has too many sessions already
+		$ip = z::getClientIP();
+
+		// TODO: check if IP address has too many sessions already and if it not banned
 
 		$this->user = $user;
 		$this->session_token = $this->generateSessionToken();
@@ -95,25 +94,27 @@ class authModule extends zModule {
 		$user = new UserModel($this->z->db);
 		$user->loadByLoginOrEmail($loginoremail);
 
-		if (isset($user) && $user->is_loaded) {
-			if ($user->val('user_failed_attempts') > $this->getConfigValue('max_attempts')) {
-				$this->z->messages->add($this->z->core->t('Max. number of login attempts exceeded. Please ask for new password.'), 'error');
-				return false;
-			}
-			if (Self::verifyPassword($password, $user->val('user_password_hash'))) {
-				// success - create new session
-				$this->createSession($user);
-				return true;
-			} else {
-				$user->data['user_failed_attempts'] += 1;
-				$user->save();
-				IpFailedAttemptModel::saveFailedAttempt($this->z->db);
-				return false;
-			}
-
-		} else {
+		if (!(isset($user) && $user->is_loaded)) {
+			$this->z->security->saveFailedAttempt();
 			return false;
 		}
+
+		if ($user->val('user_failed_attempts') > $this->getConfigValue('max_attempts')) {
+			$this->z->messages->add($this->z->core->t('Max. number of login attempts exceeded. Please ask for new password.'), 'error');
+			return false;
+		}
+
+		if (Self::verifyPassword($password, $user->val('user_password_hash'))) {
+			// success - create new session
+			$this->createSession($user);
+			return true;
+		} else {
+			$user->data['user_failed_attempts'] += 1;
+			$user->save();
+			$this->z->security->saveFailedAttempt();
+			return false;
+		}
+
 	}
 
 	/**

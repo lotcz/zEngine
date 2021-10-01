@@ -7,6 +7,10 @@ class z {
 
 	static $crlf = "\r\n";
 
+	static function getClientIP() {
+		 return $_SERVER['REMOTE_ADDR'];
+	}
+
 	/**
 	* Redirect to a new URL.
 	*/
@@ -64,7 +68,11 @@ class z {
 	* Return true if current http request is POST which in most cases means that a form was submitted.
 	*/
 	static function isPost() {
-		return ($_SERVER['REQUEST_METHOD'] === 'POST');
+		return z::isMethod('POST');
+	}
+
+	static function isMethod($method) {
+		return ($_SERVER['REQUEST_METHOD'] == $method);
 	}
 
 	/**
@@ -82,8 +90,46 @@ class z {
 		return z::parseFloat(z::get($name, $def));
 	}
 
-	static function trim($s, $chrs = ' .,-*/1234567890') {
-		return trim($s, $chrs);
+	/**
+	 * safely get ids array to prevent SQL injection
+	*/ 
+	static function getIntArray($name, $def = null) {
+		$value = z::get($name);
+		if (is_array($value)) {
+			$str_array = $value;
+		} else {
+			if ($value === null || strlen($value) === 0) {
+				return $def;
+			}
+			$str_array = explode(',', $value);
+		}
+		
+		$result_array = [];
+		foreach ($str_array as $str) {
+			$result_array[] = z::parseInt($str);
+		}
+		return $result_array;
+	}
+
+	static function shorten($str, $len, $ellipsis = "...") {
+		if (mb_strlen($str) > $len) {
+			$length = $len - mb_strlen($ellipsis);
+			return mb_substr($str, 0, $length) . $ellipsis;
+		} else {
+			return $str;
+		}
+	}
+
+	static function trim($s, $chrs = ' ') {
+		$result = trim($s, $chrs);
+		if (strlen($result) === 0) {
+			return null;
+		}
+		return $result;
+	}
+
+	static function trimSpecial($s) {
+		return trim($s, ' .,-*/?!\'"');
 	}
 
 	static function trimSlashes($s) {
@@ -94,8 +140,31 @@ class z {
 		return str_replace('\'', '\\\'', $str);
 	}
 
+	static $czech_transliteration = ['ě' => 'e', 'š' => 's', 'č' => 'c', 'ř' => 'r', 'ž' => 'z', 'ý' => 'y', 'á' => 'a', 'í' => 'i', 'é' => 'e', 'ú' => 'u', 'ů' => 'u', 'ď' => 'd', 'ť' => 't', 'ň' => 'n'];
+
+	static function transliterateCzech($str) {
+		$result = $str;
+		foreach (z::$czech_transliteration as $czech => $ascii) {
+			$result = str_replace($czech, $ascii, $result);
+		}
+		return $result;
+	}
+
+	static function transliterate($str, $encoding = 'UTF-8') {
+		return iconv($encoding, "ASCII//TRANSLIT", z::transliterateCzech($str));
+	}
+
+	static function slugify($str, $encoding = 'UTF-8') {
+		$result = z::trimSpecial($str);
+		$result = strtolower($result);
+		$result = z::transliterate($result, $encoding);
+		$result = preg_replace("/[^a-zA-Z0-9\/_| -]/", '', $result);
+		$result = preg_replace("/[_| -\/]+/", '-', $result);
+		return $result;
+	}
+
 	/**
-	* Convert mysql Datetime to php Datetime
+	* Convert mysql Datetime to php time (int)
 	*/
 	static function phpDatetime($mysqldate) {
 		if (isset($mysqldate) && (strlen($mysqldate) > 0)) {
@@ -127,6 +196,14 @@ class z {
 		}
 	}
 
+	static function formatDateForHtml($time) {
+		if (isset($time) && $time != null) {
+			return z::shorten(date_format(date_timestamp_set(new DateTime(), $time), 'c'), 19, "");
+		} else {
+			return '';
+		}
+	}
+
 	static function getDbType($val) {
 		if (is_int($val)) {
 			return PDO::PARAM_INT;
@@ -138,21 +215,25 @@ class z {
 	/**
 	* Remove dangerous characters from string. Crucial for XSS protection.
 	*/
-	static function xssafe($data, $encoding = 'UTF-8') {
+	static function xssafe($data) {
 		if (is_string($data)) {
-	   		return htmlspecialchars($data, ENT_QUOTES | ENT_HTML401, $encoding);
+			return z::stripHtmlTags($data);
 		} else {
 			return $data;
 		}
 	}
 
 	static function startsWith($haystack, $needle)	{
-		 return (substr($haystack, 0, strlen($needle)) === $needle);
+		 return (mb_substr($haystack, 0, strlen($needle)) === $needle);
 	}
 
 	static function endsWith($haystack, $needle) {
-		$length = strlen($needle);
+		$length = mb_strlen($needle);
 		return $length === 0 || (substr($haystack, -$length) === $needle);
+	}
+
+	static function contains($str, $sub) {
+		return (mb_strpos($str, $sub) !== false);
 	}
 
 	static function debug($var) {
@@ -181,7 +262,14 @@ class z {
 	*/
 	static function toHtmlEntities($string) {
 		$convmap = array(0, 0xffffff, 0, 0xffffff);
-	  return mb_encode_numericentity($string, $convmap);
+		return mb_encode_numericentity($string, $convmap);
+	}
+
+	static function stripHtmlTags($text, $allowed_tags = '<br><i><b><p>') {
+		if (!$text) {
+			return '';
+		}
+		return strip_tags($text, $allowed_tags);
 	}
 
 	/**
@@ -193,6 +281,27 @@ class z {
 	*/
 	static function mergeAssocArrays($array_seed, $array_addition) {
 		return array_merge($array_seed, $array_addition);
+	}
+
+	/***
+	 * select random element, remove it from the array and return it
+	 */
+	static function extractRandomElement(&$array) {
+		if ($array === null || count($array) === 0) {
+			return null;
+		}
+		$index = rand(0, count($array) - 1);
+		$element = $array[$index];
+		array_splice($array, $index, 1);
+		return $element;
+	}
+
+	/**
+	 * Return array of file names in given directory.
+	 * @param $path
+	 */
+	static function listFiles($path) {
+		return array_diff(scandir($path), array('.', '..'));
 	}
 
 	/*

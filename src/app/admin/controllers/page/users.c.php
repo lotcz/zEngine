@@ -6,7 +6,7 @@
 		[
 			[
 				'name' => 'user_name',
-				'label' => 'Full name'
+				'label' => 'Full Name'
 			],
 			[
 				'name' => 'user_login',
@@ -17,8 +17,18 @@
 				'label' => 'E-mail'
 			],
 			[
-				'name' => 'user_last_login',
-				'label' => 'Last Login'
+				'name' => 'user_state',
+				'label' => 'State',
+				'type' => 'custom',
+				'custom_function' => 'UserModel::getUserStatusLabel'
+			],
+			[
+				'name' => 'user_last_access',
+				'label' => 'Last Visit',
+				'type' => 'datetime'
 			]
-		]
+		],
+		null,
+		['user_id', 'user_name', 'user_login', 'user_email', 'user_last_access'],
+		'user_id'
 	);

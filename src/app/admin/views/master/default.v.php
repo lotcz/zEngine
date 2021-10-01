@@ -9,10 +9,10 @@
 		<meta name="description" content="<?=$this->getConfigValue('site_description') ?>">
 		<meta name="author" content="<?=$this->getConfigValue('site_author') ?>">
 
-		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
 
 		<?php
-			$this->renderIncludes('head');
+			$this->renderIncludes('admin.head');
 		?>
 
 	</head>
@@ -21,34 +21,26 @@
 
 		<?php
 			$this->renderAdminMenu();
+			$this->renderIncludes('admin.top');
 			$this->renderMainView();
-			$this->renderIncludes('default');
+			$this->renderIncludes('admin.default');
 		?>
 
 		<footer class="container-fluid spaced">
 			<hr>
 			<p>
-				&copy; Karel Zavadil 2018. zEngine v. <strong><?=$this->z->version ?></strong>.
-				Application version <strong><?=$this->z->core->app_version ?></strong>.
-				Go to <a href="<?=$this->url('') ?>">home</a> page.
+				Application <a href="<?=$this->url('') ?>"><?=$this->z->core->getConfigValue('site_title')?></a> version <strong><?=$this->z->core->app_version ?></strong><br>
+ 				zEngine version <strong><?=$this->z->version ?></strong><br>
+				&copy; Karel Zavadil <?=date('Y')?>
 			</p>
 		</footer>
 
-		<script
-			  src="https://code.jquery.com/jquery-3.3.1.min.js"
-			  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-			  crossorigin="anonymous"></script>
-		<script
-				src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
-				integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
-				crossorigin="anonymous"></script>
-		<script
-				src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"
-				integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T"
-				crossorigin="anonymous"></script>
+		<script src="https://code.jquery.com/jquery-3.5.1.min.js" crossorigin="anonymous"></script>
+		<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
 
 		<?php
-			$this->renderIncludes('bottom');
+			$this->renderIncludes('admin.bottom');
 		?>
 	</body>
 </html>

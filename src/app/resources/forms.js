@@ -78,17 +78,23 @@ function validate_zip(zip) {
 	return (parseInt(nZip) > 9999 && parseInt(nZip) < 100000);
 }
 
-function formValidation(form_name) {
-	this.frm = $('#' + form_name);
+function formValidation(form_id) {
+	this.frm = document.getElementById(form_id);
 	this.is_valid = true;
 	this.fields = [];
 
-	this.submit = function() {
+	this.submit = function(noret) {
 		this.is_valid = true;
 		for (var i = 0, max = this.fields.length; i < max; i++) {
 			this.is_valid = this.validateField(this.fields[i]) && this.is_valid;
-		}
+		}		
 		if (this.is_valid) {
+			if (noret == true) {
+				const input = z.getById('suppress_return');
+				if (input) {
+					input.value = 'true';
+				}
+			}
 			this.frm.submit();
 		}
 		return this.is_valid;
@@ -100,19 +106,19 @@ function formValidation(form_name) {
 		return field;
 	}
 
-	this.val = function (field_name) {
-		return $('#' + field_name, this.frm).val();
+	this.val = function (field_id) {
+		return z.val(field_id);
 	}
 
 	this.showFieldValidation = function(field_name, validation, is_valid) {
 		if (is_valid) {
-			$('#' + field_name + '_validation_' + validation, this.frm).hide();
-			$('#' + field_name + '_form_group', this.frm).removeClass('has-error');
-			$('#' + field_name, this.frm).removeClass('is-invalid');
+			z.hide(field_name + '_validation_' + validation);
+			z.removeClass(field_name + '_form_group', 'has-error');
+			z.removeClass(field_name, 'is-invalid');
 		} else {
-			$('#' + field_name + '_validation_' + validation, this.frm).show();
-			$('#' + field_name + '_form_group', this.frm).addClass('has-error');
-			$('#' + field_name, this.frm).addClass('is-invalid');
+			z.show(field_name + '_validation_' + validation);
+			z.addClass(field_name + '_form_group', 'has-error');
+			z.addClass(field_name, 'is-invalid');
 		}
 	}
 

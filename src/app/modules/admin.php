@@ -1,5 +1,6 @@
 <?php
 
+require_once __DIR__ . '/../models/admin_role.m.php';
 require_once __DIR__ . '/../models/admin.m.php';
 
 /**
@@ -7,7 +8,7 @@ require_once __DIR__ . '/../models/admin.m.php';
 */
 class adminModule extends zModule {
 
-	public $depends_on = ['auth', 'menu'];
+	public $depends_on = ['auth', 'menu', 'jobs'];
 	public $also_install = ['forms', 'tables'];
 
 	// url part defining admin protected area
@@ -34,6 +35,11 @@ class adminModule extends zModule {
 
 	public $admin = null;
 
+	public function hasRole($role) {
+		if (!$this->isAuth()) return;
+		return $this->admin->ival('user_admin_role_id') == $role;
+    }
+
 	/**
 	* Return true if an admin is authenticated.
 	*/
@@ -41,6 +47,14 @@ class adminModule extends zModule {
 		$this->checkAuthentication();
 		return isset($this->admin);
 	}
+
+	public function isSuperUser() {
+		return $this->hasRole(AdminRoleModel::role_superuser);
+	}
+
+	public function isAdmin() {
+    		return $this->hasRole(AdminRoleModel::role_admin);
+    	}
 
 	/**
 	* Verifies if there is an admin logged in.
@@ -77,6 +91,12 @@ class adminModule extends zModule {
 		$this->base_url = $this->getConfigValue('admin_area_base_url', $this->base_url);
 		$this->base_dir = $this->getConfigValue('admin_area_base_dir', $this->base_dir);
 		$this->login_url = $this->getConfigValue('login_page_url', $this->login_url);
+
+		// process default admin includes
+		$includes = $this->getConfigValue('includes', []);
+		foreach ($includes as $include) {
+			$this->z->core->addToIncludes(($include[1]) ? $include[0] : $this->z->core->url($include[0]), $include[2], $include[3]);
+		}
 	}
 
 	public function OnBeforeInit() {
@@ -113,32 +133,55 @@ class adminModule extends zModule {
 			//custom menu from app's admin config
 			$menu->loadItemsFromArray($this->getConfigValue('custom_menu'));
 
-			//standard admin menu
-			if ($this->getConfigValue('show_default_menu', false)) {
-				$submenu = $menu->addSubmenu('Administration');
-				$submenu->addItem('admin/users', 'Users');
-				$submenu->addItem('admin/administrators', 'Administrators');
-				$submenu->addSeparator();
-				$submenu->addHeader('Advanced');
-				$submenu->addItem('admin/job-runner', 'Jobs');
-				if ($this->z->isModuleEnabled('alias')) {
-					$submenu->addItem('admin/aliases', 'Aliases');
+			// SUPERUSER - standard admin menu
+			if ($this->isSuperUser() || $this->isAdmin()) {
+				$submenu = $menu->addRightSubmenu('Administration');
+
+				$submenu->addHeader('Users');
+				//$submenu->addItem('admin/users', 'Users');
+				$submenu->addItem('admin/admins', 'Administrators');
+
+				// SHOP
+				if ($this->z->isModuleEnabled('shop')) {
+					$submenu->addSeparator();
+					$submenu->addHeader('Shop');
+					$submenu->addItem('admin/products', 'Products');
+					$submenu->addItem('admin/orders', 'Orders');
+					$submenu->addItem('admin/customers', 'Customers');
 				}
-				$submenu->addItem('admin/languages', 'Languages');
-				$submenu->addItem('admin/currencies', 'Currencies');
-				$submenu->addItem('admin/ip-failed-attempts', 'Failed Login Attempts');
-				$submenu->addItem('admin/info', 'PHP-info');
-				$submenu->addItem('admin/about', 'About');
+
+				// GALLERY
+				if ($this->z->isModuleEnabled('gallery')) {
+					$submenu->addSeparator();
+					$submenu->addHeader('Gallery');
+					$submenu->addItem('admin/galleries', 'Galleries');
+				}
+
+				if ($this->isSuperUser()) {
+					// ADVANCED
+					$submenu->addSeparator();
+					$submenu->addHeader('Advanced');
+					$submenu->addItem('admin/job-runner', 'Jobs');
+					if ($this->z->isModuleEnabled('alias')) {
+						$submenu->addItem('admin/aliases', 'Aliases');
+					}
+					$submenu->addItem('admin/languages', 'Languages');
+					$submenu->addItem('admin/currencies', 'Currencies');
+					if ($this->z->isModuleEnabled('security')) {
+						$submenu->addItem('admin/ip-failed-attempts', 'Failed Attempts');
+						$submenu->addItem('admin/banned-ips', 'Banned IP Addresses');
+					}
+					$submenu->addItem('admin/info', 'PHP-info');
+					$submenu->addItem('admin/about', 'About + Sessions');
+				}
 			}
+
 			$user = $this->z->auth->user;
 			$usermenu = $menu->addRightSubmenu($user->getLabel());
 			$usermenu->addItem('admin/default/default/user/edit/' . $user->val('user_id'), 'User Profile');
 			$usermenu->addItem('admin/change-password', 'Change Password');
 			$usermenu->addItem('admin/logout', 'Log Out');
-		} else if (!$this->is_login_page) {
-			//$menu->addRightItem($this->getAdminAreaURL($this->login_url), 'Log in');
 		}
-
 		$this->menu = $menu;
 	}
 
@@ -149,11 +192,12 @@ class adminModule extends zModule {
 	/**
 	* Render default table for administration area.
 	*/
-	public function renderAdminTable($entity_name, $fields, $filter_fields = null, $view_name = null) {
+	public function renderAdminTable($entity_name, $fields, $view_name = null, $sort_fields = [], $default_sort = null, $filter_fields = null) {
 		if (!isset($view_name)) {
 			$view_name = $entity_name;
 		}
-		$form = new zForm($entity_name, '', 'POST', 'form-inline');
+		$form = new zForm($entity_name, '', 'POST', 'form-inline mb-2');
+		$form->is_valid = false;
 		$form->type = 'inline';
 		$form->render_wrapper = true;
 		$form->addField([
@@ -163,8 +207,25 @@ class adminModule extends zModule {
 				['type' => 'link', 'label' => '+ Add', 'css' => 'btn btn-success mr-2' , 'link_url' => $this->base_url . '/' . $form->detail_page . '?r=' . $this->z->core->raw_path]
 			]
 		]);
+		$this->z->core->setData('form', $form);
+
+		$table = $this->z->tables->createTable($entity_name, $view_name, $sort_fields, $default_sort, 'table-striped table-sm table-bordered table-hover mb-2');
+		$table->add($fields);
+		$table->id_field_name = $entity_name . '_id';
+		$table->edit_link = sprintf('admin/default/default/%s/edit/', $form->detail_page) . '%d';
+		$table->new_link = sprintf('admin/default/default/%s', $form->detail_page);
+
 		if (isset($filter_fields)) {
-			$form->add($filter_fields);
+			$form->add(
+				[
+					[
+						'name' => $table->paging->filter_url_name,
+						'label' => 'Search',
+						'type' => 'text',
+						'filter_fields' => $filter_fields
+					]
+				]
+			);
 			$form->addField([
 				'name' => 'form_filter_button',
 				'type' => 'buttons',
@@ -173,24 +234,23 @@ class adminModule extends zModule {
 					['type' => 'link', 'label' => 'Reset', 'css' => 'btn btn-default mr-2', 'link_url' => $this->z->core->raw_path]
 				]
 			]);
-		}
-		if (z::isPost()) {
-			$form->processInput($_POST);
-		}
-		$this->z->core->setData('form', $form);
 
-		$table = $this->z->tables->createTable($entity_name, $view_name, 'table-striped table-sm table-bordered table-hover mt-2');
-		$table->id_field_name = $entity_name . '_id';
-		$table->edit_link = sprintf('admin/default/default/%s/edit/', $form->detail_page) . '%d';
-	 	$table->new_link = sprintf('admin/default/default/%s', $form->detail_page);
-
-		$table->add($fields);
-		if (isset($filter_fields)) {
+			if (z::isPost()) {
+				$form->processInput($_POST);
+				$table->paging->offset = 0;
+			} else {
+				$form->processInput($_GET);
+			}
 			$table->filter_form = $form;
+			if ($form->is_valid) {
+				$table->paging->filter = $form->processed_input[$table->paging->filter_url_name];
+			}
 		}
+
 		$this->z->tables->prepareTable($table);
 		$this->z->core->setData('table', $table);
-		$this->z->core->setPageTemplate('admin');
+
+		$this->z->core->setPageView('admin');
 	}
 
 	public function getAdminFormButtons($form, $model_class_name) {
@@ -204,7 +264,10 @@ class adminModule extends zModule {
 			$buttons[] = ['type' => 'button', 'label' => 'Delete', 'onclick' => 'deleteItemConfirm(\'' . $delete_question . '\',' . '\'' . $delete_url . '\');', 'css' => 'btn btn-danger m-2' ];
 		}
 
-		$buttons[] = ['type' => 'submit', 'label' => 'Save', 'onclick' => 'validateForm_' . $form->id . '(event);', 'css' => 'btn btn-success m-2' ];
+		$buttons[] = ['type' => 'submit', 'label' => 'Save', 'onclick' => 'validateForm_' . $form->id . '(event, true);', 'css' => 'btn btn-success m-2' ];
+		if ($this->z->core->return_path) {
+			$buttons[] = ['type' => 'submit', 'label' => 'Save &amp; Return', 'onclick' => 'validateForm_' . $form->id . '(event, false);', 'css' => 'btn btn-success m-2' ];
+		}
 		return $buttons;
 	}
 
@@ -246,7 +309,7 @@ class adminModule extends zModule {
 		);
 
 		$this->z->core->setData('form', $form);
-		$this->z->core->setPageTemplate('admin');
+		$this->z->core->setPageView('admin');
 	}
 
 	/**

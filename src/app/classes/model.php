@@ -171,6 +171,11 @@ class zModel {
 		return $list;
 	}
 
+	public function getId() {
+		$class_name = get_called_class();
+		return $this->ival($class_name::getIdName());
+	}
+
 	public function save() {
 		$class_name = get_called_class();
 		$id = $this->ival($class_name::getIdName());
@@ -198,6 +203,15 @@ class zModel {
 		}
 
 		return true;
+	}
+
+	public function updateMultiReference($table, $ref_id_field, $other_ref_id_field, $values) {
+		$id = $this->getId();
+		$this->db->executeDeleteQuery($table, sprintf('%s = ?', $ref_id_field), [$id], [PDO::PARAM_INT]);
+		foreach ($values as $value) {
+			$val = z::parseInt($value);
+			$this->db->executeInsertQuery($table, [$ref_id_field, $other_ref_id_field], [$id, $val], [PDO::PARAM_INT, PDO::PARAM_INT]);
+		}
 	}
 
 	public function delete(int $id = null) {
@@ -255,6 +269,25 @@ class zModel {
 			$sum += $model->fval($field, 0);
 		}
 		return $sum;
+	}
+
+	/**
+	* Sort by array values in a single column.
+	* @return Array
+	*/
+	static function sort($arr, $field) {
+		$result = [];
+		$min = null;
+		for ($i = 0; $i < count($arr); $i++) {
+			for ($i2 = $i; $i2 < count($arr); $i2++) {
+				if ($min === null || $min->val($field) > $arr[$i2]->val($field)) {
+					$min = $arr[$i2];
+				}				
+			}
+			$result[] = $min;
+			$min = null;
+		}
+		return $result;
 	}
 
 	/**

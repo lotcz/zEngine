@@ -10,6 +10,7 @@ class zPaging {
 
 	public $url_name = 'p';
 	public $sorting_url_name = 's';
+	public $sorting_desc_url_name = 'sd';
 	public $filter_url_name = 'f';
 
 	public $total_records = null;
@@ -22,8 +23,9 @@ class zPaging {
 	public $filter = null;
 	public $orderby = null;
 
-	public $sorting_items = [];
+	public $allowed_sorting_items = [];
 	public $active_sorting = null;
+	public $sorting_desc = false;
 
 	function __construct($custom_offset = null, $custom_limit = null, $custom_max_pages_links = null) {
 		if (isset($custom_offset)) {
@@ -53,21 +55,23 @@ class zPaging {
 			$this->offset = z::parseInt($arr[0]);
 			$this->limit = z::parseInt($arr[1]);
 		}
-
 		if (isset($_GET[$this->sorting_url_name])) {
-			$this->active_sorting = $_GET[$this->sorting_url_name];
-			if (!isset($this->sorting_items[$this->active_sorting])) {
-				reset($this->sorting_items);
-				$this->active_sorting = key($this->sorting_items);
+			$sort = $_GET[$this->sorting_url_name];
+			if (in_array($sort, $this->allowed_sorting_items)) {
+				$this->active_sorting = $_GET[$this->sorting_url_name];
+				$this->sorting_desc = isset($_GET[$this->sorting_desc_url_name]);
 			}
 		}
-
+		if (isset($_GET[$this->filter_url_name])) {
+			$this->filter = $_GET[$this->filter_url_name];
+		}
 	}
 
-	public function getLinkUrl($offset = null, $limit = null, $sorting = null, $filter = null) {
+	public function getLinkUrl($offset = null, $limit = null, $sorting = null, $sorting_desc = null, $filter = null) {
 		$offset = isset($offset) ? $offset : $this->offset;
 		$limit = isset($limit) ? $limit : $this->limit;
 		$sorting = isset($sorting) ? $sorting : $this->active_sorting;
+		$desc = isset($sorting_desc) ? $sorting_desc : $this->sorting_desc;
 		$filter = isset($filter) ? $filter : $this->filter;
 
 		$url = '?';
@@ -77,6 +81,9 @@ class zPaging {
 		}
 		if (isset($filter) && strlen($filter)>0) {
 			$url .= sprintf('&%s=%s', $this->filter_url_name, $filter);
+		}
+		if ($desc) {
+			$url .= sprintf('&%s=%s', $this->sorting_desc_url_name, 'desc');
 		}
 		return $url;
 	}
@@ -192,8 +199,8 @@ class zPaging {
 	}
 
 	public function getOrderBy() {
-		if (isset($this->sorting_items) && count($this->sorting_items) > 0) {
-			return $this->sorting_items[$this->active_sorting];
+		if (isset($this->active_sorting)) {
+			return $this->active_sorting . ($this->sorting_desc ? ' DESC' : ' ASC');
 		}
 	}
 
@@ -207,10 +214,9 @@ class zPaging {
 
 		if (count($links) > 0) {
 			?>
-				<div class="m-2">
+				<div class="mb-2">
 					<nav>
-						<ul class="pagination" style="margin:0">
-
+						<ul class="pagination">
 							<?php
 								foreach ($links as $link) {
 									?>
@@ -218,7 +224,7 @@ class zPaging {
 									<?php
 								}
 							?>
-							<li><div class="d-inline-block p-2"><?=sprintf('%d / %d', $this->current_page, $this->total_pages);?></div></li>
+							<li><div class="d-inline-block p-2"><?=sprintf('%d / %d [%d]', $this->current_page, $this->total_pages, $this->total_records);?></div></li>
 						</ul>
 					</nav>
 				</div>

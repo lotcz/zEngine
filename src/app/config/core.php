@@ -6,11 +6,8 @@
 		// should be identical with GIT branch name
 		'app_version' => 0.0,
 
-		// required zEngine major version (integer value)
-		'require_z_version' => 4,
-
 		// this is minimum required zEngine version
-		'minimum_z_version' => 4.3,
+		'minimum_z_version' => 9.0,
 
 		'site_title' => 'Your site title',
 		'site_description' => 'Your site description.',
@@ -33,6 +30,10 @@
 		// redirect here in case of unrecoverable error
 		// only applies when debug_mode is off
 		'error_page' => 'error.html',
+
+		// display this when requested page is not found
+		// only applies when debug_mode is off
+		'not_found_page' => 'notfound',
 
 		// URL query variable name used for return paths
 		'return_path_name' => 'r',

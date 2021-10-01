@@ -7,7 +7,7 @@ class emailsModule extends zModule {
 
 	public static $after_shutdown = [];
 
-	public function onAfterRender() {
+	public function onBeforeRender() {
 		if (count(self::$after_shutdown) > 0) {
 			emailsModule::processQueue();
 		}

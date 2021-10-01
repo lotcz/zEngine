@@ -1,3 +1,23 @@
 .table-hover tbody tr {
   cursor:pointer;
 }
+
+ul.pagination {
+  margin:0;
+}
+
+.table .caret {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    margin-left: 2px;
+    vertical-align: middle;
+    border-top: 4px dashed;
+    border-right: 4px solid transparent;
+    border-left: 4px solid transparent;
+}
+
+.table .caret.caret-up {
+    border-top-width: 0;
+    border-bottom: 4px solid;
+}

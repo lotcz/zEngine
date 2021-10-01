@@ -5,12 +5,12 @@ require_once __DIR__ . '/app/classes/module.php';
 
 /**
 * zEngine himself - this is the main class of zEngine.
-* All you have to do is create instance of this class and call method run().
+* All you have to do is create an instance of this class and call method run().
 */
 class zEngine {
 
-	public $version = 5;
-  public $app_dir = '';
+	public $version = 9.0;
+	public $app_dir = '';
 	public $modules = [];
 
 	function __construct($app_dir = 'app/', $modules = []) {
@@ -27,7 +27,13 @@ class zEngine {
 	public function enableModule($module_name) {
 		try {
 			if (!$this->isModuleEnabled($module_name)) {
-				require_once __DIR__ . "/app/modules/$module_name.php";
+				$core_modules_path = __DIR__ . "/app/modules/$module_name.php";
+				$app_modules_path = $this->app_dir . "modules/$module_name.php";
+				if (file_exists($app_modules_path)) {
+					require_once $app_modules_path;
+				} else {
+					require_once $core_modules_path;
+				}
 				$module_class = $module_name . 'Module';
 				$module = new $module_class($this);
 				$module->name = $module_name;
@@ -108,10 +114,6 @@ class zEngine {
 	public function run() {
 		try {
 
-			if (isset($_GET['path'])) {
-				$this->core->parseURL($_GET['path']);
-			}
-
 			foreach ($this->modules as $module) {
 				if (method_exists($module, 'onBeforeInit')) {
 					$module->onBeforeInit();
@@ -127,8 +129,42 @@ class zEngine {
 			}
 
 			$this->core->runMasterController();
+
+			if (empty($this->core->findViewTemplate('master'))) {
+				if ($this->isDebugMode()) {
+					$view_name = $this->core->getViewName('master');
+					$this->fatalError("Template master file <strong>$view_name</strong> not found!");
+				} else {
+					$this->core->setMasterView('default');
+				}
+			}
+
 			$this->core->runMainController();
+
+			if ($this->core->require_main_view) {
+				if (empty($this->core->findViewTemplate('main'))) {
+					if ($this->isDebugMode()) {
+						$view_name = $this->core->getViewName('main');
+						$this->fatalError("Template main file <strong>$view_name</strong> not found!");
+					} else {
+						$this->core->setMainView('default');
+					}
+				}
+			}
+
 			$this->core->runPageController();
+
+			if ($this->core->require_page_view) {
+				if (empty($this->core->findViewTemplate('page'))) {
+					if ($this->isDebugMode()) {
+						$view_name = $this->core->getViewName('page');
+						$this->fatalError("Template page file <strong>$view_name</strong> not found!");
+					} else {
+						$this->core->setPageController($this->core->not_found_page);
+						$this->core->runPageController();
+					}
+				}
+			}
 
 			foreach ($this->modules as $module) {
 				if (method_exists($module, 'onBeforeRender')) {

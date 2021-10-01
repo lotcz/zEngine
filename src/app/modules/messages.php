@@ -61,6 +61,7 @@ class messagesModule extends zModule{
 					?>
 				</div>
 			<?php
+			$this->clear();
 		}
 	}
 

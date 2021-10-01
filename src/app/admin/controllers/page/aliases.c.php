@@ -12,5 +12,8 @@
 				'name' => 'alias_path',
 				'label' => 'Path'
 			],
-		]
+		],
+		null,
+		['alias_url', 'alias_path'],
+		'alias_url'
 	);

@@ -1,6 +1,8 @@
 <?php
 	$this->setPageTitle('Forgotten Password');
 
+	$this->requireModule('emails');
+
 	if (z::isPost()) {
 		$user = new UserModel($this->z->db);
 		$user->loadByLoginOrEmail(z::get('email'));
@@ -20,7 +22,7 @@
 			}
 		} else {
 			// increase ip address failed attempts
-			IpFailedAttemptModel::saveFailedAttempt($this->z->db);
+			$this->z->security->saveFailedAttempt();
 			$this->message('E-mail address not found!','error');
 		}
 	}

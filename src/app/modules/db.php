@@ -44,7 +44,7 @@ class dbModule extends zModule {
 				$this->getConfigValue('options', [])
 			);
 			$this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-			$this->connection->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+			$this->connection->setAttribute(PDO::ATTR_EMULATE_PREPARES, true);
 		}
 		return $this->connection;
 	}
@@ -120,7 +120,7 @@ class dbModule extends zModule {
 			$limitSQL = sprintf('LIMIT %s', $limit);
 		}
 
-		$sql = sprintf('SELECT %s FROM %s %s %s %s', implode(',', $columns), $table_name, $whereSQL, $orderbySQL, $limitSQL);
+		$sql = sprintf('SELECT %s FROM `%s` %s %s %s', implode(',', $columns), $table_name, $whereSQL, $orderbySQL, $limitSQL);
 		return $this->executeQuery($sql, $bindings, $types);
 	}
 
@@ -141,7 +141,7 @@ class dbModule extends zModule {
 			$columnsSQL[] = $column . ' = ?';
 		}
 
-		$sql = sprintf('UPDATE %s SET %s %s', $table_name, implode(',', $columnsSQL), $whereSQL);
+		$sql = sprintf('UPDATE `%s` SET %s %s', $table_name, implode(',', $columnsSQL), $whereSQL);
 		return $this->executeQuery($sql, $bindings, $types);
 	}
 
@@ -160,8 +160,20 @@ class dbModule extends zModule {
 			$values[] = '?';
 		}
 
-		$sql = sprintf('INSERT INTO %s (%s) VALUES (%s)', $table_name, implode(',', $columns), implode(',', $values));
+		$sql = sprintf('INSERT INTO `%s` (%s) VALUES (%s)', $table_name, implode(',', $columns), implode(',', $values));
 		return $this->executeQuery($sql, $bindings, $types);
+	}
+
+	/**
+	 * Executes insert query.
+	 * @param String $procedure_name Name of the procedure.
+	 * @param Array $parameters Array of values to be subject to parameter binding.
+	 * @param Array $types Array of PDO type specifications for binding values.
+	 * @return PDOStatement
+	 */
+	public function executeStoredProcedure($procedure_name, $parameters, $types)
+	{
+		return $this->executeQuery(sprintf('call %s(?);', $procedure_name), $parameters, $types);
 	}
 
 	/**
@@ -185,7 +197,7 @@ class dbModule extends zModule {
 			$whereSQL = sprintf('WHERE %s', $where);
 		}
 
-		$sql = sprintf('DELETE FROM %s %s', $table_name, $whereSQL);
+		$sql = sprintf('DELETE FROM `%s` %s', $table_name, $whereSQL);
 		return $this->executeQuery($sql, $bindings, $types);
 	}
 

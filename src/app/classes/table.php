@@ -21,6 +21,9 @@ class zTable {
 	public $fields = [];
 	public $data = [];
 
+	// list of field names available for sorting
+	public $sort_fields = [];
+
 	function __construct($entity_name = 'table or view', $view_name = null, $css = '') {
 		$this->entity_name = $entity_name;
 		if (!isset($view_name)) {

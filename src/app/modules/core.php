@@ -8,11 +8,10 @@
 class coreModule extends zModule {
 
 	public $depends_on = ['errorlog'];
-	//public $also_install = ['i18n'];
+	public $also_install = [];
 
 	public $app_version = 0.0;
-  public $require_z_version = 4;
-	public $minimum_z_version = 4;
+	public $minimum_z_version = 5.0;
 
 	//path to application directory
 	public $app_dir = null;
@@ -26,7 +25,7 @@ class coreModule extends zModule {
 	public $debug_mode = false;
 	public $error_page = 'error.html';
 	public $error_view = 'error';
-	public $not_found_path = 'notfound';
+	public $not_found_page = 'notfound';
 
 	public $return_path = false;
 
@@ -35,13 +34,21 @@ class coreModule extends zModule {
 		'site_title' => null
 	];
 
-	public $includes = ['head' => [], 'default' => [], 'bottom' => []];
+	public $includes = ['head' => [], 'top' => [], 'default' => [], 'bottom' => [], 'admin.head' => [], 'admin.top' => [], 'admin.default' => [], 'admin.bottom' => []];
 
+	// controller names
 	public $controllers = ['master' => 'default', 'main' => 'default', 'page' => 'default'];
-	public $templates = ['master' => null, 'main' => null, 'page' => null];
+	// view names
+	public $views = ['master' => null, 'main' => null, 'page' => null];
+	// view template paths
+	public $view_templates = ['master' => null, 'main' => null, 'page' => null];
 
-	public $path = [];
+	public $require_main_view = true;
+	public $require_page_view = true;
+
+	public $raw_url = '';
 	public $raw_path = '';
+	public $path = [];
 
 	private $page_keywords = '';
 
@@ -51,14 +58,15 @@ class coreModule extends zModule {
 		$this->base_url = $this->getConfigValue('base_url');
 		$this->debug_mode = $this->getConfigValue('debug_mode', $this->debug_mode);
 		$this->error_page = $this->getConfigValue('error_page', $this->error_page);
-		$this->not_found_path = $this->getConfigValue('not_found_path', $this->not_found_path);
+		$this->not_found_page = $this->getConfigValue('not_found_page', $this->not_found_page);
 
 		$this->app_version = $this->getConfigValue('app_version', $this->app_version);
-		$this->require_z_version = intval($this->getConfigValue('require_z_version', $this->require_z_version));
 		$this->minimum_z_version = $this->getConfigValue('minimum_z_version', $this->minimum_z_version);
 
-		if (intval($this->z->version) != $this->require_z_version) {
-			throw new Exception(sprintf('Application is for zEngine version %d. zEngine is version %s.', $this->require_z_version, $this->z->version));
+		$require_z_major_version = intval(floor($this->minimum_z_version));
+		$actual_z_major_version = intval(floor($this->z->version));
+		if ($actual_z_major_version != $require_z_major_version) {
+			throw new Exception(sprintf('Application is for zEngine version %d! Actual zEngine version is %s.', $require_z_major_version, $this->z->version));
 		}
 
 		if ($this->z->version < $this->minimum_z_version) {
@@ -74,12 +82,19 @@ class coreModule extends zModule {
 			$this->requireModule($module_name);
 		}
 
+		$this->includeJS('resources/z.js', false, 'head');
+		$this->includeJS('resources/z.js', false, 'admin.head');
+
 		// process default includes
 		$includes = $this->getConfigValue('includes',[]);
 		foreach ($includes as $include) {
 			$this->z->core->addToIncludes(($include[1]) ? $include[0] : $this->z->core->url($include[0]), $include[2], $include[3]);
 		}
 
+		if (isset($_GET['path'])) {
+			$this->raw_url = z::trimSlashes(strtolower($_GET['path']));
+			$this->parseURL($this->raw_url);
+		}
 	}
 
 	public function installAllModules($db_login = null, $db_password = null, $db_name = null) {
@@ -137,6 +152,7 @@ class coreModule extends zModule {
 
 	/**
 	* Analyzes $path and choose correct master, main and page controllers.
+	 * parseUrl() must be called before this or path property must be set in some other way.
 	*/
 	public function chooseControllers() {
 		$path_items = count($this->path);
@@ -321,7 +337,7 @@ class coreModule extends zModule {
 	}
 
 	public function xssafe($data) {
-	   return z::xssafe($data, $this->default_encoding);
+	   return z::xssafe($data);
 	}
 
 	/*
@@ -332,8 +348,8 @@ class coreModule extends zModule {
 		$this->z->admin->renderAdminMenu();
 	}
 
-	public function renderAdminTable($entity_name, $fields, $filter_fields = null, $view_name = null) {
-		$this->z->admin->renderAdminTable($entity_name, $fields, $filter_fields, $view_name);
+	public function renderAdminTable($entity_name, $fields, $view_name = null, $sort_fields = [], $default_sort = null, $filter_fields = null) {
+		$this->z->admin->renderAdminTable($entity_name, $fields, $view_name, $sort_fields, $default_sort, $filter_fields);
 	}
 
 	public function renderAdminForm($model_class_name, $fields, $onBeforeUpdate = null, $onAfterUpdate = null, $onBeforeDelete = null, $onAfterDelete = null) {
@@ -352,6 +368,10 @@ class coreModule extends zModule {
 		$this->includes[$placement][] = [$content, $type];
 	}
 
+	public function includePartial($name, $placement = 'bottom') {
+		$this->addToIncludes($name, 'partial_view', $placement);
+	}
+
 	public function insertJS($js_content, $placement = 'head') {
 		$this->addToIncludes($js_content, 'inline_js', $placement);
 	}
@@ -361,10 +381,6 @@ class coreModule extends zModule {
 			$js_path = $this->url($js_path);
 		}
 		$this->addToIncludes($js_path, 'link_js', $placement);
-	}
-
-	public function includeJS_head($js_path, $abs = false) {
-		$this->includeJS($js_path, $abs, 'head');
 	}
 
 	public function includeFavicon($path = 'favicon.ico') {
@@ -396,6 +412,9 @@ class coreModule extends zModule {
 	public function renderIncludes($placement = 'default') {
 		foreach ($this->includes[$placement] as $incl) {
 			switch ($incl[1]) {
+				case 'partial_view':
+					$this->renderPartialView($incl[0]);
+				break;
 				case 'inline_js':
 					if (is_object($incl[0]) || is_array($incl[0])) {
 						echo '<script>';
@@ -409,6 +428,9 @@ class coreModule extends zModule {
 				break;
 				case 'link_js':
 					echo sprintf('<script src="%s?v=%s"></script>' . z::$crlf, $incl[0], $this->app_version);
+				break;
+				case 'link_js_module':
+					echo sprintf('<script type="module" src="%s?v=%s"></script>' . z::$crlf, $incl[0], $this->app_version);
 				break;
 				case 'link_css':
 					echo sprintf('<link rel="stylesheet" type="text/css" href="%s?v=%s">' . z::$crlf, $incl[0], $this->app_version);
@@ -430,7 +452,7 @@ class coreModule extends zModule {
 	}
 
 	public function showErrorView($message = null) {
-		$this->setPageTemplate($this->error_view);
+		$this->setPageView($this->error_view);
 		$this->setPageTitle('Error');
 		if (isset($message)) {
 			$this->message($message, 'error');
@@ -442,56 +464,105 @@ class coreModule extends zModule {
 	*/
 
 	public function setTemplate($type, $template_name) {
-		$this->templates[$type] = $template_name;
-	}
-
-	public function setView($type, $template_name) {
-		$this->setTemplate($type, $template_name);
+		$this->view_templates[$type] = $template_name;
 	}
 
 	public function setPageTemplate($template_name) {
 		$this->setTemplate('page', $template_name);
 	}
 
-	public function setPageView($template_name) {
-		$this->setPageTemplate($template_name);
-	}
-
 	public function setMainTemplate($template_name) {
 		$this->setTemplate('main', $template_name);
-	}
-
-	public function setMainView($template_name) {
-		$this->setMainTemplate($template_name);
 	}
 
 	public function setMasterTemplate($template_name) {
 		$this->setTemplate('master', $template_name);
 	}
 
-	public function setMasterView($template_name) {
-		$this->setMasterTemplate($template_name);
+	public function setView($type, $view_name) {
+		$this->views[$type] = $view_name;
+		$this->setTemplate($type, null);
+	}
+
+	public function setPageView($view_name) {
+		$this->setView('page', $view_name);
+	}
+
+	public function setMainView($view_name) {
+		$this->setView('main', $view_name);
+	}
+
+	public function setMasterView($view_name) {
+		$this->setView('master', $view_name);
+	}
+
+	public function getViewName($type) {
+		$name = $this->views[$type];
+		if (empty($name)) {
+			$name = $this->controllers[$type];
+		}
+		return $name;
+	}
+
+	/**
+	 * Find a view template path of given type. View file must exist or null returned.
+	 * @param $type
+	 * @param $name
+	 * @return string|null full path to view file or null if not found
+	 */
+	public function findViewTemplatePath($type, $name) {
+		$template_path = $this->app_dir . "views/$type/" . $name . '.v.php';
+		if (file_exists($template_path)) {
+			return $template_path;
+		} else {
+			$default_template_path = $this->default_app_dir . "views/$type/" . $name . '.v.php';
+			if (file_exists($default_template_path)) {
+				return $default_template_path;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Find a view of given type. View file must exist or null returned.
+	 * @param $type
+	 * @return string|null full path to view file or null if not found
+	 */
+	public function findViewTemplate($type) {
+		if (empty($this->view_templates[$type])) {
+			$name = $this->getViewName($type);
+			$this->setTemplate($type, $this->findViewTemplatePath($type, $name));
+		}
+		return $this->view_templates[$type];
 	}
 
 	public function renderView($type = 'page') {
-		if (!isset($this->templates[$type])) {
-			$this->templates[$type] = $this->controllers[$type];
-		}
-		$template_path = $this->app_dir . "views/$type/" .  $this->templates[$type] . '.v.php';
-		if (file_exists($template_path)) {
-			include $template_path;
+		$selected_template_path = $this->findViewTemplate($type);
+
+		if (!empty($selected_template_path)) {
+			// make data available to the view
+			foreach ($this->data as $data_key => $data_value) {
+				if (!isset($$data_key)) {
+					$$data_key = $data_value;
+				}
+			}
+			include $selected_template_path;
 		} else {
-			$default_template_path = $this->default_app_dir . "views/$type/" .  $this->templates[$type] . '.v.php';
-			if (file_exists($default_template_path)) {
-				include $default_template_path;
+			if ($this->debug_mode) {
+				$view_name = $this->views[$type];
+				echo "Template <strong>$type</strong> view not found for <strong>$view_name</strong>!";
 			} else {
-				if ($this->debug_mode) {
-					echo "Template for $type view not found: $default_template_path!";
+				$not_found_template = $this->findViewTemplatePath('page', $this->not_found_page);
+				if (!empty($not_found_template)) {
+					$this->controllers['page'] = $this->not_found_page;
+					$this->runController('page');
+					include $not_found_template;
 				} else {
-					$this->redirect($this->not_found_path);
+					echo "404 - Not found!";
 				}
 			}
 		}
+
 	}
 
 	public function renderMasterView() {
@@ -507,17 +578,18 @@ class coreModule extends zModule {
 	}
 
 	public function renderPartialView($partial_name, $data = null) {
-		$template_path = $this->app_dir . 'views/partial/' .  $partial_name . '.v.php';
-		if (file_exists($template_path)) {
-			$this->setData("partials.$partial_name", $data);
+		$template_path = $this->findViewTemplatePath('partial', $partial_name);
+		if (!empty($template_path)) {
+			if (!empty($data)) {
+				foreach ($data as $data_key => $data_value) {
+					if (!isset($$data_key)) {
+						$$data_key = $data_value;
+					}
+				}
+			}
 			include $template_path;
 		} else {
-			$default_template_path = $this->default_app_dir . "views/partial/" .  $partial_name . '.v.php';
-			if (file_exists($default_template_path)) {
-				include $default_template_path;
-			} else {
-			echo "Template for partial view $partial_name not found: $template_path!";
-			}
+			echo "Template for partial view <strong>$partial_name</strong> not found!";
 		}
 	}
 

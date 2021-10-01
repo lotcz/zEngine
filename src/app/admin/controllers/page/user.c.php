@@ -1,6 +1,21 @@
 <?php
 
 	require_once __DIR__ . '/../../../models/user.m.php';
+	require_once __DIR__ . '/../../../models/admin.m.php';
+
+	// create admin account if doesnt exist yet
+	// TODO: replace with proper administration of administrators
+	$onAfterUpdate = function($z, $form, $data) {
+		$user_id = $data->ival('user_id');
+		if ($user_id <= 0) return;
+
+		$admin = new AdminModel($this->z->db);
+		$admin->loadByUserId($user_id);
+		if (!$admin->is_loaded) {
+			$admin->set('admin_user_id', $user_id);
+			$admin->save();
+		}
+	};
 
 	$this->renderAdminForm(
 		'UserModel',
@@ -13,7 +28,7 @@
 			],
 			[
 				'name' => 'user_name',
-				'label' => 'Full name',
+				'label' => 'Full Name',
 				'type' => 'text'
 			],
 			[
@@ -46,6 +61,16 @@
 				'name' => 'user_last_access',
 				'label' => 'Last Visit',
 				'type' => 'staticdate'
+			],
+			[
+				'name' => 'user_buttons',
+				'label' => 'Commands',
+				'type' => 'buttons',
+				'buttons' => [
+					['type' => 'link', 'label' => 'Change Password', 'link_url' => 'admin/change-password?user_id=' . $this->getPath(-1), 'css' => 'btn btn-primary m-2' ]
+				]
 			]
-		]
+		],
+		null,
+		$onAfterUpdate
 	);

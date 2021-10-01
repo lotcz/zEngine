@@ -1,7 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../classes/forms.php';
-require_once __DIR__ . '/../models/xsrf.m.php';
+require_once __DIR__ . '/../models/form_protection_token.m.php';
 
 /**
 * Module that simplifies rendering and processing of forms.
@@ -11,14 +11,18 @@ class formsModule extends zModule {
 	public $depends_on = ['db', 'messages', 'resources'];
 	public $also_install = ['auth'];
 
-	private $xsrf_enabled = false;
-	private $xsrf_token_expires = 60*60;
+	private $protection_enabled = false;
+	private $protection_token_min_delay = 3;
+	private $protection_token_expires = 60*60;
 
 	public function onEnabled() {
-		$this->xsrf_enabled = $this->getConfigValue('xsrf_enabled', $this->xsrf_enabled);
-		$this->xsrf_token_expires = $this->getConfigValue('xsrf_token_expires', $this->xsrf_token_expires);
-		$this->z->core->includeJS('resources/forms.js');
-		$this->z->core->includeCSS('resources/forms.css');
+		$this->protection_enabled = $this->getConfigValue('protection_enabled', $this->protection_enabled);
+		$this->protection_token_min_delay = $this->getConfigValue('protection_token_min_delay', $this->protection_token_min_delay);
+		$this->protection_token_expires = $this->getConfigValue('protection_token_expires', $this->protection_token_expires);
+		$this->z->core->includeJS('resources/forms.js', false, 'bottom');
+		$this->z->core->includeCSS('resources/forms.css', false, 'head');
+		$this->z->core->includeJS('resources/forms.js', false, 'admin.bottom');
+		$this->z->core->includeCSS('resources/forms.css', false, 'admin.head');
 	}
 
 	public function pathParam() {
@@ -44,7 +48,7 @@ class formsModule extends zModule {
 	}
 
 	public function fieldValidation($validation_type, $value, $param = null) {
-		$method = 'zForm::validate_' .$validation_type;
+		$method = 'zForm::validate_' . $validation_type;
 		return $method($value, $param);
 	}
 
@@ -65,61 +69,107 @@ class formsModule extends zModule {
 		return $is_valid;
 	}
 
-	public function createXSRFTokenHash($form_name) {
+	/*
+		Create and save protection token and then return the hash to be stored in the form.
+	 */
+	public function createProtectionTokenHash($form_name) {
+		$ip = z::getClientIP();
+
+		$user_session_id = null;
+		if ($this->z->isModuleEnabled('auth') && $this->z->auth->isAuth()) {
+			$user_session_id = $this->z->auth->session->ival('user_session_id');
+		}
+
 		$token_value = z::generateRandomToken(50);
 		$token_hash = z::createHash($token_value);
-		$expires = time() + $this->xsrf_token_expires;
-		if ($this->z->auth->isAuth()){
-			$user_session_id = $this->z->auth->session->ival('user_session_id');
-			$ip = $this->z->auth->session->val('user_session_ip');
-		} else {
-			throw new Exception('There is no session! Cannot create form token.');
-		}
-		$token = FormXSRFTokenModel::createToken($this->z->db, $user_session_id, $ip, $form_name, $token_hash, $expires);
-		return sprintf('%d-%s', $token->ival('form_xsrf_token_id'), $token_value);
+		$token = FormProtectionTokenModel::createToken($this->z->db, $user_session_id, $ip, $form_name, $token_hash);
+		return sprintf('%d-%s', $token->ival('form_protection_token_id'), $token_value);
 	}
 
-	public function verifyXSRFTokenHash($form_name, $token_raw_value) {
-		if ($this->z->auth->isAuth()) {
+	/**
+	 * Verify if token hash is valid and if it is, then delete it
+	 * @param  [type] $form_name       [description]
+	 * @param  [type] $token_raw_value [description]
+	 * @return bool True if token is valid.
+	 */
+	public function verifyProtectionTokenHash($form_name, $token_raw_value) {
+		$ip = z::getClientIP();
+
+		$user_session_id = null;
+		if ($this->z->isModuleEnabled('auth') && $this->z->auth->isAuth()) {
 			$user_session_id = $this->z->auth->session->ival('user_session_id');
-			$ip = $this->z->auth->session->val('user_session_ip');
-		} else {
-			return false;
 		}
 
 		$arr = explode('-', $token_raw_value);
-		if (count($arr) == 2) {
-			$token_id = intval($arr[0]);
-			$token_value = $arr[1];
-			return FormXSRFTokenModel::verifyToken($this->z->db, $token_id, $user_session_id, $ip, $form_name, $token_value);
-		} else {
+		if (count($arr) != 2) {
 			return false;
 		}
+
+		$token_id = intval($arr[0]);
+		$token_value = $arr[1];
+
+		$token = new FormProtectionTokenModel($this->z->db, $token_id);
+		if (!$token->is_loaded) {
+			return false;
+		}
+
+		$token_created = $token->dtval('form_protection_token_created');
+		$valid_from = $token_created + $this->protection_token_min_delay;
+		$valid_to = $token_created + $this->protection_token_expires;
+
+		$token_time_ok = ($valid_from < time()) && ($valid_to > time());
+
+		$session_ok = ($user_session_id == null) || ($token->ival('form_protection_token_user_session_id') == $user_session_id);
+
+		$token_attrs_ok = ($token->val('form_protection_token_ip') == $ip) && ($token->val('form_protection_token_form_name') == $form_name);
+
+		$token_hash_ok = z::verifyHash($token_value, $token->val('form_protection_token_hash'));
+
+		$token_verified = $token_time_ok && $session_ok && $token_attrs_ok && $token_hash_ok;
+
+		if ($token_verified) {
+			$token->delete();
+		}
+
+		return $token_verified;
 	}
 
 	public function processForm($form, $model_class_name) {
 		$model = new $model_class_name($this->z->db);
-		if (z::isPost()) {
 
-			if ($this->z->isModuleEnabled('images')) {
-				$form->images_module = $this->z->images;
+		if ($this->z->isModuleEnabled('images')) {
+			$form->images_module = $this->z->images;
+		}
+
+		if ($this->z->isModuleEnabled('files')) {
+			$form->files_module = $this->z->files;
+		}
+
+		if ($this->z->isModuleEnabled('openinghours')) {
+			$form->openinghours_module = $this->z->openinghours;
+		}
+
+		// DEFAULT VALUES
+		foreach ($form->fields as $field) {
+			if (isset($field->value)) {
+				$model->set($field->name, $field->value);
 			}
+		}
 
+		if (z::isPost()) {
 			if ($form->processInput($_POST)) {
+				$form_protection_ok = true;
 
-				//XSS protection
-				$xsrf_ok = true;
-
-				if ($this->xsrf_enabled || $form->xsrf_enabled) {
-					$xsrf_ok = $this->verifyXSRFTokenHash($form->id, z::get('form_token'));
+				if ($this->protection_enabled || $form->protection_enabled) {
+					$form_protection_ok = $this->verifyProtectionTokenHash($form->id, z::get('form_token'));
 				}
 
-				if ($xsrf_ok) {
-
+				if ($form_protection_ok) {
+/*
 					foreach ($form->processed_input as $key => $value) {
 						$form->processed_input[$key] = $this->z->core->xssafe($value);
 					}
-
+*/
 					//VALIDATION
 					if ($this->validateForm($form, $form->processed_input)) {
 						$entity_id_value = z::parseInt($_POST[$model_class_name::getIdName()]);
@@ -133,20 +183,32 @@ class formsModule extends zModule {
 						}
 						try {
 							$model->save();
+							foreach ($form->fields as $field) {
+								if ($field->type == 'multiselect') {
+									$model->updateMultiReference($field->multi_ref_table, $field->multi_fk_id_field, $field->multi_fk_other_id_field, $field->selected_items);
+								}
+							}
 							if ($form->onAfterUpdate !== null) {
 								$onAfterUpdate = $form->onAfterUpdate;
 								$onAfterUpdate($this->z, $form, $model);
 							}
-							$this->z->core->redirectBack($form->ret);
+							if ($form->suppress_return) {
+								$this->z->messages->success($this->z->i18n->translate('Form was successfully saved.'));
+							} else {
+								$this->z->core->redirectBack($form->ret);
+							}
 						} catch (Exception $e) {
 							$this->z->messages->error($e->getMessage());
 						}
 					} else {
-						$this->z->messages->error('Some fields in the form don\'t validate! Form cannot be saved.');
+						$this->z->messages->error('Some field values in the form are not valid! Form cannot be saved.');
 						$model->setData($form->processed_input);
 					}
 				} else {
-					$this->z->messages->error('Repeated form submit attempt was detected! Cannot process form. Please refresh the page and try to submit form again.');
+					if ($this->z->isModuleEnabled('security')) {
+						$this->z->security->saveFailedAttempt();
+					}
+					$this->z->messages->error('Timeout! Cannot process form. Please try to submit form again. You can also try to refresh the page.');
 					$model->setData($form->processed_input);
 				}
 
@@ -174,12 +236,12 @@ class formsModule extends zModule {
 
 		$form->prepare($this->z->db, $model);
 
-		// add XSRF token
-		if ($this->xsrf_enabled || $form->xsrf_enabled) {
+		// add protection token
+		if ($this->protection_enabled || $form->protection_enabled) {
 			$form->addField([
 				'name' => 'form_token',
 				'type' => 'hidden',
-				'value' => $this->createXSRFTokenHash($form->id)
+				'value' => $this->createProtectionTokenHash($form->id)
 			]);
 		}
 
@@ -243,12 +305,54 @@ class formsModule extends zModule {
 						if ($localized) {
 							$label_text = $this->z->core->t($items[$i]->val($label_name));
 						}
-							?>
-								<option value="<?=$items[$i]->val($id_name) ?>" <?=$selected ?> ><?=$label_text ?></option>
-							<?php
+						?>
+							<option value="<?=$items[$i]->val($id_name) ?>" <?=$selected ?> ><?=$label_text ?></option>
+						<?php
 					}
 				?>
 			</select>
+		<?php
+	}
+
+	public function renderMultiSelect($name, $items, $selected_items, $select_id_field, $select_label_field) {
+		?>
+			<select name="<?=$name ?>[]" class="form-control chosen" multiple="multiple">
+				<?php
+					for ($i = 0, $max = count($items); $i < $max; $i++) {
+						$id = $items[$i]->ival($select_id_field);
+						$selected = '';
+						if (in_array($id, $selected_items)) {
+							$selected = 'selected';
+						}
+						?>
+							<option value="<?=$id ?>" <?=$selected ?> ><?=$items[$i]->val($select_label_field) ?></option>
+						<?php
+					}
+				?>
+			</select>
+		<?php
+	}
+
+	public function renderForeignKeyLink($name, $link_table, $link_template, $link_id_field, $link_label_field, $value) {
+		$result = $this->z->db->executeSelectQuery($link_table, $columns = [$link_label_field], sprintf('%s = ?', $link_id_field), null, 1, [$value], [PDO::PARAM_INT]);
+		if ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+			$label = $row[$link_label_field];
+			$this->z->core->renderLink(
+				sprintf($link_template, $value),
+				$label
+			);
+		}
+		$result->closeCursor();
+	}
+
+	public function renderAliasLink($name, $value) {
+		$alias = new AliasModel($this->z->db, $value);
+		if ($alias->is_loaded) {
+			$url = $alias->val('alias_url');
+			$this->z->core->renderLink($url, $url);
+		}
+		?>
+			<input type="hidden" name="<?=$name?>" value="<?=$value ?>" />
 		<?php
 	}
 
@@ -267,7 +371,8 @@ class formsModule extends zModule {
 
 		if ($this->z->core->return_path) {
 			?>
-				<input type="hidden" name="r" value="<?=$this->z->core->return_path ?>" />
+				<input type="hidden" id="return_url" name="r" value="<?=$this->z->core->return_path ?>" />
+				<input type="hidden" id="suppress_return" name="suppress_return" value="false" />
 			<?php
 		}
 
@@ -280,7 +385,6 @@ class formsModule extends zModule {
 					<input type="hidden" name="<?=$field->name ?>" id="field_<?=$field->name ?>" value="<?=$field->value ?>" />
 				<?php
 			} elseif (z::startsWith($field->type, 'static')) {
-				$render_value = $field->value;
 				switch ($field->type) {
 					case 'staticdate' :
 					case 'static_date' :
@@ -290,10 +394,16 @@ class formsModule extends zModule {
 					case 'static_localized' :
 						$render_value = $this->z->core->t($field->value);
 					break;
+					case 'static_link':
+					case 'staticlink':
+						$render_value = $this->z->core->getLink($field->value, $field->value);
+					break;
 					case 'static_custom' :
 						$fn = $field->custom_function;
 						$render_value = $fn($field->value);
 					break;
+					default:
+						$render_value = $this->z->core->xssafe($field->value);
 				}
 				?>
 					<div id="<?=$field->name ?>_form_group" class="form-group">
@@ -306,8 +416,16 @@ class formsModule extends zModule {
 					<div id="<?=$field->name ?>_form_group" class="form-group">
 						<div class="form-check">
 							<input type="checkbox" id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> value="1" <?=($field->value) ? 'checked' : '' ?> class="form-check-input" />
-							<label for="<?=$field->name ?>" class="<?=$label_css ?> form-check-label"><?=$this->z->core->t($field->label) ?>:</label>
+							<label for="<?=$field->name ?>" class="<?=$label_css ?> form-check-label"><?=$this->z->core->t($field->label) ?></label>
 						</div>
+
+						<?php
+							if (isset($field->hint)) {
+								?>
+									<small class="text-muted"><?=$this->z->core->t($field->hint) ?></small>
+								<?php
+							}
+						?>
 					</div>
 				<?php
 			} elseif ($field->type == 'begin_group') {
@@ -344,6 +462,8 @@ class formsModule extends zModule {
 						?>
 					</div>
 				<?php
+			} elseif ($field->type == 'opening_hours') {
+				$this->z->openinghours->renderFormField($field);
 			} else {
 				?>
 					<div id="<?=$field->name ?>_form_group" class="form-group <?=($form->type) == 'horizontal' ? 'row' : '' ?>">
@@ -355,6 +475,7 @@ class formsModule extends zModule {
 									switch ($field->type) {
 
 										case 'text' :
+										case 'integer' :
 										?>
 											<input type="text" id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> <?=$required ?> value="<?=$field->value ?>" class="form-control" />
 										<?php
@@ -366,9 +487,10 @@ class formsModule extends zModule {
 										<?php
 										break;
 
-										case 'html' :
+										case 'wysiwyg' :
+										case 'tinymce' :
 										?>
-											<textarea id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> class="htmlarea"><?=$field->value ?></textarea>
+											<textarea id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> class="wysiwyg tinymce"><?=$field->value ?></textarea>
 										<?php
 										break;
 
@@ -380,24 +502,39 @@ class formsModule extends zModule {
 
 										case 'date' :
 										?>
-											<input type="datetime" id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> value="<?=$field->value ?>" class="form-control" />
+											<input type="datetime-local" id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> value="<?=z::formatDateForHtml(z::phpDatetime($field->value)) ?>" class="form-control" />
 										<?php
 										break;
 
 										case 'file' :
-										?>
-											<input type="file" id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> class="form-control-file" />
-										<?php
+											?>
+												<span><?=$field->value?></span>
+												<input type="hidden" name="<?=$field->name ?>" id="field_<?=$field->name ?>" value="<?=$field->value ?>" />
+												<input type="file" id="<?=$field->name ?>" name="<?=$field->name ?>_file_input" <?=$disabled ?> class="form-control-file" />
+											<?php
 										break;
 
 										case 'image' :
 											if (isset($field->value)) {
-												$this->z->images->renderImage($field->value, 'mini-thumb');
+												$this->z->images->renderImage($field->value, isset($field->image_size) ? $field->image_size : 'mini-thumb');
 											}
 										?>
 											<input type="hidden" name="<?=$field->name ?>" id="field_<?=$field->name ?>" value="<?=$field->value ?>" />
 											<input type="file" name="<?=$field->name ?>_image_file" <?=$disabled ?> class="form-control-file" />
 										<?php
+										break;
+
+										case 'gallery' :
+											if (z::parseInt($field->value) > 0) {
+												$this->z->gallery->renderGalleryForm($field->value);
+												?>
+													<input type="hidden" name="<?=$field->name ?>" id="<?=$field->name ?>" value="<?=$field->value ?>" />
+												<?php
+											} else {
+												?>
+													<span><?=$this->z->core->t('You must save the form first before adding to gallery.')?></span>
+												<?php
+											}
 										break;
 
 										case 'select' :
@@ -409,16 +546,43 @@ class formsModule extends zModule {
 												$field->select_label_localized,
 												$field->value
 											);
+											break;
+
+										case 'multiselect' :
+											$this->renderMultiSelect(
+												$field->name,
+												$field->select_data,
+												$field->selected_items,
+												$field->select_id_field,
+												$field->select_label_field
+											);
 										break;
 
 										case 'foreign_key_link' :
+											$this->renderForeignKeyLink(
+												$field->name,
+												$field->link_table,
+												$field->link_template,
+												$field->link_id_field,
+												$field->link_label_field,
+												$field->value
+											);
+										break;
+
+										case 'alias_link' :
+											$this->renderAliasLink($field->name, $field->value);
+											break;
+
+										case 'link' :
 											?>
 												<p class="form-control-static">
 													<?php
-														$this->z->core->renderLink(
-															$field->link_url,
-															$field->link_label
-														);
+														if ($field->link_url != null && $field->link_label != null) {
+															$this->z->core->renderLink(
+																$field->link_url,
+																$field->link_label
+															);
+														}
 													?>
 												</p>
 											<?php
@@ -471,7 +635,7 @@ class formsModule extends zModule {
 		?>
 
 			<script>
-				function validateForm_<?=$form->id ?>(e) {
+				function validateForm_<?=$form->id ?>(e, noret) {
 					e.preventDefault();
 					var frm = new formValidation('form_<?=$form->id ?>');
 						<?php
@@ -485,7 +649,7 @@ class formsModule extends zModule {
 								}
 							}
 						?>
-					frm.submit();
+					frm.submit(noret);
 				}
 			</script>
 
