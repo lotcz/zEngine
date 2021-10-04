@@ -11,7 +11,7 @@
 	return [
 		// available formats for image resizing
 		'formats' => [
-			'mini-thumb' => ['width' => 75, 'height' => 50 ],
+			'mini' => ['width' => 75, 'height' => 50 ],
 			'thumb' => ['width' => 160, 'height' => 140 ],
 			'view' => ['width' => 320, 'height' => 200 ]
 		],
