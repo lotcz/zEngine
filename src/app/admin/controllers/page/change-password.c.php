@@ -12,11 +12,12 @@
 			if ($password == $password_confirm) {
 				if ($user_id > 0) {
 					if ($this->z->isModuleEnabled('admin') && $this->z->admin->isSuperUser()) {
-						$user = new UserModel($this->z->db, $user_id);
+						$user = new UserModel($this->z->db, $user_id);						
 						if ($user->is_loaded) {
-							$user->set('user_password_hash', $this->z->auth->hashPassword($password));
+							$user->set('user_password_hash', $this->z->auth->hashPassword($password));							
 							$user->save();
-							$this->message("User password was successfully changed for user '$user_id'.", 'success');
+							$user_name = $user->val('user_login', $user->val('user_email'));
+							$this->message("User password was successfully changed for user '$user_name'.", 'success');
 						} else $this->z->messages->error($this->t("User ID '$user_id' not found!"));
 					} else $this->z->messages->error($this->t('You must be superuser to change other people\'s passwords!'));
 				} else {
