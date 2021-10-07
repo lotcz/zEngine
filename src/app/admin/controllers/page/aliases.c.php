@@ -15,5 +15,6 @@
 		],
 		null,
 		['alias_url', 'alias_path'],
-		'alias_url'
+		'alias_url',
+		['alias_url', 'alias_path']
 	);
