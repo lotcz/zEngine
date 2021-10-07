@@ -516,7 +516,7 @@ class formsModule extends zModule {
 
 										case 'image' :
 											if (isset($field->value)) {
-												$this->z->images->renderImage($field->value, isset($field->image_size) ? $field->image_size : 'mini-thumb');
+												$this->z->images->renderImage($field->value, isset($field->image_size) ? $field->image_size : 'thumb');
 											}
 										?>
 											<input type="hidden" name="<?=$field->name ?>" id="field_<?=$field->name ?>" value="<?=$field->value ?>" />

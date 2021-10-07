@@ -149,7 +149,7 @@ class adminModule extends zModule {
 					$submenu->addItem('admin/orders', 'Orders');
 					$submenu->addItem('admin/customers', 'Customers');
 				}
-
+			
 				// GALLERY
 				if ($this->z->isModuleEnabled('gallery')) {
 					$submenu->addSeparator();

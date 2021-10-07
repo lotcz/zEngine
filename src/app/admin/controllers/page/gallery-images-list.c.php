@@ -1,7 +1,5 @@
 <?php
 
-	//$this->z->enableModule('images');
-
 	$article_id = z::getInt('article_id');
 	$article = new ArticleModel($this->z->db, $article_id);
 
@@ -14,7 +12,7 @@
 	foreach ($images as $image) {
 		$json[] = [
 			'title' => $image->val('image_path'), 
-			'value' => $this->z->images->img($image->val('image_path'))
+			'value' => $this->z->images->img($image->val('image_path'), 'view')
 		];
 	}
 

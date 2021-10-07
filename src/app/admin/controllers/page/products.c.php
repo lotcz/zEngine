@@ -20,12 +20,5 @@
 		null,
 		['product_id', 'product_name'],
 		'product_id',
-		[
-			[
-				'name' => 'search_text',
-				'label' => 'Search',
-				'type' => 'text',
-				'filter_fields' => ['product_name', 'product_description']
-			]
-		]
+		['product_name', 'product_description']
 	);

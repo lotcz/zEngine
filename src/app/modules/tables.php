@@ -151,6 +151,8 @@ class tablesModule extends zModule {
 																	echo $this->z->core->formatDatetime($row->dtval($field->name));
 																} elseif ($field->type == 'localized') {
 																	echo $this->z->core->t($row->val($field->name));
+																} elseif ($field->type == 'integer') {
+																	echo $row->ival($field->name);
 																} elseif ($field->type == 'custom') {
 																	$fn = $field->custom_function;
 																	echo $fn($row->val($field->name));
