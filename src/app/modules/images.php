@@ -91,7 +91,12 @@ class imagesModule extends zModule {
 
 				$img = $image_create_func($original_path);
 
-				list($width, $height) = getimagesize($original_path);
+				if ((!isset($info[0])) || (!isset($info[1]))) {
+					$this->z->errorlog->write(sprintf('Image %s has incomplete info: [%s].', $image, implode(',', $info)));
+				}
+				
+				$width = z::parseInt($info[0]);
+				$height = z::parseInt($info[1]);
 				
 				$src_x = 0;
 				$src_y = 0;
@@ -229,8 +234,23 @@ class imagesModule extends zModule {
 		return $this->getImageURL($image, $format);
 	}
 
+	public function getImgSize($image, $format) {
+		$path = '';
+		if ($image === null) {
+			$path = $this->getImagePath($this->no_image, $format);
+		} else if ($this->exists($image, $format)) {
+			$path = $this->getImagePath($image, $format);
+		} else {
+			$path = $this->getImagePath($this->image_not_found, $format);
+		}
+		$info = getimagesize($path);
+		return $info[3];
+	}
+	
 	public function renderImage($image, $format = 'thumb', $alt = '', $css = '') {
-		echo sprintf('<img src="%s" class="%s" alt="%s" />',  $this->img($image, $format), $css, $alt);
+		$url = $this->img($image, $format);
+		$size = $this->getImgSize($image, $format);
+		echo sprintf('<img src="%s" class="%s" alt="%s" %s />', $url, $css, $alt, $size);
 	}
 
 	public function uploadImage($name) {

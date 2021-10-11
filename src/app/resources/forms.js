@@ -41,15 +41,18 @@ function validate_integer(n, param) {
 }
 
 function validate_min(n, param) {
-	return  (parseFloat(n) >= parseFloat(param));
+	return (parseFloat(n) >= parseFloat(param));
 }
 
 function validate_max(n, param) {
-	return  (parseFloat(n) <= parseFloat(param));
+	return (parseFloat(n) <= parseFloat(param));
 }
 
-function validate_decimal(n) {
-	return !isNaN(parseFloat(n)) && isFinite(n);
+function validate_decimal(n, param) {
+	if (param == 'false' || param == '0') {
+		param = false;
+	}
+	return (param && !n) || (!isNaN(parseFloat(n)) && isFinite(n));
 }
 
 function validate_price(value) {

@@ -137,7 +137,8 @@ class zForm {
 
 					default:
 						if (isset($data[$field->name])) {
-							$result[$field->name] = $data[$field->name];
+							$str = $data[$field->name];
+							$result[$field->name] = ($str === '') ? null : $str;
 						} else {
 							$this->is_valid = false;
 						}
@@ -274,8 +275,8 @@ class zForm {
 		return (z::parseFloat($value) <= z::parseFloat($param));
 	}
 
-	static function validate_decimal($value) {
-		return is_numeric($value);
+	static function validate_decimal($value, $param) {
+		return ($param && ($value == '')) || is_numeric($value);
 	}
 
 	static function validate_price($value) {
