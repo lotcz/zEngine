@@ -265,7 +265,7 @@ class z {
 		return mb_encode_numericentity($string, $convmap);
 	}
 
-	static function stripHtmlTags($text, $allowed_tags = '<br><i><b><p>') {
+	static function stripHtmlTags($text, $allowed_tags = '<br><i><b><p><strong>') {
 		if (!$text) {
 			return '';
 		}

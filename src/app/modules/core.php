@@ -601,10 +601,6 @@ class coreModule extends zModule {
 		echo $this->getLink($href, $title, $css, $ret);
 	}
 
-	public function renderImage($src, $alt, $css = '') {;
-		echo sprintf('<img src="%s" class="%s" alt="%s" />', $this->url('images/' . $src), $css, $this->t($alt));
-	}
-
 	/*
 		CONTROLLERS
 	*/
