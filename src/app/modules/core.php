@@ -10,8 +10,8 @@ class coreModule extends zModule {
 	public $depends_on = ['errorlog'];
 	public $also_install = [];
 
-	public $app_version = 0.0;
-	public $minimum_z_version = 5.0;
+	public $app_version = 1.0;
+	public $minimum_z_version = 10.5;
 
 	//path to application directory
 	public $app_dir = null;

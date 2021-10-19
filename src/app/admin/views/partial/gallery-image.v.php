@@ -1,7 +1,7 @@
 <div class="gallery-image">
 	<div class="gallery-image-file">
 		<?php
-			$this->z->images->renderImage($image->val('image_path'), 'thumb');
+			$this->z->images->renderImage($image->val('image_path'), 'mini');
 		?>
 		<form method="POST">
 			<input type="hidden" name="delete_image_id" value="<?=$image->val('image_id')?>" />
