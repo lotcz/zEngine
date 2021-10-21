@@ -92,7 +92,7 @@ class z {
 
 	/**
 	 * safely get ids array to prevent SQL injection
-	*/ 
+	*/
 	static function getIntArray($name, $def = null) {
 		$value = z::get($name);
 		if (is_array($value)) {
@@ -103,7 +103,7 @@ class z {
 			}
 			$str_array = explode(',', $value);
 		}
-		
+
 		$result_array = [];
 		foreach ($str_array as $str) {
 			$result_array[] = z::parseInt($str);
@@ -140,7 +140,10 @@ class z {
 		return str_replace('\'', '\\\'', $str);
 	}
 
-	static $czech_transliteration = ['ě' => 'e', 'š' => 's', 'č' => 'c', 'ř' => 'r', 'ž' => 'z', 'ý' => 'y', 'á' => 'a', 'í' => 'i', 'é' => 'e', 'ú' => 'u', 'ů' => 'u', 'ď' => 'd', 'ť' => 't', 'ň' => 'n'];
+	static $czech_transliteration = [
+		'á' => 'a', 'é' => 'e', 'ě' => 'e', 'í' => 'i', 'ý' => 'y', 'ó' => 'o', 'ú' => 'u', 'ů' => 'u', 'ž' => 'z', 'š' => 's', 'č' => 'c', 'ř' => 'r', 'ď' => 'd', 'ť' => 't', 'ň' => 'n',
+		'Á' => 'A', 'É' => 'E', 'Ě' => 'E', 'Í' => 'I', 'Ý' => 'Y', 'Ó' => 'O', 'Ú' => 'U', 'Ů' => 'U', 'Ž' => 'Z', 'Š' => 'S', 'Č' => 'C', 'Ř' => 'R', 'Ď' => 'D', 'Ť' => 'T', 'Ň' => 'N'
+	];
 
 	static function transliterateCzech($str) {
 		$result = $str;
@@ -156,8 +159,8 @@ class z {
 
 	static function slugify($str, $encoding = 'UTF-8') {
 		$result = z::trimSpecial($str);
-		$result = strtolower($result);
 		$result = z::transliterate($result, $encoding);
+		$result = mb_strtolower($result);
 		$result = preg_replace("/[^a-zA-Z0-9\/_| -]/", '', $result);
 		$result = preg_replace("/[_| -\/]+/", '-', $result);
 		return $result;
@@ -302,6 +305,17 @@ class z {
 	 */
 	static function listFiles($path) {
 		return array_diff(scandir($path), array('.', '..'));
+	}
+
+	static function getExternalUrl($url) {
+		if (strlen($url) > 0) {
+			$url = strtolower($url);
+			if (!z::startsWith($url, 'http')) {
+				$url = 'http://' . $url;
+			}
+			return $url;
+		}
+		return null;
 	}
 
 	/*
