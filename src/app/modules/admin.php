@@ -315,11 +315,14 @@ class adminModule extends zModule {
 	/**
 	* Create and activate admin account. Used for db initialization.
 	*/
-	public function createActiveAdminAccount($full_name, $login, $email, $password) {
+	public function createActiveAdminAccount($full_name, $login, $email, $password, $role = null) {
+		if (!$role) {
+			$role = AdminRoleModel::role_superuser;
+		}
 		$user = $this->z->auth->createActiveUser($full_name, $login, $email, $password);
-		$admin = new AdminModel($this->z->db);
-		$admin->set('admin_user_id', $user->ival('user_id'));
-		$admin->save();
+		$user->set('user_admin_role_id', $role);
+		$user->save();
+		return $user;
 	}
 
 }

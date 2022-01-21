@@ -53,12 +53,13 @@ class imagesModule extends zModule {
 			}
 
 			if (file_exists($original_path)) {
-
 				$info = getimagesize($original_path);
+				if ((!isset($info[0])) || (!isset($info[1]))) {
+					$this->z->errorlog->write(sprintf('Image %s has incomplete info: [%s].', $image, implode(',', $info)));
+				}
 				$mime = $info['mime'];
 
 				switch ($mime) {
-
 					case 'image/png':
 						$image_create_func = 'imagecreatefrompng';
 						$image_save_func = 'imagepng';
@@ -89,10 +90,13 @@ class imagesModule extends zModule {
 				$format_height = $format_conf['height'];
 				$format_mode = isset($format_conf['mode']) ? $format_conf['mode'] : 'fit';
 
-				$img = $image_create_func($original_path);
-
-				if ((!isset($info[0])) || (!isset($info[1]))) {
-					$this->z->errorlog->write(sprintf('Image %s has incomplete info: [%s].', $image, implode(',', $info)));
+				try {
+					$img = $image_create_func($original_path);
+				} catch (Exception $e) {
+					$message = sprintf('Creating image \'%s\' failed: %s', $image, $e->getMessage());
+					$this->z->errorlog->write($message);
+					$this->z->messages->error($message);
+					return;
 				}
 				
 				$width = z::parseInt($info[0]);
@@ -145,37 +149,36 @@ class imagesModule extends zModule {
 
 				$tmp = imagecreatetruecolor($newWidth, $newHeight);
 
-				switch ($new_image_ext)
-					{
-						case "png":
-						case "webp":
+				switch ($new_image_ext)	{
+					case "png":
+					case "webp":
 
-							// integer representation of the color black (rgb: 0,0,0)
-							$background = imagecolorallocate($tmp, 0, 0, 0);
+						// integer representation of the color black (rgb: 0,0,0)
+						$background = imagecolorallocate($tmp, 0, 0, 0);
 
-							// removing the black from the placeholder
-							imagecolortransparent($tmp, $background);
+						// removing the black from the placeholder
+						imagecolortransparent($tmp, $background);
 
-							// turning off alpha blending (to ensure alpha channel information
-							// is preserved, rather than removed (blending with the rest of the
-							// image in the form of black))
-							imagealphablending($tmp, false);
+						// turning off alpha blending (to ensure alpha channel information
+						// is preserved, rather than removed (blending with the rest of the
+						// image in the form of black))
+						imagealphablending($tmp, false);
 
-							// turning on alpha channel information saving (to ensure the full range
-							// of transparency is preserved)
-							imagesavealpha($tmp, true);
+						// turning on alpha channel information saving (to ensure the full range
+						// of transparency is preserved)
+						imagesavealpha($tmp, true);
 
-							break;
-						case "gif":
+						break;
+					case "gif":
 
-							// integer representation of the color black (rgb: 0,0,0)
-							$background = imagecolorallocate($tmp, 0, 0, 0);
+						// integer representation of the color black (rgb: 0,0,0)
+						$background = imagecolorallocate($tmp, 0, 0, 0);
 
-							// removing the black from the placeholder
-							imagecolortransparent($tmp, $background);
+						// removing the black from the placeholder
+						imagecolortransparent($tmp, $background);
 
-							break;
-					}
+						break;
+				}
 
 				imagecopyresampled($tmp, $img, 0, 0, $src_x, $src_y, $newWidth, $newHeight, $src_width, $src_height);
 

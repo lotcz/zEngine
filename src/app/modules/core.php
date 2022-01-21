@@ -51,6 +51,7 @@ class coreModule extends zModule {
 	public $path = [];
 
 	private $page_keywords = '';
+	private $og_image = null;
 
 	public function onEnabled() {
 		$this->default_app_dir = __DIR__ . '/../';
@@ -687,4 +688,12 @@ class coreModule extends zModule {
 		$this->page_keywords = $keywords;
 	}
 
+	public function getOgImage() {
+		return $this->og_image;
+	}
+	
+	public function setOgImage($image) {
+		$this->og_image = $image;
+	}
+	
 }

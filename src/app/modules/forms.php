@@ -520,7 +520,7 @@ class formsModule extends zModule {
 											}
 										?>
 											<input type="hidden" name="<?=$field->name ?>" id="field_<?=$field->name ?>" value="<?=$field->value ?>" />
-											<input type="file" name="<?=$field->name ?>_image_file" <?=$disabled ?> class="form-control-file" />
+											<input type="file" name="<?=$field->name ?>_image_file" <?=$disabled ?> class="form-control-file" accept=".gif,.jpg,.jpeg,.png,.webp" />
 										<?php
 										break;
 
