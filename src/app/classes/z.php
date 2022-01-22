@@ -136,6 +136,19 @@ class z {
 		return z::trim($s, '/');
 	}
 
+	static function splitString($str, $separators) {
+		$results = [$str];
+		foreach($separators as $separator) {
+			$nresults = [];
+			foreach($results as $result) {
+				$arr = explode($separator, $result);
+				$nresults = array_merge($nresults, $arr);
+			}
+			$results = $nresults;
+		}
+		return $results;
+	}
+
 	static function escapeSingleQuotes($str) {
 		return str_replace('\'', '\\\'', $str);
 	}

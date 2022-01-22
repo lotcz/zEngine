@@ -138,8 +138,17 @@ class adminModule extends zModule {
 				$submenu = $menu->addRightSubmenu('Administration');
 
 				$submenu->addHeader('Users');
-				//$submenu->addItem('admin/users', 'Users');
-				$submenu->addItem('admin/admins', 'Administrators');
+				$submenu->addItem('admin/users', 'Users');
+				if ($this->isSuperUser()) {
+					$submenu->addItem('admin/admins', 'Administrators');
+				}
+
+				if ($this->z->isModuleEnabled('newsletter')) {
+					$submenu->addSeparator();
+					$submenu->addHeader('Newsletters');
+					$submenu->addItem('admin/newsletter-subscriptions', 'Subscriptions');
+					$submenu->addItem('admin/newsletter-address-import', 'Import Addresses');
+				}
 
 				// SHOP
 				if ($this->z->isModuleEnabled('shop')) {

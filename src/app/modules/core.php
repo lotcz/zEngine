@@ -460,6 +460,17 @@ class coreModule extends zModule {
 		}
 	}
 
+	public function showNotFoundView() {
+		$not_found_template = $this->findViewTemplatePath('page', $this->not_found_page);
+		if (!empty($not_found_template)) {
+			$this->controllers['page'] = $this->not_found_page;
+			$this->runController('page');
+			include $not_found_template;
+		} else {
+			echo "404 - Not found!";
+		}
+	}
+
 	/*
 		RENDERING
 	*/
@@ -553,14 +564,7 @@ class coreModule extends zModule {
 				$view_name = $this->views[$type];
 				echo "Template <strong>$type</strong> view not found for <strong>$view_name</strong>!";
 			} else {
-				$not_found_template = $this->findViewTemplatePath('page', $this->not_found_page);
-				if (!empty($not_found_template)) {
-					$this->controllers['page'] = $this->not_found_page;
-					$this->runController('page');
-					include $not_found_template;
-				} else {
-					echo "404 - Not found!";
-				}
+				$this->showNotFoundView();
 			}
 		}
 
