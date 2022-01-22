@@ -411,7 +411,7 @@ class formsModule extends zModule {
 						<span><?=$render_value ?></span>
 					</div>
 				<?php
-			} elseif ($field->type == 'bool') {
+			} elseif ($field->type == 'bool' || $field->type == 'checkbox' || $field->type == 'boolean') {
 				?>
 					<div id="<?=$field->name ?>_form_group" class="form-group">
 						<div class="form-check">

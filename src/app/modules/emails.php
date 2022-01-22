@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../models/email.m.php';
+
 /**
 * Module that handles sending of emails.
 */
@@ -46,9 +48,16 @@ class emailsModule extends zModule {
 		return $master;
 	}
 
-	public static function processQueue() {
-		foreach($unsent as $mail) {
-			
+	public function loadUnsentEmails() {
+		return EmailModel::select($this->z->db, 'email', 'email_sent = 0 and email_send_date <= CURRENT_TIMESTAMP()', 'email_send_date');
+	}
+	
+	public function processQueue() {
+		$unsent = $this->loadUnsentEmails();
+		foreach($unsent as $email) {
+			$this->sendEmail($email->val('email_to'), $email->val('email_subject'), $email->val('email_body'), $email->val('email_content_type'));
+			$email->set('email_sent', 1);
+			$email->save();
 		}
 	}
 }

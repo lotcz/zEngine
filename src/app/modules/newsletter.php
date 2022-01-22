@@ -26,7 +26,7 @@ class newsletterModule extends zModule {
 	}
 
 	public function importSubscriptions($str) {
-		$arr = z::splitString($str, [' ', "\r\n", '\n', ',', ';']);
+		$arr = z::splitString($str, [' ', "\r\n", "\n", ',', ';']);
 		$total = count($arr);
 		$imported = 0;
 		foreach ($arr as $email) {

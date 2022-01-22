@@ -63,6 +63,8 @@ class zForm {
 			if (isset($field->name) && (!(isset($field->disabled) && $field->disabled)) && (!z::startsWith($field->type, 'static')) && ($field->type !== 'buttons')) {
 				switch ($field->type) {
 					case 'bool':
+					case 'checkbox':
+					case 'boolean':
 						$result[$field->name] = isset($data[$field->name]) ? 1 : 0;
 						break;
 

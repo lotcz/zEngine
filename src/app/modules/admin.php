@@ -150,6 +150,12 @@ class adminModule extends zModule {
 					$submenu->addItem('admin/newsletter-address-import', 'Import Addresses');
 				}
 
+				if ($this->z->isModuleEnabled('emails')) {
+					$submenu->addSeparator();
+					$submenu->addHeader('Emails');
+					$submenu->addItem('admin/emails', 'Emails');
+				}
+
 				// SHOP
 				if ($this->z->isModuleEnabled('shop')) {
 					$submenu->addSeparator();
