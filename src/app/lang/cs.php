@@ -147,5 +147,10 @@
 	$language_data['Import Addresses'] = 'Importovat adresy';
 	$language_data['Newsletter Subscription'] = 'Přihlášená adresa';
 	$language_data['Enter email addresses separated by space, comma or new line.'] = 'Vložte e-mailové adresy oddělené mezerou, čárkou nebo novým řádkem.';
-
+	$language_data['Unsubscribe from Newsletter'] = 'Odhlášení z odběru newsletteru.';
+	$language_data['This page should only be accessed from link sent to your e-mail.'] = 'Tato stránka funguje pouze s pomocí odkazu zaslaného e-mailem.';
+	$language_data['No subscription found for \'%s\''] = 'Adresa \'%s\' není přihlášena k odběru newsletteru.';
+	$language_data['Your e-mail address \'%s\' was successfully unsubscribed from newsletter.'] = 'Vaše adresa \'%s\' byla úspěšně odhlášena z odběru newsletteru.';
+	$language_data['Your link seems to be invalid.'] = 'Váš odkaz je neplatný.';
+	
 	return $language_data;

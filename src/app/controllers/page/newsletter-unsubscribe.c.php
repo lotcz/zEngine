@@ -4,7 +4,7 @@
 		return;
 	}
 
-	$this->setPageTitle('Unsubscribe From Newsletter');
+	$this->setPageTitle('Unsubscribe from Newsletter');
 
 	$token = z::get('token');
 	$email = z::get('email');
@@ -14,12 +14,13 @@
 	} else {
 		$sub = new NewsletterSubscriptionModel($this->z->db);
 		$sub->loadByEmail($email);
-		$token_valid = z::verifyHash($email, $token);
-
-		if (!($sub->is_loaded && $token_valid)) {
-			$this->message('Your link seems to be invalid.', 'error');
-		} else {
+		if (!$sub->is_loaded) {
+			$this->z->messages->add(sprintf($this->t('No subscription found for \'%s\''), $email), 'error');
+		} elseif (z::verifyHash($email, $token)) {
 			$sub->set('newsletter_subscription_active', 0);
-			$this->message('Your e-mail address was successfully unsubscribed from newsletter.', 'info');
+			$sub->save();
+			$this->z->messages->add(sprintf($this->t('Your e-mail address \'%s\' was successfully unsubscribed from newsletter.'), $email), 'success');
+		} else {
+			$this->message('Your link seems to be invalid.', 'error');
 		}
 	}
