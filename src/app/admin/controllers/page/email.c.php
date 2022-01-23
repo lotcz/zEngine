@@ -23,7 +23,7 @@
 			[
 				'name' => 'email_body',
 				'label' => 'Body',
-				'type' => 'text'
+				'type' => 'wysiwyg'
 			],
 			[
 				'name' => 'email_send_date',

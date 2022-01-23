@@ -36,9 +36,13 @@ class newsletterModule extends zModule {
 		}
 		return [$imported, $total];
 	}
-	
+
 	public function createUnsubscribeLink($email) {
 		return $this->z->url(sprintf('newsletter-unsubscribe?email=%s&token=%s', $email, z::createHash($email)));
+	}
+
+	public function getActiveSubscriptions() {
+		return NewsletterSubscriptionModel::select($this->z->db, 'newsletter_subscription', 'newsletter_subscription_active = 1');
 	}
 
 }

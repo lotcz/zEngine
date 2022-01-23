@@ -51,7 +51,7 @@ class emailsModule extends zModule {
 	public function loadUnsentEmails() {
 		return EmailModel::select($this->z->db, 'email', 'email_sent = 0 and email_send_date <= CURRENT_TIMESTAMP()', 'email_send_date');
 	}
-	
+
 	public function processQueue() {
 		$unsent = $this->loadUnsentEmails();
 		foreach($unsent as $email) {
@@ -59,5 +59,19 @@ class emailsModule extends zModule {
 			$email->set('email_sent', 1);
 			$email->save();
 		}
+	}
+
+	public function addEmailToQueue($to, $subject, $content_type, $body, $from = null) {
+		if ($from == null) {
+			$from = $this->z->emails->getConfigValue('from_address');
+		}
+		$email = new EmailModel($this->z->db);
+		$email->set('email_to', $to);
+		$email->set('email_from', $from);
+		$email->set('email_subject', $subject);
+		$email->set('email_content_type', $content_type);
+		$email->set('email_body', $body);
+		$email->save();
+		return $email;
 	}
 }
