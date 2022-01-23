@@ -147,7 +147,7 @@ class adminModule extends zModule {
 					$submenu->addSeparator();
 					$submenu->addHeader('Newsletters');
 					$submenu->addItem('admin/newsletter-subscriptions', 'Subscriptions');
-					$submenu->addItem('admin/newsletter-address-import', 'Import Addresses');
+					$submenu->addItem('admin/newsletter-address-import', 'Import');
 				}
 
 				if ($this->z->isModuleEnabled('emails')) {

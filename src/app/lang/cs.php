@@ -7,6 +7,8 @@
 
 	/* BASIC */
 	$language_data['Hello'] = 'Dobrý den';
+	$language_data['Yes'] = 'Ano';
+	$language_data['No'] = 'Ne';
 	$language_data['Name'] = 'Název';
 	$language_data['Full name'] = 'Celé jméno';
 	$language_data['Description'] = 'Popis';
@@ -97,10 +99,13 @@
 	$language_data['Delete'] = 'Smazat';
 	$language_data['Edit'] = 'Upravit';
 	$language_data['Send'] = 'Odeslat';
+	$language_data['Active'] = 'Aktivní';
+	$language_data['Import'] = 'Importovat';
 	$language_data['Please enter valid decimal number.'] = 'Prosím vložte platné desetinné číslo.';
 	$language_data['Max value is %s.'] = 'Maximální hodnota je %s.';
 	$language_data['%d - %d of %d'] = '<b>%d</b> až <b>%d</b> z celkových <b>%d</b>.';
 	$language_data['Value must be at least %s characters long.'] = 'Hodnota musí být alespoň %s znaků dlouhá.';
+	$language_data['Addreses'] = 'Adresy';
 	$language_data['Invoicing Address'] = 'Fakturační adresa';
 	$language_data['Shipping Address'] = 'Doručovací adresa';
 	$language_data['City'] = 'Město';
@@ -135,4 +140,12 @@
 	$language_data['You must save the form first before adding to gallery.'] = 'Musíte nejprve uložit formulář, aby bylo možné nahrávat obrázky do galerie.';
 	$language_data['Upload Image'] = 'Nahrát obrázek';
 
+	/* EMAILS AND NEWSLETTERS */	
+	$language_data['Newsletters'] = 'Newslettery';
+	$language_data['Subscriptions'] = 'Přihlášené adresy';
+	$language_data['Import'] = 'Importovat';
+	$language_data['Import Addresses'] = 'Importovat adresy';
+	$language_data['Newsletter Subscription'] = 'Přihlášená adresa';
+	$language_data['Enter email addresses separated by space, comma or new line.'] = 'Vložte e-mailové adresy oddělené mezerou, čárkou nebo novým řádkem.';
+	
 	return $language_data;

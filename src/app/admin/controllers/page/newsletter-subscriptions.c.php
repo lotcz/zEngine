@@ -1,6 +1,6 @@
 <?php
 
-	$this->setPageTitle('Newsletter Subscriptions');
+	$this->setPageTitle('Subscriptions');
 	$this->renderAdminTable(
 		'newsletter_subscription',
 		[
@@ -14,7 +14,8 @@
 			],
 			[
 				'name' => 'newsletter_subscription_active',
-				'label' => 'Active'
+				'label' => 'Zasílat newslettery',
+				'type' => 'bool'
 			]
 		],
 		'newsletter_subscription',

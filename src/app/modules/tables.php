@@ -153,6 +153,8 @@ class tablesModule extends zModule {
 																	echo $this->z->core->t($row->val($field->name));
 																} elseif ($field->type == 'integer') {
 																	echo $row->ival($field->name);
+																} elseif ($field->type == 'bool') {
+																	echo $this->z->core->t(($row->ival($field->name) == 1) ? 'Yes' : 'No');
 																} elseif ($field->type == 'custom') {
 																	$fn = $field->custom_function;
 																	echo $fn($row->val($field->name));

@@ -12,8 +12,9 @@
 			],
 			[
 				'name' => 'newsletter_subscription_active',
-				'label' => 'Active',
-				'type' => 'bool'
+				'label' => 'Zasílat newslettery',
+				'type' => 'bool',
+				'hint' => 'Je-li tento příznak vypnutý, znamená to, že adresa se odhlásila a nepřeje si dostávat newsletter. Nikdy nemažte neaktivní adresy - mohlo by dojít k jejich opětovnému importu a nevyžádanému zasílání!'
 			],
 		]
 	);

@@ -79,10 +79,10 @@ class menuModule extends zModule {
 			</div>
 		<?php
 	}
-	
+
 	public function renderMenu($menu) {
 		?>
-			<nav class="navbar navbar-dark bg-dark navbar-expand sticky-top">				
+			<nav class="navbar navbar-dark bg-dark navbar-expand-lg sticky-top">
 				<div class="navbar-header">
 					<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
 						<span class="navbar-toggler-icon"></span>
@@ -95,13 +95,13 @@ class menuModule extends zModule {
 							<?php
 						} else {
 							?>
-								<span class="navbar-brand"><?=$this->z->core->t($menu->label) ?></span>								
+								<span class="navbar-brand"><?=$this->z->core->t($menu->label) ?></span>
 							<?php
 						}
 					?>
 				</div>
 
-				<div class="collapse navbar-collapse" id="navbar">		
+				<div class="collapse navbar-collapse" id="navbar">
 					<ul class="navbar-nav mr-auto">
 						<?php
 							foreach ($menu->items as $item) {

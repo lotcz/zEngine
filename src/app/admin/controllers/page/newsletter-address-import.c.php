@@ -1,5 +1,5 @@
 <?php
-	$this->setPageTitle('Import Newsletter Addresses');
+	$this->setPageTitle('Import Addresses');
 
 	if (!$this->z->isModuleEnabled('newsletter')) {
 		$this->z->messages->error('Newsletter module is not enabled!');
