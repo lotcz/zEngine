@@ -147,5 +147,5 @@
 	$language_data['Import Addresses'] = 'Importovat adresy';
 	$language_data['Newsletter Subscription'] = 'Přihlášená adresa';
 	$language_data['Enter email addresses separated by space, comma or new line.'] = 'Vložte e-mailové adresy oddělené mezerou, čárkou nebo novým řádkem.';
-	
+
 	return $language_data;

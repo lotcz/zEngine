@@ -462,6 +462,13 @@ class formsModule extends zModule {
 						?>
 					</div>
 				<?php
+
+				if (isset($field->hint)) {
+					?>
+						<small class="text-muted"><?=$this->z->core->t($field->hint) ?></small>
+					<?php
+				}
+
 			} elseif ($field->type == 'opening_hours') {
 				$this->z->openinghours->renderFormField($field);
 			} else {

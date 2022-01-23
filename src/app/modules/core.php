@@ -239,6 +239,13 @@ class coreModule extends zModule {
 		return $url;
 	}
 
+	public function urlWithRet($link, $ret = null){
+		if ($ret == null) {
+			$ret = $this->raw_path;
+		}
+		return $this->url($link, $ret);
+	}
+
 	/**
 	* Generate link HTML wih fully qualified URL for a page.
 	*/

@@ -30,10 +30,10 @@ class emailsModule extends zModule {
 		$this->sendHTML($to, $subject, $email_body, $from);
 	}
 
-	public function renderEmailBody($template_name, $email_data) {
-		$master_template_path = $this->z->core->app_dir . 'views/email/master.v.php';
+	public function renderEmailBody($template_name, $email_data, $master_template_name = 'master') {
+		$master_template_path = $this->z->core->app_dir . 'views/email/' . $master_template_name . '.v.php';
 		if (!file_exists($master_template_path)) {
-			$master_template_path = __DIR__ . '/../views/email/master.v.php';
+			$master_template_path = __DIR__ . '/../views/email/' . $master_template_name . '.v.php';
 		}
 		$template_path = $this->z->core->app_dir . 'views/email/' .  $template_name . '.v.php';
 		if (!file_exists($template_path)) {

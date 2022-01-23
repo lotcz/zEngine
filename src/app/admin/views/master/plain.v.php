@@ -11,6 +11,7 @@
 
 	<body>
 		<?php
+			$this->renderMessages();
 			$this->renderPageView();
 			$this->renderIncludes('admin.default');
 			$this->renderIncludes('admin.bottom');
