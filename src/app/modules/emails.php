@@ -59,6 +59,7 @@ class emailsModule extends zModule {
 			$email->set('email_sent', 1);
 			$email->save();
 		}
+		return count($unsent);
 	}
 
 	public function addEmailToQueue($to, $subject, $content_type, $body, $from = null) {
