@@ -99,7 +99,7 @@ class adminModule extends zModule {
 		}
 	}
 
-	public function OnBeforeInit() {
+	public function onBeforeInit() {
 		$this->is_admin_area = (count($this->z->core->path) > 0 && ($this->z->core->path[0] == $this->base_url));
 		if ($this->is_admin_area) {
 			array_shift($this->z->core->path);

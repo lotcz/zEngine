@@ -23,7 +23,7 @@ class authModule extends zModule {
 		$this->cookie_name = $this->getConfigValue('cookie_name', $this->cookie_name);
 	}
 
-	function OnBeforeInit() {
+	function onBeforeInit() {
 		$this->checkAuthentication();
 		$this->z->core->insertJS(
 			[

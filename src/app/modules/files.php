@@ -23,7 +23,7 @@ class filesModule extends zModule {
 
 	public function getFileURL($file) {
 		if ($this->exists($file)) {
-			return $this->root_files_url . '/' . $file;
+			return $this->z->core->url($this->root_files_url . '/' . $file);
 		}
 	}
 
