@@ -9,3 +9,7 @@ CREATE TABLE IF NOT EXISTS `newsletter_subscription` (
     unique KEY (`newsletter_subscription_email`)
 ) ENGINE = InnoDB;
 
+DROP VIEW IF EXISTS `viewNewsletterSubscriptionsStats`;
+
+CREATE VIEW viewNewsletterSubscriptionsStats AS
+select newsletter_subscription_active, COUNT(*) as cnt from newsletter_subscription group by newsletter_subscription_active;
