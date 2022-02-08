@@ -291,7 +291,7 @@ class zModel {
 			for ($i2 = $i; $i2 < count($arr); $i2++) {
 				if ($min === null || $min->val($field) > $arr[$i2]->val($field)) {
 					$min = $arr[$i2];
-				}				
+				}
 			}
 			$result[] = $min;
 			$min = null;

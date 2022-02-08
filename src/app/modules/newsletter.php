@@ -47,4 +47,16 @@ class newsletterModule extends zModule {
 		return NewsletterSubscriptionModel::select($this->z->db, 'newsletter_subscription', 'newsletter_subscription_active = 1');
 	}
 
+	public function cleanSubscriptionEmails() {
+		$all_active = $this->getActiveSubscriptions();
+		$deleted = 0;
+		foreach ($all_active as $subscription) {
+			if (!zForm::validate_email($subscription->val('newsletter_subscription_email'))) {
+				// $subscription->delete();
+				$deleted += 1;
+				echo sprintf("Deleted <strong>%s</strong> (DELETE DISABLED!).\r\n", $subscription->val('newsletter_subscription_email'));
+			}
+		}
+		return $deleted;
+	}
 }

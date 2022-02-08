@@ -49,17 +49,22 @@ class emailsModule extends zModule {
 	}
 
 	public function loadUnsentEmails() {
-		return EmailModel::select($this->z->db, 'email', 'email_sent = 0 and email_send_date <= CURRENT_TIMESTAMP()', 'email_send_date');
+		return EmailModel::select($this->z->db, 'email', 'email_sent = 0 and email_send_date <= CURRENT_TIMESTAMP()', 'email_send_date', '0,100');
 	}
 
 	public function processQueue() {
+		$total = 0;
 		$unsent = $this->loadUnsentEmails();
-		foreach($unsent as $email) {
-			$this->sendEmail($email->val('email_to'), $email->val('email_subject'), $email->val('email_body'), $email->val('email_content_type'));
-			$email->set('email_sent', 1);
-			$email->save();
+		while (count($unsent) > 0) {
+			$total += count($unsent);
+			foreach($unsent as $email) {
+				$this->sendEmail($email->val('email_to'), $email->val('email_subject'), $email->val('email_body'), $email->val('email_content_type'));
+				$email->set('email_sent', 1);
+				$email->save();
+			}
+			$unsent = $this->loadUnsentEmails();
 		}
-		return count($unsent);
+		return $total;
 	}
 
 	public function addEmailToQueue($to, $subject, $content_type, $body, $from = null) {
@@ -75,4 +80,5 @@ class emailsModule extends zModule {
 		$email->save();
 		return $email;
 	}
+
 }
