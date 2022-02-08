@@ -13,6 +13,7 @@ class newsletterModule extends zModule {
 		$subs = new NewsletterSubscriptionModel($this->z->db);
 		$mail = z::trimSpecial($email);
 		if (!zForm::validate_email($email)) {
+			$this->z->core->message(sprintf('<strong>"%s"</strong> is not a valid address!', $email), 'error');
 			return false;
 		}
 		$subs->loadByEmail($email);
@@ -34,6 +35,7 @@ class newsletterModule extends zModule {
 				$imported += 1;
 			}
 		}
+		$this->z->core->message(sprintf('Imported %d from %d addresses.', $imported, $total), 'success');
 		return [$imported, $total];
 	}
 
