@@ -7,14 +7,19 @@ require_once __DIR__ . '/../models/email.m.php';
 */
 class emailsModule extends zModule {
 
-	private function sendEmail($to, $subject, $body, $content_type, $from = null) {
+	private function sendEmail($to, $subject, $body, $content_type, $from = null, $reply_to = null) {
 		if ($from == null) {
 			$from = $this->z->emails->getConfigValue('from_address');
 		}
-		$headers = "From: $from;\r\n";
-		$headers .= "Content-Type: $content_type;charset=utf-8\r\n";
+		$headers = [];
+		$headers[] = "From: $from";
+		if ($reply_to !== null) {
+			$headers[] = "Reply-to: $reply_to";
+		}
+		$headers[] = "Content-Type: $content_type;charset=utf-8";
 
-		mail($to, $subject, $body, $headers);
+		$origin = ($reply_to === null) ? $from : $reply_to;
+		mail($to, $subject, $body, implode("\r\n", $headers), "-f$origin");
 	}
 
 	public function sendPlain($to, $subject, $body, $from = null) {
@@ -46,6 +51,10 @@ class emailsModule extends zModule {
 		include $master_template_path;
 		$master = ob_get_clean();
 		return $master;
+	}
+
+	public function getUnsentEmailsCount() {
+		return $this->z->db->getRecordCount('email', 'email_sent = 0 and email_send_date <= CURRENT_TIMESTAMP()');
 	}
 
 	public function loadUnsentEmails() {
