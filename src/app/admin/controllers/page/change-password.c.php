@@ -8,13 +8,12 @@
 		$user_id = z::getInt('user_id');
 
 		if ($this->z->auth->isValidPassword($password)) {
-
 			if ($password == $password_confirm) {
 				if ($user_id > 0) {
-					if ($this->z->isModuleEnabled('admin') && $this->z->admin->isSuperUser()) {
-						$user = new UserModel($this->z->db, $user_id);						
+					if ($this->z->isModuleEnabled('admin') && ($this->z->admin->isSuperUser() || $this->z->admin->isAdmin())) {
+						$user = new UserModel($this->z->db, $user_id);
 						if ($user->is_loaded) {
-							$user->set('user_password_hash', $this->z->auth->hashPassword($password));							
+							$user->set('user_password_hash', $this->z->auth->hashPassword($password));
 							$user->save();
 							$user_name = $user->val('user_login', $user->val('user_email'));
 							$this->message("User password was successfully changed for user '$user_name'.", 'success');
