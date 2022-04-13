@@ -23,5 +23,6 @@
 		],
 		'email',
 		['email_to', 'email_subject', 'email_send_date', 'email_sent'],
-		'email_send_date desc'
+		'email_send_date desc',
+		['email_to', 'email_subject']
 	);

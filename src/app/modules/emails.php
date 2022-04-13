@@ -19,7 +19,13 @@ class emailsModule extends zModule {
 		$headers[] = "Content-Type: $content_type;charset=utf-8";
 
 		$origin = ($reply_to === null) ? $from : $reply_to;
-		mail($to, $subject, $body, implode("\r\n", $headers), "-f$origin");
+		mail(
+			$to,
+			emailsModule::encodeEmailSubject($subject),
+			$body,
+			implode("\r\n", $headers),
+			"-f$origin"
+		);
 	}
 
 	public function sendPlain($to, $subject, $body, $from = null) {
@@ -58,7 +64,7 @@ class emailsModule extends zModule {
 	}
 
 	public function loadUnsentEmails() {
-		return EmailModel::select($this->z->db, 'email', 'email_sent = 0 and email_send_date <= CURRENT_TIMESTAMP()', 'email_send_date', '0,100');
+		return EmailModel::select($this->z->db, 'email', 'email_sent = 0 and email_send_date <= CURRENT_TIMESTAMP()', 'email_send_date', '0,1');
 	}
 
 	public function processQueue() {
@@ -67,9 +73,14 @@ class emailsModule extends zModule {
 		while (count($unsent) > 0) {
 			$total += count($unsent);
 			foreach($unsent as $email) {
-				$this->sendEmail($email->val('email_to'), $email->val('email_subject'), $email->val('email_body'), $email->val('email_content_type'));
 				$email->set('email_sent', 1);
 				$email->save();
+				$this->sendEmail(
+					$email->val('email_to'),
+					$email->val('email_subject'),
+					$email->val('email_body'),
+					$email->val('email_content_type')
+				);
 			}
 			$unsent = $this->loadUnsentEmails();
 		}
@@ -88,6 +99,10 @@ class emailsModule extends zModule {
 		$email->set('email_body', $body);
 		$email->save();
 		return $email;
+	}
+
+	static function encodeEmailSubject($subject) {
+		return '=?utf-8?B?' . base64_encode($subject) . '?=';
 	}
 
 }
