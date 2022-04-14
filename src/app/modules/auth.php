@@ -18,9 +18,12 @@ class authModule extends zModule {
 
 	public $cookie_name = 'session_token';
 
+	public $public_login_home = 'custom';
+
 	function onEnabled() {
 		$this->requireConfig();
 		$this->cookie_name = $this->getConfigValue('cookie_name', $this->cookie_name);
+		$this->public_login_home = $this->getConfigValue('public_login_home', $this->public_login_home);
 	}
 
 	function onBeforeInit() {

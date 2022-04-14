@@ -2,6 +2,8 @@
 
 	require_once __DIR__ . '/../../../models/delivery_type.m.php';
 
+	$this->z->admin->checkAnyRole();
+
 	$this->renderAdminForm(
 		'DeliveryTypeModel',
 		[

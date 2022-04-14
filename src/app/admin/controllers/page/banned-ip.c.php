@@ -2,6 +2,8 @@
 
 	require_once __DIR__ . '/../../../models/banned_ip.m.php';
 
+	$this->z->admin->checkIsSuperuser();
+
 	$this->renderAdminForm(
 		'BannedIpModel',
 		[

@@ -2,6 +2,8 @@
 
 	require_once __DIR__ . '/../../../models/email.m.php';
 
+	$this->z->admin->checkAnyRole();
+
 	$this->renderAdminForm(
 		'EmailModel',
 		[

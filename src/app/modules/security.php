@@ -4,7 +4,8 @@ require_once __DIR__ . '/../models/ip_failed.m.php';
 require_once __DIR__ . '/../models/banned_ip.m.php';
 
 /**
-* Module that handles security needs. At the moment it is all IP based.
+* Module that handles security needs.
+  At the moment it is all about IP blocking.
 */
 class securityModule extends zModule {
 

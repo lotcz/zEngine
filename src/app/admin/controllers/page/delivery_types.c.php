@@ -1,5 +1,7 @@
 <?php
 
+	$this->z->admin->checkAnyRole();
+
 	$this->setPageTitle('Delivery types');
 	$this->renderAdminTable(
 		'delivery_type',

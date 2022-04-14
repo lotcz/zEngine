@@ -18,7 +18,7 @@
 	<div class="form-group row">
 		<div class="col-sm-3 offset-sm-2">
 			<input type="hidden" id="user_id" name="user_id" value="<?=z::getInt('user_id') ?>" />
-			<input type="button" onclick="javascript:changepass_validate(event);return false;" class="btn btn-success" value="<?=$this->t('Change Password') ?>">
+			<input type="submit" onclick="javascript:changepass_validate(event);return false;" class="btn btn-success" value="<?=$this->t('Change Password') ?>">
 		</div>
 	</div>
 </form>

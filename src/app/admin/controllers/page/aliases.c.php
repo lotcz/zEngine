@@ -1,5 +1,7 @@
 <?php
 
+	$this->z->admin->checkAnyRole();
+
 	$this->setPageTitle('Aliases');
 	$this->renderAdminTable(
 		'alias',

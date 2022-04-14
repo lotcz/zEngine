@@ -1,8 +1,10 @@
 <?php
 
+	$this->z->admin->checkAnyRole();
+
 	$this->setPageTitle('Administrators');
 	$this->renderAdminTable(
-		'admin',
+		'user',
 		[
 			[
 				'name' => 'user_name',

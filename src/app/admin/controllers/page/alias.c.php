@@ -2,7 +2,9 @@
 
 	require_once __DIR__ . '/../../../models/alias.m.php';
 
-	$this->renderAdminForm(		
+	$this->z->admin->checkAnyRole();
+
+	$this->renderAdminForm(
 		'AliasModel',
 		[
 			[

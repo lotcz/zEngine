@@ -18,7 +18,7 @@
 			],
 			[
 				'name' => 'user_state',
-				'label' => 'State',
+				'label' => 'Status',
 				'type' => 'custom',
 				'custom_function' => 'UserModel::getUserStatusLabel'
 			],
@@ -28,7 +28,7 @@
 				'type' => 'datetime'
 			]
 		],
-		null,
-		['user_id', 'user_name', 'user_login', 'user_email', 'user_last_access'],
+		'viewUsers',
+		['user_id', 'user_name', 'user_login', 'user_email', 'user_state', 'user_last_access'],
 		'user_id'
 	);

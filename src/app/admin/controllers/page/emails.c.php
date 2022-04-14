@@ -1,5 +1,7 @@
 <?php
 
+	$this->z->admin->checkAnyRole();
+
 	$this->setPageTitle('Emails');
 	$this->renderAdminTable(
 		'email',

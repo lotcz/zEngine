@@ -1,5 +1,7 @@
 <?php
 
+	$this->z->admin->checkAnyRole();
+
 	$this->setPageTitle('Failed Attempts');
 	$this->renderAdminTable(
 		'ip_failed_attempt',

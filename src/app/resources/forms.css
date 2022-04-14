@@ -22,3 +22,9 @@ textarea.wysiwyg,
 article_text_form_group .tox-tinymce {
     height: 450px;
 }
+
+form .form-field button {
+	text-transform: none;
+	text-decoration: none;
+
+}

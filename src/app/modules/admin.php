@@ -1,7 +1,6 @@
 <?php
 
 require_once __DIR__ . '/../models/admin_role.m.php';
-require_once __DIR__ . '/../models/admin.m.php';
 
 /**
 * Module that handles administration area.
@@ -36,9 +35,44 @@ class adminModule extends zModule {
 	public $admin = null;
 
 	public function hasRole($role) {
-		if (!$this->isAuth()) return;
+		if (!$this->isAuth()) return false;
 		return $this->admin->ival('user_admin_role_id') == $role;
-    }
+	}
+
+	public function hasAnyRole($roles = null) {
+		if (!$this->isAuth()) return false;
+		if ($roles != null && count($roles) > 0) {
+			for ($i = 0, $max = count($roles); $i < $max; $i++) {
+				if ($this->hasRole($roles[$i])) {
+					return true;
+				}
+			}
+			return false;
+		} else {
+			return ($this->admin->ival('user_admin_role_id') > 0);
+		}
+	}
+
+	public function checkAnyRole($roles = null) {
+		if (!$this->hasAnyRole($roles)) {
+			$this->z->core->redirect('admin', 403);
+			die();
+		}
+	}
+
+	public function checkIsSuperUser() {
+		if (!$this->isSuperUser()) {
+			$this->z->core->redirect('admin', 403);
+			die();
+		}
+	}
+
+	public function checkIsAdmin() {
+		if (!$this->isAdmin()) {
+			$this->z->core->redirect('admin', 403);
+			die();
+		}
+	}
 
 	/**
 	* Return true if an admin is authenticated.
@@ -53,8 +87,8 @@ class adminModule extends zModule {
 	}
 
 	public function isAdmin() {
-    		return $this->hasRole(AdminRoleModel::role_admin);
-    	}
+		return $this->hasRole(AdminRoleModel::role_admin);
+	}
 
 	/**
 	* Verifies if there is an admin logged in.
@@ -64,11 +98,7 @@ class adminModule extends zModule {
 		if (!$this->authentication_checked) {
 			$this->admin = null;
 			if ($this->z->auth->isAuth()) {
-				$admin = new AdminModel($this->z->db);
-				$admin->loadByUserId($this->z->auth->user->ival('user_id'));
-				if ($admin->is_loaded) {
-					$this->admin = $admin;
-				}
+				$this->admin = $this->z->auth->user;
 			}
 			$this->authentication_checked = true;
 		}
@@ -131,7 +161,9 @@ class adminModule extends zModule {
 		if ($this->isAuth()) {
 
 			//custom menu from app's admin config
-			$menu->loadItemsFromArray($this->getConfigValue('custom_menu'));
+			if ($this->hasAnyRole()) {
+				$menu->loadItemsFromArray($this->getConfigValue('custom_menu'));
+			}
 
 			// SUPERUSER - standard admin menu
 			if ($this->isSuperUser() || $this->isAdmin()) {
@@ -164,7 +196,7 @@ class adminModule extends zModule {
 					$submenu->addItem('admin/orders', 'Orders');
 					$submenu->addItem('admin/customers', 'Customers');
 				}
-			
+
 				// GALLERY
 				if ($this->z->isModuleEnabled('gallery')) {
 					$submenu->addSeparator();
@@ -193,7 +225,7 @@ class adminModule extends zModule {
 
 			$user = $this->z->auth->user;
 			$usermenu = $menu->addRightSubmenu($user->getLabel());
-			$usermenu->addItem('admin/default/default/user/edit/' . $user->val('user_id'), 'User Profile');
+			$usermenu->addItem('admin/default/default/profile/edit/' . $user->val('user_id'), 'User Profile');
 			$usermenu->addItem('admin/change-password', 'Change Password');
 			$usermenu->addItem('admin/logout', 'Log Out');
 		}
