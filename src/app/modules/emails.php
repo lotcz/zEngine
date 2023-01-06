@@ -9,7 +9,7 @@ class emailsModule extends zModule {
 
 	private function sendEmail($to, $subject, $body, $content_type, $from = null, $reply_to = null) {
 		if ($from == null) {
-			$from = $this->z->emails->getConfigValue('from_address');
+			$from = $this->getConfigValue('from_address');
 		}
 		$headers = [];
 		$headers[] = "From: $from";
@@ -64,32 +64,32 @@ class emailsModule extends zModule {
 	}
 
 	public function loadUnsentEmails() {
-		return EmailModel::select($this->z->db, 'email', 'email_sent = 0 and email_send_date <= CURRENT_TIMESTAMP()', 'email_send_date', '0,1');
+		$limit = $this->getConfigValue('limit_emails_per_cron', 4);
+		return EmailModel::select($this->z->db, 'email', 'email_sent = 0 and email_send_date <= CURRENT_TIMESTAMP()', 'email_send_date', "0,$limit");
 	}
 
 	public function processQueue() {
-		$total = 0;
 		$unsent = $this->loadUnsentEmails();
-		while (count($unsent) > 0) {
-			$total += count($unsent);
-			foreach($unsent as $email) {
-				$email->set('email_sent', 1);
-				$email->save();
-				$this->sendEmail(
-					$email->val('email_to'),
-					$email->val('email_subject'),
-					$email->val('email_body'),
-					$email->val('email_content_type')
-				);
-			}
-			$unsent = $this->loadUnsentEmails();
+		$total = count($unsent);
+
+		foreach($unsent as $email) {
+			$email->set('email_sent', 1);
+			$email->save();
+			$this->sendEmail(
+				$email->val('email_to'),
+				$email->val('email_subject'),
+				$email->val('email_body'),
+				$email->val('email_content_type'),
+				$email->val('email_from')
+			);
 		}
+
 		return $total;
 	}
 
 	public function addEmailToQueue($to, $subject, $content_type, $body, $from = null) {
 		if ($from == null) {
-			$from = $this->z->emails->getConfigValue('from_address');
+			$from = $this->getConfigValue('from_address');
 		}
 		$email = new EmailModel($this->z->db);
 		$email->set('email_to', $to);

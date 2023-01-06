@@ -1,6 +1,6 @@
 <?php
 
-	$this->z->admin->checkAnyRole();
+	$this->z->admin->checkAnyRole([AdminRoleModel::role_superuser, AdminRoleModel::role_admin]);
 
 	$this->setPageTitle('Administrators');
 	$this->renderAdminTable(

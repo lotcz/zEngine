@@ -170,8 +170,8 @@ class adminModule extends zModule {
 				$submenu = $menu->addRightSubmenu('Administration');
 
 				$submenu->addHeader('Users');
-				$submenu->addItem('admin/users', 'Users');
-				if ($this->isSuperUser()) {
+				$submenu->addItem('admin/users', 'External Users');
+				if ($this->isSuperUser() || $this->isAdmin()) {
 					$submenu->addItem('admin/admins', 'Administrators');
 				}
 
@@ -197,14 +197,14 @@ class adminModule extends zModule {
 					$submenu->addItem('admin/customers', 'Customers');
 				}
 
-				// GALLERY
-				if ($this->z->isModuleEnabled('gallery')) {
-					$submenu->addSeparator();
-					$submenu->addHeader('Gallery');
-					$submenu->addItem('admin/galleries', 'Galleries');
-				}
-
 				if ($this->isSuperUser()) {
+					// GALLERY
+					if ($this->z->isModuleEnabled('gallery')) {
+						$submenu->addSeparator();
+						$submenu->addHeader('Gallery');
+						$submenu->addItem('admin/galleries', 'Galleries');
+					}
+
 					// ADVANCED
 					$submenu->addSeparator();
 					$submenu->addHeader('Advanced');

@@ -65,6 +65,7 @@
 	$language_data['Administration'] = 'Administrace';
 	$language_data['Dashboard'] = 'Ovládací panel';
 	$language_data['Users'] = 'Uživatelé';
+	$language_data['External Users'] = 'Externí uživatelé';
 	$language_data['User'] = 'Uživatel';
 	$language_data['Administrators'] = 'Správci';
 	$language_data['Last Visit'] = 'Poslední návštěva';
