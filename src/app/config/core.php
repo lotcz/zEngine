@@ -7,7 +7,7 @@
 		'app_version' => 0.0,
 
 		// this is minimum required zEngine version
-		'minimum_z_version' => 10.0,
+		'minimum_z_version' => 12.0,
 
 		'site_title' => 'Your site title',
 		'site_description' => 'Your site description.',
@@ -38,4 +38,16 @@
 		// URL query variable name used for return paths
 		'return_path_name' => 'r',
 
+		// additional js, css etc.
+		// EXAMPLE: [file_path, is_absolute, type, placement]
+		// file_path - path to file
+		// is_absolute - true/false
+		// type - link_css/print_css/link_less/link_js/inline_js/favicon
+		// placement - head/default/bottom/admin.head/admin.default/admin.bottom
+		'includes' => [
+			['https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js', true, 'link_js', 'bottom'],
+			['https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css', true, 'link_css', 'head'],
+			['https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js', true, 'link_js', 'admin.bottom'],
+			['https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css', true, 'link_css', 'admin.head']
+		]
 	];
