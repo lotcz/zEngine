@@ -105,4 +105,12 @@ class emailsModule extends zModule {
 		return '=?utf-8?B?' . base64_encode($subject) . '?=';
 	}
 
+	public function cleanSentEmails($days = 30) {
+		$now = new \DateTime();
+		$interval = \DateInterval::createFromDateString(sprintf('%d days', $days));
+		$date = $now->sub($interval);
+		$mysqlTimestamp = z::mysqlTimestamp($date->getTimestamp());
+		$this->z->db->executeDeleteQuery('email', 'email_sent = 1 and email_send_date <= ?', [$mysqlTimestamp], [PDO::PARAM_STR]);
+	}
+
 }
