@@ -21,6 +21,13 @@ CREATE TABLE `user` (
     REFERENCES `language` (`language_id`)
 ) ENGINE = InnoDB;
 
+DROP VIEW IF EXISTS `viewUsers`;
+
+CREATE VIEW viewUsers AS
+	SELECT *, u.user_id as admin_id
+	FROM user u
+	WHERE u.user_admin_role_id is null;
+
 DROP TABLE IF EXISTS `session`;
 
 CREATE TABLE `user_session` (
@@ -37,17 +44,4 @@ CREATE TABLE `user_session` (
     ON DELETE CASCADE
 ) ENGINE = InnoDB;
 
-DROP VIEW IF EXISTS `viewSessionsStats` ;
 
-CREATE VIEW viewSessionsStats AS
-	SELECT 'Anonymous' as n, COUNT(*) as c
-    FROM user_session us
-    JOIN user u ON (u.user_id = us.user_session_user_id)
-    WHERE u.user_state = 0
-
-    UNION
-
-    SELECT 'Logged in' as n, COUNT(*) as c
-    FROM user_session us
-    JOIN user u ON (u.user_id = us.user_session_user_id)
-    WHERE u.user_state > 0;

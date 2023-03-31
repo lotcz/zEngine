@@ -7,8 +7,10 @@
 
 	/* BASIC */
 	$language_data['Hello'] = 'Dobrý den';
+	$language_data['Yes'] = 'Ano';
+	$language_data['No'] = 'Ne';
 	$language_data['Name'] = 'Název';
-	$language_data['Full name'] = 'Celé jméno';
+	$language_data['Full Name'] = 'Celé jméno';
 	$language_data['Description'] = 'Popis';
 	$language_data['Image'] = 'Obrázek';
 	$language_data['Date'] = 'Datum';
@@ -48,6 +50,8 @@
 	$language_data['Your account was successfully activated. '] = 'Váš účet byl úspěšně aktivován.';
 	$language_data['Login unsuccessful!'] = 'Přihlášení bylo neúspěšné!';
 	$language_data['E-mail address not found!'] = 'E-mailová adresa nenalezena!';
+	$language_data["To reset your password, visit following link:\r\n %s?user=%s&reset_token=%s.\r\nThis link is only valid for %d days."] =
+		"Pro změnu hesla klikněte na tento odkaz:\r\n %s?user=%s&reset_token=%s.\r\nOdkaz je platný do dobu %d dnů.";
 	$language_data['An e-mail was sent to your address with reset password instructions.'] = 'Na Vaši emailovou adresu jsme odeslali email s instrukcemi pro obnovení hesla.';
 	$language_data['An e-mail was already sent to your address with reset password instructions.'] = 'Na Vaši emailovou adresu jsme již odeslali email s instrukcemi pro obnovení hesla.';
 	$language_data['Enter your new password.'] = 'Vložte Vaše nové heslo.';
@@ -61,6 +65,7 @@
 	$language_data['Administration'] = 'Administrace';
 	$language_data['Dashboard'] = 'Ovládací panel';
 	$language_data['Users'] = 'Uživatelé';
+	$language_data['External Users'] = 'Externí uživatelé';
 	$language_data['User'] = 'Uživatel';
 	$language_data['Administrators'] = 'Správci';
 	$language_data['Last Visit'] = 'Poslední návštěva';
@@ -97,10 +102,13 @@
 	$language_data['Delete'] = 'Smazat';
 	$language_data['Edit'] = 'Upravit';
 	$language_data['Send'] = 'Odeslat';
+	$language_data['Active'] = 'Aktivní';
+	$language_data['Import'] = 'Importovat';
 	$language_data['Please enter valid decimal number.'] = 'Prosím vložte platné desetinné číslo.';
 	$language_data['Max value is %s.'] = 'Maximální hodnota je %s.';
 	$language_data['%d - %d of %d'] = '<b>%d</b> až <b>%d</b> z celkových <b>%d</b>.';
 	$language_data['Value must be at least %s characters long.'] = 'Hodnota musí být alespoň %s znaků dlouhá.';
+	$language_data['Addreses'] = 'Adresy';
 	$language_data['Invoicing Address'] = 'Fakturační adresa';
 	$language_data['Shipping Address'] = 'Doručovací adresa';
 	$language_data['City'] = 'Město';
@@ -109,7 +117,7 @@
 	$language_data['Back to cart'] = 'Zpět do košíku';
 	$language_data['Continue'] = 'Pokračovat';
 	$language_data['Please enter your whole name.'] = 'Vložte prosím Vaše celé jméno.';
-	$language_data['Please enter your email address.'] = 'Vložte prosím Vaši emailovou adresu.';	
+	$language_data['Please enter your email address.'] = 'Vložte prosím Vaši emailovou adresu.';
 	$language_data['Required.'] = 'Vyžadováno.';
 	$language_data['Please enter valid ZIP code.'] = 'Prosím vložte platné PSČ.';
 	$language_data['Some fields in the form don\'t validate! Form cannot be saved.'] = 'Některá pole formuláře neprošla ověřením! Formulář nelze uložit.';
@@ -134,5 +142,18 @@
 	$language_data['Gallery'] = 'Galerie';
 	$language_data['You must save the form first before adding to gallery.'] = 'Musíte nejprve uložit formulář, aby bylo možné nahrávat obrázky do galerie.';
 	$language_data['Upload Image'] = 'Nahrát obrázek';
+
+	/* EMAILS AND NEWSLETTERS */
+	$language_data['Newsletters'] = 'Newslettery';
+	$language_data['Subscriptions'] = 'Přihlášené adresy';
+	$language_data['Import'] = 'Importovat';
+	$language_data['Import Addresses'] = 'Importovat adresy';
+	$language_data['Newsletter Subscription'] = 'Přihlášená adresa';
+	$language_data['Enter email addresses separated by space, comma or new line.'] = 'Vložte e-mailové adresy oddělené mezerou, čárkou nebo novým řádkem.';
+	$language_data['Unsubscribe from Newsletter'] = 'Odhlášení z odběru newsletteru.';
+	$language_data['This page should only be accessed from link sent to your e-mail.'] = 'Tato stránka funguje pouze s pomocí odkazu zaslaného e-mailem.';
+	$language_data['No subscription found for \'%s\''] = 'Adresa \'%s\' není přihlášena k odběru newsletteru.';
+	$language_data['Your e-mail address \'%s\' was successfully unsubscribed from newsletter.'] = 'Vaše adresa \'%s\' byla úspěšně odhlášena z odběru newsletteru.';
+	$language_data['Your link seems to be invalid.'] = 'Váš odkaz je neplatný.';
 
 	return $language_data;

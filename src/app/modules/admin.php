@@ -1,7 +1,6 @@
 <?php
 
 require_once __DIR__ . '/../models/admin_role.m.php';
-require_once __DIR__ . '/../models/admin.m.php';
 
 /**
 * Module that handles administration area.
@@ -36,9 +35,44 @@ class adminModule extends zModule {
 	public $admin = null;
 
 	public function hasRole($role) {
-		if (!$this->isAuth()) return;
+		if (!$this->isAuth()) return false;
 		return $this->admin->ival('user_admin_role_id') == $role;
-    }
+	}
+
+	public function hasAnyRole($roles = null) {
+		if (!$this->isAuth()) return false;
+		if ($roles != null && count($roles) > 0) {
+			for ($i = 0, $max = count($roles); $i < $max; $i++) {
+				if ($this->hasRole($roles[$i])) {
+					return true;
+				}
+			}
+			return false;
+		} else {
+			return ($this->admin->ival('user_admin_role_id') > 0);
+		}
+	}
+
+	public function checkAnyRole($roles = null) {
+		if (!$this->hasAnyRole($roles)) {
+			$this->z->core->redirect('admin', 403);
+			die();
+		}
+	}
+
+	public function checkIsSuperUser() {
+		if (!$this->isSuperUser()) {
+			$this->z->core->redirect('admin', 403);
+			die();
+		}
+	}
+
+	public function checkIsAdmin() {
+		if (!$this->isAdmin()) {
+			$this->z->core->redirect('admin', 403);
+			die();
+		}
+	}
 
 	/**
 	* Return true if an admin is authenticated.
@@ -53,8 +87,8 @@ class adminModule extends zModule {
 	}
 
 	public function isAdmin() {
-    		return $this->hasRole(AdminRoleModel::role_admin);
-    	}
+		return $this->hasRole(AdminRoleModel::role_admin);
+	}
 
 	/**
 	* Verifies if there is an admin logged in.
@@ -64,11 +98,7 @@ class adminModule extends zModule {
 		if (!$this->authentication_checked) {
 			$this->admin = null;
 			if ($this->z->auth->isAuth()) {
-				$admin = new AdminModel($this->z->db);
-				$admin->loadByUserId($this->z->auth->user->ival('user_id'));
-				if ($admin->is_loaded) {
-					$this->admin = $admin;
-				}
+				$this->admin = $this->z->auth->user;
 			}
 			$this->authentication_checked = true;
 		}
@@ -99,7 +129,7 @@ class adminModule extends zModule {
 		}
 	}
 
-	public function OnBeforeInit() {
+	public function onBeforeInit() {
 		$this->is_admin_area = (count($this->z->core->path) > 0 && ($this->z->core->path[0] == $this->base_url));
 		if ($this->is_admin_area) {
 			array_shift($this->z->core->path);
@@ -131,15 +161,32 @@ class adminModule extends zModule {
 		if ($this->isAuth()) {
 
 			//custom menu from app's admin config
-			$menu->loadItemsFromArray($this->getConfigValue('custom_menu'));
+			if ($this->hasAnyRole()) {
+				$menu->loadItemsFromArray($this->getConfigValue('custom_menu'));
+			}
 
 			// SUPERUSER - standard admin menu
 			if ($this->isSuperUser() || $this->isAdmin()) {
 				$submenu = $menu->addRightSubmenu('Administration');
 
 				$submenu->addHeader('Users');
-				//$submenu->addItem('admin/users', 'Users');
-				$submenu->addItem('admin/admins', 'Administrators');
+				$submenu->addItem('admin/users', 'External Users');
+				if ($this->isSuperUser() || $this->isAdmin()) {
+					$submenu->addItem('admin/admins', 'Administrators');
+				}
+
+				if ($this->z->isModuleEnabled('newsletter')) {
+					$submenu->addSeparator();
+					$submenu->addHeader('Newsletters');
+					$submenu->addItem('admin/newsletter-subscriptions', 'Subscriptions');
+					$submenu->addItem('admin/newsletter-address-import', 'Import');
+				}
+
+				if ($this->z->isModuleEnabled('emails')) {
+					$submenu->addSeparator();
+					$submenu->addHeader('Emails');
+					$submenu->addItem('admin/emails', 'Emails');
+				}
 
 				// SHOP
 				if ($this->z->isModuleEnabled('shop')) {
@@ -149,15 +196,15 @@ class adminModule extends zModule {
 					$submenu->addItem('admin/orders', 'Orders');
 					$submenu->addItem('admin/customers', 'Customers');
 				}
-			
-				// GALLERY
-				if ($this->z->isModuleEnabled('gallery')) {
-					$submenu->addSeparator();
-					$submenu->addHeader('Gallery');
-					$submenu->addItem('admin/galleries', 'Galleries');
-				}
 
 				if ($this->isSuperUser()) {
+					// GALLERY
+					if ($this->z->isModuleEnabled('gallery')) {
+						$submenu->addSeparator();
+						$submenu->addHeader('Gallery');
+						$submenu->addItem('admin/galleries', 'Galleries');
+					}
+
 					// ADVANCED
 					$submenu->addSeparator();
 					$submenu->addHeader('Advanced');
@@ -178,7 +225,7 @@ class adminModule extends zModule {
 
 			$user = $this->z->auth->user;
 			$usermenu = $menu->addRightSubmenu($user->getLabel());
-			$usermenu->addItem('admin/default/default/user/edit/' . $user->val('user_id'), 'User Profile');
+			$usermenu->addItem('admin/default/default/profile/edit/' . $user->val('user_id'), 'User Profile');
 			$usermenu->addItem('admin/change-password', 'Change Password');
 			$usermenu->addItem('admin/logout', 'Log Out');
 		}
@@ -315,11 +362,14 @@ class adminModule extends zModule {
 	/**
 	* Create and activate admin account. Used for db initialization.
 	*/
-	public function createActiveAdminAccount($full_name, $login, $email, $password) {
+	public function createActiveAdminAccount($full_name, $login, $email, $password, $role = null) {
+		if (!$role) {
+			$role = AdminRoleModel::role_superuser;
+		}
 		$user = $this->z->auth->createActiveUser($full_name, $login, $email, $password);
-		$admin = new AdminModel($this->z->db);
-		$admin->set('admin_user_id', $user->ival('user_id'));
-		$admin->save();
+		$user->set('user_admin_role_id', $role);
+		$user->save();
+		return $user;
 	}
 
 }

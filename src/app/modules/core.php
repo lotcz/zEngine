@@ -51,6 +51,7 @@ class coreModule extends zModule {
 	public $path = [];
 
 	private $page_keywords = '';
+	private $og_image = null;
 
 	public function onEnabled() {
 		$this->default_app_dir = __DIR__ . '/../';
@@ -236,6 +237,13 @@ class coreModule extends zModule {
 			$url .= '?r=' . $ret;
 		}
 		return $url;
+	}
+
+	public function urlWithRet($link, $ret = null){
+		if ($ret == null) {
+			$ret = $this->raw_path;
+		}
+		return $this->url($link, $ret);
 	}
 
 	/**
@@ -459,6 +467,17 @@ class coreModule extends zModule {
 		}
 	}
 
+	public function showNotFoundView() {
+		$not_found_template = $this->findViewTemplatePath('page', $this->not_found_page);
+		if (!empty($not_found_template)) {
+			$this->controllers['page'] = $this->not_found_page;
+			$this->runController('page');
+			include $not_found_template;
+		} else {
+			echo "404 - Not found!";
+		}
+	}
+
 	/*
 		RENDERING
 	*/
@@ -552,14 +571,7 @@ class coreModule extends zModule {
 				$view_name = $this->views[$type];
 				echo "Template <strong>$type</strong> view not found for <strong>$view_name</strong>!";
 			} else {
-				$not_found_template = $this->findViewTemplatePath('page', $this->not_found_page);
-				if (!empty($not_found_template)) {
-					$this->controllers['page'] = $this->not_found_page;
-					$this->runController('page');
-					include $not_found_template;
-				} else {
-					echo "404 - Not found!";
-				}
+				$this->showNotFoundView();
 			}
 		}
 
@@ -687,4 +699,12 @@ class coreModule extends zModule {
 		$this->page_keywords = $keywords;
 	}
 
+	public function getOgImage() {
+		return $this->og_image;
+	}
+	
+	public function setOgImage($image) {
+		$this->og_image = $image;
+	}
+	
 }

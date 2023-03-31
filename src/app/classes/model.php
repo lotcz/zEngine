@@ -171,6 +171,15 @@ class zModel {
 		return $list;
 	}
 
+	static function selectSingle($db, $table_name, $where = null, $orderby = null, $limit = null, $bindings = null, $types = null) {
+		$result = zModel::select($db, $table_name, $where, $orderby, $limit, $bindings, $types);
+		if (count($result) > 0) {
+			return $result[0];
+		} else {
+			return null;
+		}
+	}
+
 	public function getId() {
 		$class_name = get_called_class();
 		return $this->ival($class_name::getIdName());
@@ -282,7 +291,7 @@ class zModel {
 			for ($i2 = $i; $i2 < count($arr); $i2++) {
 				if ($min === null || $min->val($field) > $arr[$i2]->val($field)) {
 					$min = $arr[$i2];
-				}				
+				}
 			}
 			$result[] = $min;
 			$min = null;

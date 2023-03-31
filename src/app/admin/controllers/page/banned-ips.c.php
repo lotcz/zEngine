@@ -2,6 +2,8 @@
 
 	$this->setPageTitle('Banned IP Addresses');
 
+	$this->z->admin->checkIsSuperUser();
+
 	$this->renderAdminTable(
 		'banned_ip',
 		[

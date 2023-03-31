@@ -1,6 +1,9 @@
 <?php
 
 	require_once __DIR__ . '/../../../models/ip_failed.m.php';
+
+	$this->z->admin->checkAnyRole();
+
 	$this->renderAdminForm(
 		'IpFailedAttemptModel',
 		[

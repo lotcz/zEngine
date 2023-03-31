@@ -4,15 +4,15 @@
 * Class that represents a single message in message queue.
 */
 class zMessage {
-	
-	public $type = 'info';	
+
+	public $type = 'info';
 	public $text = '';
-	
-	function __construct($text, $type = 'info') {		
+
+	function __construct($text, $type = 'info') {
 		$this->type = $type;
 		$this->text = $text;
 	}
-	
+
 }
 
 /**

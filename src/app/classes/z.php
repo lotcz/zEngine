@@ -114,7 +114,7 @@ class z {
 	static function shorten($str, $len, $ellipsis = "...") {
 		if (mb_strlen($str) > $len) {
 			$length = $len - mb_strlen($ellipsis);
-			return mb_substr($str, 0, $length) . $ellipsis;
+			return z::trimSpecial(mb_substr($str, 0, $length)) . $ellipsis;
 		} else {
 			return $str;
 		}
@@ -134,6 +134,19 @@ class z {
 
 	static function trimSlashes($s) {
 		return z::trim($s, '/');
+	}
+
+	static function splitString($str, $separators) {
+		$results = [$str];
+		foreach($separators as $separator) {
+			$nresults = [];
+			foreach($results as $result) {
+				$arr = explode($separator, $result);
+				$nresults = array_merge($nresults, $arr);
+			}
+			$results = $nresults;
+		}
+		return $results;
 	}
 
 	static function escapeSingleQuotes($str) {

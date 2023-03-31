@@ -1,5 +1,7 @@
 <?php
 
+	$this->z->admin->checkAnyRole();
+
 	$this->setPageTitle('Galleries');
 	$this->renderAdminTable(
 		'gallery',

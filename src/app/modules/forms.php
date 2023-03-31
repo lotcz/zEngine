@@ -411,7 +411,7 @@ class formsModule extends zModule {
 						<span><?=$render_value ?></span>
 					</div>
 				<?php
-			} elseif ($field->type == 'bool') {
+			} elseif ($field->type == 'bool' || $field->type == 'checkbox' || $field->type == 'boolean') {
 				?>
 					<div id="<?=$field->name ?>_form_group" class="form-group">
 						<div class="form-check">
@@ -462,6 +462,13 @@ class formsModule extends zModule {
 						?>
 					</div>
 				<?php
+
+				if (isset($field->hint)) {
+					?>
+						<small class="text-muted"><?=$this->z->core->t($field->hint) ?></small>
+					<?php
+				}
+
 			} elseif ($field->type == 'opening_hours') {
 				$this->z->openinghours->renderFormField($field);
 			} else {
@@ -520,7 +527,7 @@ class formsModule extends zModule {
 											}
 										?>
 											<input type="hidden" name="<?=$field->name ?>" id="field_<?=$field->name ?>" value="<?=$field->value ?>" />
-											<input type="file" name="<?=$field->name ?>_image_file" <?=$disabled ?> class="form-control-file" />
+											<input type="file" name="<?=$field->name ?>_image_file" <?=$disabled ?> class="form-control-file" accept=".gif,.jpg,.jpeg,.png,.webp" />
 										<?php
 										break;
 

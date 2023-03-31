@@ -6,7 +6,7 @@
 		$this->redirect('login');
 	} else {
 		$form = new zForm('user');
-		$form->type = '';
+		$form->type = 'vertical';
 		$form->add([
 			[
 			  'name' => 'user_email',

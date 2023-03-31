@@ -9,7 +9,7 @@ class aliasModule extends zModule {
 
 	public $depends_on = ['db'];
 
-	public function OnBeforeInit() {
+	public function onBeforeInit() {
 		$alias = new AliasModel($this->z->db);
 		$alias->loadByUrl($this->z->core->raw_path);
 		if ($alias->is_loaded) {
@@ -17,7 +17,7 @@ class aliasModule extends zModule {
 		}
 	}
 
-	public function slugify($str) {		
+	public function slugify($str) {
 		$slug = z::slugify($str, $this->z->core->default_encoding);
 		if (strlen($slug) === 0) {
 			return 'empty';
