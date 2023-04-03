@@ -25,8 +25,7 @@ DROP VIEW IF EXISTS `viewUsers`;
 
 CREATE VIEW viewUsers AS
 	SELECT *, u.user_id as admin_id
-	FROM user u
-	WHERE u.user_admin_role_id is null;
+	FROM user u;
 
 DROP TABLE IF EXISTS `session`;
 

@@ -243,7 +243,7 @@ class adminModule extends zModule {
 		if (!isset($view_name)) {
 			$view_name = $entity_name;
 		}
-		$form = new zForm($entity_name, '', 'POST', 'form-inline mb-2');
+		$form = new zForm($entity_name, '', 'POST', 'd-flex flex-row align-items-center mb-2');
 		$form->is_valid = false;
 		$form->type = 'inline';
 		$form->render_wrapper = true;
@@ -251,7 +251,7 @@ class adminModule extends zModule {
 			'name' => 'form_buttons',
 			'type' => 'buttons',
 			'buttons' => [
-				['type' => 'link', 'label' => '+ Add', 'css' => 'btn btn-success mr-2' , 'link_url' => $this->base_url . '/' . $form->detail_page . '?r=' . $this->z->core->raw_path]
+				['type' => 'link', 'label' => '+ Add', 'css' => 'btn btn-success me-2' , 'link_url' => $this->base_url . '/' . $form->detail_page . '?r=' . $this->z->core->raw_path]
 			]
 		]);
 		$this->z->core->setData('form', $form);
@@ -269,6 +269,7 @@ class adminModule extends zModule {
 						'name' => $table->paging->filter_url_name,
 						'label' => 'Search',
 						'type' => 'text',
+						'css' => 'd-flex flex-row align-items-center',
 						'filter_fields' => $filter_fields
 					]
 				]
@@ -277,8 +278,8 @@ class adminModule extends zModule {
 				'name' => 'form_filter_button',
 				'type' => 'buttons',
 				'buttons' => [
-					['type' => 'submit', 'label' => 'Search', 'css' => 'btn btn-success mr-2'],
-					['type' => 'link', 'label' => 'Reset', 'css' => 'btn btn-default mr-2', 'link_url' => $this->z->core->raw_path]
+					['type' => 'submit', 'label' => 'Search', 'css' => 'btn btn-success me-2'],
+					['type' => 'link', 'label' => 'Reset', 'css' => 'btn btn-default me-2', 'link_url' => $this->z->core->raw_path]
 				]
 			]);
 

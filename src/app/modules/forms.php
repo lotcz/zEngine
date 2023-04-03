@@ -293,7 +293,7 @@ class formsModule extends zModule {
 
 	public function renderSelect($name, $items, $id_name, $label_name, $localized = false, $selected_value = null) {
 		?>
-			<select name="<?=$name ?>" class="form-control">
+			<select name="<?=$name ?>" class="form-select">
 				<?php
 					for ($i = 0, $max = count($items); $i < $max; $i++) {
 						$value = $items[$i]->ival($id_name);
@@ -360,7 +360,7 @@ class formsModule extends zModule {
 		$label_css = '';
 		$value_css = '';
 
-		if ($form->type == 'horizontal') {
+		if ($form->type === 'horizontal') {
 			$label_css = 'col-sm-4';
 			$value_css = 'col-sm-8';
 		}
@@ -443,7 +443,7 @@ class formsModule extends zModule {
 				<?php
 			} elseif ($field->type == 'buttons') {
 				?>
-					<div class="form-buttons">
+					<div class="d-flex flex-row">
 						<?php
 							foreach ($field->buttons as $button) {
 								if ($button['type'] == 'link') {
@@ -473,9 +473,9 @@ class formsModule extends zModule {
 				$this->z->openinghours->renderFormField($field);
 			} else {
 				?>
-					<div id="<?=$field->name ?>_form_group" class="form-group <?=($form->type) == 'horizontal' ? 'row' : '' ?>">
-						<label for="<?=$field->name ?>" class="<?=$label_css ?> control-label form-label"><?=$this->z->core->t($field->label) ?>:</label>
-						<div class="<?=$value_css ?>">
+					<div id="<?=$field->name ?>_form_group" class="form-group <?=($form->type) == 'horizontal' ? 'row me-2' : '' ?> <?=isset($field->css) ? $field->css : '' ?>">
+						<label for="<?=$field->name ?>" class="<?=$label_css ?> control-label form-label <?=$form->type === 'inline' ? 'me-2' : '' ?>"><?=$this->z->core->t($field->label) ?>:</label>
+						<div class="<?=$value_css ?> <?=$form->type === 'inline' ? 'me-2' : '' ?>">
 							<div class="input-group form-field">
 								<?php
 

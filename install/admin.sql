@@ -16,6 +16,13 @@ ALTER TABLE `user` add CONSTRAINT `user_admin_role_fk`
     FOREIGN KEY (`user_admin_role_id`)
     REFERENCES `admin_role` (`admin_role_id`);
 
+DROP VIEW IF EXISTS `viewUsers`;
+
+CREATE VIEW viewUsers AS
+	SELECT *, u.user_id as admin_id
+	FROM user u
+	WHERE u.user_admin_role_id is null;
+
 DROP VIEW IF EXISTS `viewAdministrators`;
 
 CREATE VIEW viewAdministrators AS

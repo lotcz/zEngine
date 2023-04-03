@@ -41,7 +41,7 @@ class menuModule extends zModule {
 		} else {
 			$css = '';
 		}
-		echo sprintf('<li class="nav-item %s"><a class="nav-link" href="%s" >%s</a></li>', $css, $this->z->core->url($href), $this->z->core->t($title));
+		echo sprintf('<li class="nav-item %s"><a class="nav-link %s" href="%s" >%s</a></li>', $css, $css, $this->z->core->url($href), $this->z->core->t($title));
 	}
 
 	public function renderSubmenuLink($href, $title) {
