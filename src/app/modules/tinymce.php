@@ -19,12 +19,12 @@ class tinymceModule extends zModule {
 			$this->z->core->addToIncludes(($include[1]) ? $include[0] : $this->z->core->url($include[0]), $include[2], $this->placement);
 		}
 	}
-	
+
 	public function activateTinyMce() {
 		$this->z->core->insertJS(['z_tinymceconfig' => $this->tinymce_config], $this->placement);
-		$this->z->core->insertJS('$("textarea.wysiwyg").tinymce(z_tinymceconfig);', $this->placement);
+		$this->z->core->insertJS('tinymce.init(z_tinymceconfig);', $this->placement);
 	}
-	
+
 	public function setTinyMceConfig($config) {
 		$this->tinymce_config = $config;
 	}

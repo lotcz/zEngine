@@ -42,6 +42,7 @@ class i18nModule extends zModule {
 
 			if ($this->z->isModuleEnabled('auth') && $this->z->auth->isAuth()) {
 				// update customer default language if different from cookie values
+				//todo: fix problem that this prevents changing language in user profile
 				if (isset($this->selected_language)) {
 					if ($this->z->auth->user->ival('user_language_id') != $this->selected_language->ival('language_id')) {
 						$this->z->auth->user->set('user_language_id', $this->selected_language->ival('language_id'));
@@ -118,14 +119,14 @@ class i18nModule extends zModule {
 		}
 
 		// app localization
-    $app_lang_data = [];
-    $file_path = $this->z->app_dir . 'lang/' . $lang_code . '.php';
+		$app_lang_data = [];
+		$file_path = $this->z->app_dir . 'lang/' . $lang_code . '.php';
 
 		if (file_exists($file_path)) {
 			$app_lang_data = include $file_path;
 		}
 
-    return array_merge($z_lang_data, $app_lang_data);
+    	return array_merge($z_lang_data, $app_lang_data);
 	}
 
 	public function loadLanguage($lang_code) {
