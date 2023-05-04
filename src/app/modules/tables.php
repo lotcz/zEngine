@@ -12,7 +12,7 @@ class tablesModule extends zModule {
 
 	public function onEnabled() {
 		$this->z->core->includeCSS('resources/tables.css');
-		$this->z->core->includeCSS('resources/tables.css', false, 'admin.head');
+		$this->z->core->includeCSS('resources/tables.css', 'admin.head');
 	}
 
 	public function createPaging() : zPaging {

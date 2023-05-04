@@ -33,7 +33,7 @@
 		// type - link_css/print_css/link_less/link_js/inline_js/favicon
 		// placement - head/default/bottom/
 		'includes' => [
-			['https://zavadil.eu/tinymce6/tinymce.min.js', true, 'link_js', 'admin.bottom']
+			['https://zavadil.eu/tinymce6/tinymce.min.js', 'link_js', 'admin.bottom']
 		],
 
 		// This will override placement defined for includes above.

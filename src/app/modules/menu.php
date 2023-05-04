@@ -82,11 +82,8 @@ class menuModule extends zModule {
 
 	public function renderMenu($menu) {
 		?>
-			<nav class="navbar navbar-dark bg-dark navbar-expand-lg sticky-top">
-				<div class="navbar-header">
-					<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
-						<span class="navbar-toggler-icon"></span>
-					</button>
+			<nav class="navbar navbar-dark bg-dark navbar-expand-md sticky-top">
+				<div class="container-fluid">
 
 					 <?php
 						if (isset($menu->href)) {
@@ -99,23 +96,27 @@ class menuModule extends zModule {
 							<?php
 						}
 					?>
-				</div>
 
-				<div class="collapse navbar-collapse" id="navbar">
-					<ul class="navbar-nav me-auto">
-						<?php
+					<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+						<span class="navbar-toggler-icon"></span>
+					</button>
+
+					<div class="collapse navbar-collapse" id="navbar">
+						<ul class="navbar-nav me-auto">
+							<?php
 							foreach ($menu->items as $item) {
 								$this->renderMenuItem($item);
 							}
-						?>
-					</ul>
-					<ul class="navbar-nav">
-						<?php
+							?>
+						</ul>
+						<ul class="navbar-nav">
+							<?php
 							foreach ($menu->right_items as $item) {
 								$this->renderMenuItem($item);
 							}
-						?>
-					</ul>
+							?>
+						</ul>
+					</div>
 				</div>
 			</nav>
 		<?php
