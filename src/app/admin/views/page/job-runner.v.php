@@ -26,7 +26,7 @@
 
 	function jobFinished(el, response) {
 		response.text().then(
-			(text) => el.innerText = `${response.statusText} : ${text}`
+			(text) => el.innerHTML = `${response.statusText} : ${text}`
 		);
 	}
 

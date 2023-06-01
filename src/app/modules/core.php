@@ -423,7 +423,7 @@ class coreModule extends zModule {
 					if (is_object($incl[0]) || is_array($incl[0])) {
 						echo '<script>';
 						foreach ($incl[0] as $key => $value) {
-							echo sprintf('var %s = %s;', $key, z::formatForJS($value));
+							echo sprintf('const %s = %s;', $key, z::formatForJS($value));
 						}
 						echo '</script>' . z::$crlf;
 					} else {

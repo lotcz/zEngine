@@ -34,10 +34,13 @@ class adminModule extends zModule {
 
 	public $admin = null;
 
+	public $show_custom_menu_to_external = false;
+
 	public function onEnabled() {
 		$this->base_url = $this->getConfigValue('admin_area_base_url', $this->base_url);
 		$this->base_dir = $this->getConfigValue('admin_area_base_dir', $this->base_dir);
 		$this->login_url = $this->getConfigValue('login_page_url', $this->login_url);
+		$this->show_custom_menu_to_external = $this->getConfigValue('show_custom_menu_to_external', $this->show_custom_menu_to_external);
 
 		$this->z->core->includeJS('https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js', 'admin.bottom');
 		$this->z->core->includeCSS('https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css', 'admin.head');
@@ -158,8 +161,10 @@ class adminModule extends zModule {
 
 		if ($this->isAuth()) {
 
-			//custom menu from app's admin config
-			$menu->loadItemsFromArray($this->getConfigValue('custom_menu'));
+			if ($this->show_custom_menu_to_external || $this->hasAnyRole()) {
+				//custom menu from app's admin config
+				$menu->loadItemsFromArray($this->getConfigValue('custom_menu'));
+			}
 
 			// SUPERUSER - standard admin menu
 			if ($this->isSuperUser() || $this->isAdmin()) {

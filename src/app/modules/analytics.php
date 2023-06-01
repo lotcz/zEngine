@@ -9,15 +9,19 @@ class analyticsModule extends zModule {
 	}
 
 	function OnBeforeRender() {
-		$this->z->core->includeJS('https://www.googletagmanager.com/gtag/js?id=' . $this->id, true, 'head');
+		if ($this->z->isDebugMode()) {
+			$this->z->core->insertJS('console.log(\'Analytics disabled in debug mode. GA-ID: ' . $this->id . '\');', 'bottom');
+			return;
+		}
+
+		$this->z->core->includeJS('https://www.googletagmanager.com/gtag/js?id=' . $this->id, 'head');
 		$this->z->core->insertJS(
-			"
-				window.dataLayer = window.dataLayer || [];
-             	function gtag(){dataLayer.push(arguments);}
-             	gtag('js', new Date());
-             	gtag('config', '$this->id');
-            ",
-            'head'
+			"window.dataLayer = window.dataLayer || [];
+				function gtag(){dataLayer.push(arguments);}
+				gtag('js', new Date());
+				gtag('config', '$this->id');
+			",
+			'head'
 		);
 	}
 

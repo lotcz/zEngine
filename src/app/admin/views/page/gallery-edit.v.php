@@ -1,6 +1,6 @@
 <div>
 	<div class="gallery-form">
-		<form id="image_form" action="<?=$this->url('admin/plain/default/gallery-edit')?>" method="POST" enctype="multipart/form-data">
+		<form id="image_form" method="POST" enctype="multipart/form-data">
 			<input type="hidden" name="gallery_id" value="<?=$gallery_id?>" />
 			<div class="gallery-upload">
 				<input id="gallery_image_file" name="image_file" type="file" class="form-control-file" />

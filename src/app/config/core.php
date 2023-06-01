@@ -45,7 +45,7 @@
 		// type - link_css/print_css/link_less/link_js/inline_js/favicon
 		// placement - head/default/bottom/admin.head/admin.default/admin.bottom
 		'includes' => [
-			['https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js', true, 'link_js', 'bottom'],
-			['https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css', true, 'link_css', 'head']
+			['https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js', 'link_js', 'bottom'],
+			['https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css', 'link_css', 'head']
 		]
 	];
