@@ -17,6 +17,7 @@
 			'image_caption' => true,
 			'image_advtab' => true,
 			'image_dimensions' => false,
+			'relative_urls' => false,
 			'typeahead_urls' => false,
 			'style_formats' => [
 				[ 'title' => 'Odstavec', 'format' => 'p' ],

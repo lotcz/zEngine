@@ -17,8 +17,9 @@ class galleryModule extends zModule {
 		$this->z->core->includeCSS('resources/gallery.css', 'admin.head');
 	}
 
-	function createGallery() {
+	function createGallery(string $name = '') {
 		$gallery = new GalleryModel($this->z->db);
+		$gallery->set('gallery_name', $name);
 		$gallery->save();
 		return $gallery;
 	}
@@ -42,12 +43,12 @@ class galleryModule extends zModule {
 		$image->delete();
 	}
 
-	function deleteImage(int $image_id) {
+	function deleteImage(int $image_id = null) {
 		$image = new ImageModel($this->z->db, $image_id);
 		$this->deleteImageInternal($image);
 	}
 
-	function deleteGallery(int $gallery_id) {
+	function deleteGallery(int $gallery_id = null) {
 		$images = $this->loadGalleryImages($gallery_id);
 		foreach ($images as $image) {
 			$this->deleteImageInternal($image);

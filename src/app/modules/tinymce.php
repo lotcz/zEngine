@@ -18,6 +18,10 @@ class tinymceModule extends zModule {
 		}
 	}
 
+	public function onBeforeRender() {
+		$this->activateTinyMce();
+	}
+
 	public function activateTinyMce($placement = 'admin.bottom') {
 		$this->z->core->insertJS(['z_tinymceconfig' => $this->tinymce_config], $placement);
 		$this->z->core->insertJS('tinymce.init(z_tinymceconfig);', $placement);
@@ -27,8 +31,12 @@ class tinymceModule extends zModule {
 		$this->tinymce_config = $config;
 	}
 
-	public function onBeforeRender() {
-		$this->activateTinyMce();
+	public function getTinyMceConfig() {
+		return $this->tinymce_config;
+	}
+
+	public function addToConfig($config) {
+		$this->setTinyMceConfig(z::mergeAssocArrays($this->getTinyMceConfig(), $config));
 	}
 
 }
