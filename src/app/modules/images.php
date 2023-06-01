@@ -98,10 +98,10 @@ class imagesModule extends zModule {
 					$this->z->messages->error($message);
 					return;
 				}
-				
+
 				$width = z::parseInt($info[0]);
 				$height = z::parseInt($info[1]);
-				
+
 				$src_x = 0;
 				$src_y = 0;
 				$src_width = $width;
@@ -113,12 +113,12 @@ class imagesModule extends zModule {
 						$newWidth = $format_width;
 						break;
 
-					case 'crop':						
+					case 'crop':
 						$original_aspect = $width / $height;
 						$new_aspect = $format_width / $format_height;
 
 						if ($original_aspect > $new_aspect) {
-							$src_width = $height * $new_aspect;		
+							$src_width = $height * $new_aspect;
 							$src_x = ($width - $src_width) / 2;
 						} else {
 							$src_height = $width / $new_aspect;
@@ -139,15 +139,15 @@ class imagesModule extends zModule {
 							$newHeight = $height;
 							$newWidth = $width;
 						}
-		
+
 						if ($newHeight > $format_height) {
 							$newWidth = ($newWidth / $newHeight) * $format_height;
 							$newHeight = $format_height;
 						}
 						break;
-				}		
+				}
 
-				$tmp = imagecreatetruecolor($newWidth, $newHeight);
+				$tmp = imagecreatetruecolor(round($newWidth), round($newHeight));
 
 				switch ($new_image_ext)	{
 					case "png":
@@ -180,7 +180,7 @@ class imagesModule extends zModule {
 						break;
 				}
 
-				imagecopyresampled($tmp, $img, 0, 0, $src_x, $src_y, $newWidth, $newHeight, $src_width, $src_height);
+				imagecopyresampled($tmp, $img, 0, 0, $src_x, $src_y, round($newWidth), round($newHeight), $src_width, $src_height);
 
 				if (file_exists($resized_path)) {
 					unlink($resized_path);
@@ -249,7 +249,7 @@ class imagesModule extends zModule {
 		$info = getimagesize($path);
 		return $info[3];
 	}
-	
+
 	public function renderImage($image, $format = 'thumb', $alt = '', $css = '') {
 		$url = $this->img($image, $format);
 		$size = $this->getImgSize($image, $format);

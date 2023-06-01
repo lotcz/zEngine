@@ -8,7 +8,7 @@
 		null, /* orderby */
 		null, /* limit */
 		[z::mysqlTimestamp(time())], /* bindings */
-		[PDO::PARAM_INT] /* types */
+		[PDO::PARAM_STR] /* types */
 	);
 
 	foreach ($sessions as $session) {

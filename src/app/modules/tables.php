@@ -56,7 +56,7 @@ class tablesModule extends zModule {
 				}
 			}
 			if (count($where) > 0) {
-				$table->where = implode($where, ' or ');
+				$table->where = implode(' or ', $where);
 			} else {
 				$table->where = null;
 				$table->bindings = null;

@@ -41,22 +41,22 @@
 			?>
 
 		var config = {
-				 type: 'pie',
-				 data: {
-						 datasets: [{
-								 data: pieData,
-								 label: 'Sessions',
-								 backgroundColor: [
-	                'Red',
-	                'Blue',
-	                'Green'
-	            ]
-						 }],
-						 labels: pieLabels
-				 },
-				 options: {
-						 responsive: true
-				 }
+				type: 'pie',
+				data: {
+					 datasets: [{
+						 data: pieData,
+						 label: 'Sessions',
+						 backgroundColor: [
+							'Red',
+							'Blue',
+							'Green'
+						]
+					}],
+					labels: pieLabels
+				},
+				options: {
+					responsive: true
+				}
 		 };
 
 		var ctx = document.getElementById('myChart1').getContext('2d');

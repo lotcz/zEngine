@@ -4,8 +4,8 @@
 			foreach ($jobs as $job) {
 				?>
 					<div class="my-1">
-							<button type="button" onclick="javascript:runJob('<?=$job?>');" class="btn btn-primary mr-1"><?=$job ?></button>
-							<span><?=$this->z->jobs->getJobUrl($job) ?></span>
+						<button type="button" onclick="javascript:runJob('<?=$job?>');" class="btn btn-primary mr-1"><?=$job ?></button>
+						<span><?=$this->z->jobs->getJobUrl($job) ?></span>
 					</div>
 				<?php
 			}
@@ -21,34 +21,21 @@
 <script>
 
 	function addToConsole(str) {
-		$('#console_inner').html(str);
+		return z.createElement(z.getById('console_inner'), 'div', 'border-1 mt-2', str);
 	}
 
-	function jobFinished(data) {
-		addToConsole(data + '<br/>');
-	}
-
-	function jobErrored(request, message, error) {
-		addToConsole(request.responseText + '<br/>');
-	}
-
-	function runCustomJob() {
-		var job_name = $('#custom').val();
-		runJob(job_name);
+	function jobFinished(el, response) {
+		response.text().then(
+			(text) => el.innerText = `${response.statusText} : ${text}`
+		);
 	}
 
 	function runJob(name) {
-		addToConsole(`Running job ${name}...`);
-		$.get({
-			dataType: 'html',
-			url: '<?=$this->url('jobs') ?>',
-			data: {
-				job: name,
-				security_token: '<?=$this->z->jobs->getConfigValue('security_token') ?>'
-			},
-			success: jobFinished,
-			error: jobErrored
-		});
+		const el = addToConsole(`Running job ${name}...`);
+		const finished = (response) => jobFinished(el, response);
+		z
+			.fetch(`<?=$this->url('jobs') ?>?job=${name}&security_token=<?=$this->z->jobs->getConfigValue('security_token') ?>`)
+			.then(finished);
 	}
 
 </script>

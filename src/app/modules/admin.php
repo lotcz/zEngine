@@ -40,7 +40,7 @@ class adminModule extends zModule {
 		$this->login_url = $this->getConfigValue('login_page_url', $this->login_url);
 
 		$this->z->core->includeJS('https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js', 'admin.bottom');
-        $this->z->core->includeCSS('https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css', 'admin.head');
+		$this->z->core->includeCSS('https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css', 'admin.head');
 
 	}
 
@@ -159,9 +159,7 @@ class adminModule extends zModule {
 		if ($this->isAuth()) {
 
 			//custom menu from app's admin config
-			if ($this->hasAnyRole()) {
-				$menu->loadItemsFromArray($this->getConfigValue('custom_menu'));
-			}
+			$menu->loadItemsFromArray($this->getConfigValue('custom_menu'));
 
 			// SUPERUSER - standard admin menu
 			if ($this->isSuperUser() || $this->isAdmin()) {

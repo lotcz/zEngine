@@ -35,7 +35,7 @@ CREATE TABLE `user_session` (
   `user_session_user_id` INT UNSIGNED NOT NULL,
   `user_session_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `user_session_expires` DATETIME NULL,
-  `user_session_ip` VARCHAR(15),
+  `user_session_ip` VARCHAR(46),
   PRIMARY KEY (`user_session_id`),
   CONSTRAINT `user_session_user_fk`
     FOREIGN KEY (`user_session_user_id`)
