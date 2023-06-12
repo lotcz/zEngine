@@ -1,42 +1,57 @@
-/* UNFINISHED, but good base for native js swiping detection */
+function swipedetect(el, callback){
 
-var swipeStartTime = null;
-var swipeStartX = null;
-var swipeStartY = null;
-var swipeTimer = null;
+	let touchsurface = el,
+	swipedir,
+	startX,
+	startY,
+	distX,
+	distY,
+	threshold = 100, //required min distance traveled to be considered swipe
+	restraint = 75, // maximum distance allowed at the same time in perpendicular direction
+	allowedTime = 350, // maximum time allowed to travel that distance
+	elapsedTime,
+	startTime,
+	handleswipe = callback || function(swipedir){};
 
-function swipeStart(x, y) {
-	swipeStartTime = new Date();
-	swipeStartX = x;
-	swipeStartY = y;
-	swipeTimer = setTimeout(swipeEnd, 2000);
-}
+	touchsurface.addEventListener('touchstart', function(e) {
+		let touchobj = e.changedTouches[0];
+		swipedir = 'none';
+		dist = 0;
+		startX = touchobj.pageX;
+		startY = touchobj.pageY;
+		startTime = new Date().getTime(); // record time when finger first makes contact with surface
+		e.preventDefault();
+		e.stopPropagation();
+	}, false);
 
-function swipeEnd(x, y) {
-	clearTimeout(swipeTimer) ;
-	if (swipeStartTime != null && swipeStartX != null && swipeStartY != null && x != null && y != null) {
-		let now = new Date();
-		const swipeDuration = now.getTime() - swipeStartTime.getTime();
-		const swipeX = x - swipeStartX;
-		const swipeY = y - swipeStartY;
-		if (Math.abs(swipeX) > 30 && Math.abs(swipeX) > Math.abs(swipeY)) {
-			if (swipeX > 0) {
+	touchsurface.addEventListener('touchmove', function(e) {
+		e.preventDefault(); // prevent scrolling when inside DIV
+	}, false);
 
-			} else {
-
+	touchsurface.addEventListener('touchend', function(e) {
+		let touchobj = e.changedTouches[0];
+		distX = touchobj.pageX - startX; // get horizontal dist traveled by finger while in contact with surface
+		distY = touchobj.pageY - startY; // get vertical dist traveled by finger while in contact with surface
+		elapsedTime = new Date().getTime() - startTime; // get time elapsed
+		if (elapsedTime <= allowedTime){ // first condition for awipe met
+			if (Math.abs(distX) >= threshold && Math.abs(distY) <= restraint) { // 2nd condition for horizontal swipe met
+				swipedir = (distX < 0)? 'left' : 'right'; // if dist traveled is negative, it indicates left swipe
+			}
+			else if (Math.abs(distY) >= threshold && Math.abs(distX) <= restraint) { // 2nd condition for vertical swipe met
+				swipedir = (distY < 0)? 'up' : 'down'; // if dist traveled is negative, it indicates up swipe
 			}
 		}
-	}
-	swipeStartTime = null;
-	swipeStartX = null;
-	swipeStartY = null;
+		handleswipe(swipedir);
+		e.preventDefault();
+	}, false);
 }
 
-/* swiping */
-$('#home_slider_wrapper').on('touchstart', function (e) {
-	console.log(e);
-});
-
-$('#home_slider_wrapper').on('touchend', function (e) {
-	console.log(e);
-});
+//USAGE:
+/*
+var el = document.getElementById('someel')
+swipedetect(el, function(swipedir){
+	swipedir contains either "none", "left", "right", "top", or "down"
+	if (swipedir =='left')
+		alert('You just swiped left!')
+})
+*/

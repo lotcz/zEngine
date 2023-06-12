@@ -1,38 +1,119 @@
-#gallery_iframe {
-	border: solid 1px #ced4da;
-}
-
-.gallery-form {
-
-}
-
-.gallery-form .gallery-upload {
-	position: relative;
-	padding: 20px;
-	text-align: center;
-	line-height: 2;
-}
-
-.gallery-form .gallery-upload label {
-	position: absolute;
-	background-color: #007bff;
-	color: #fff;
-	padding-top: 20px;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom:0;
-	border-radius: 4px;
-	font-family: sans-serif;
-	cursor: pointer;
-}
-
-.gallery-images {
+.gallery-thumbnails {
 	display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
+	justify-content: center;
+	align-items: center;
 }
 
-.gallery-images .gallery-image {
-	margin: 10px;
+.gallery-thumbnails .gallery-thumbnail {
+	margin: 5px;
+}
+
+.gallery-thumbnails .gallery-thumbnail img {
+	cursor: pointer;
+}
+
+#gallery_viewer {
+	z-index: 999999;
+	position:fixed;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background-color: rgba(0, 0, 0, 0.8);
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+#gallery_viewer.hidden {
+	display: none;
+}
+
+#gallery_viewer .close-btn,
+#gallery_viewer .arrows div {
+	font-size: 2rem;
+	text-align: center;
+	width: 3rem;
+	height: 3rem;
+	padding: 2px;
+	color: #fff;
+	background-color: rgba(0, 0, 0, 0.8);
+	border-radius: 50%;
+	border: solid 2px #fff;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+#gallery_viewer .close-btn:hover,
+#gallery_viewer .arrows div:hover {
+	background-color: #222;
+}
+
+#gallery_viewer .close-btn:active,
+#gallery_viewer .arrows div:active {
+	background-color: #444;
+}
+
+#gallery_viewer .close-btn:hover {
+	margin-top: 3px;
+}
+
+#gallery_viewer .close-btn:active {
+	margin-top: 6px;
+}
+
+#gallery_viewer .arrows div {
+	margin-top: 0;
+	margin-bottom: 6px;
+}
+
+#gallery_viewer .arrows div:hover {
+	margin-top: 3px;
+	margin-bottom: 3px;
+}
+
+#gallery_viewer .arrows div:active {
+	margin-top: 6px;
+	margin-bottom: 0;
+}
+
+#gallery_viewer .close-btn {
+	z-index: 1000000;
+	position:fixed;
+	top: 5px;
+	right: 5px;
+	background-image: url('close.svg');
+}
+
+#gallery_viewer .arrows {
+	z-index: 1000000;
+	position: fixed;
+	bottom: 5px;
+	display: flex;
+	width: 9rem;
+	flex-direction:row;
+	justify-content: space-between;
+}
+
+#gallery_viewer .arrows .prev-btn {
+	background-image: url('arrow-back.svg');
+}
+
+#gallery_viewer .arrows .next-btn {
+	background-image: url('arrow-forward.svg');
+}
+
+#gallery_viewer img {
+	max-width: 90%;
+	max-height:90%;
+}
+
+@media (any-pointer: coarse) {
+	#gallery_viewer .arrows {
+		top: initial;
+
+	}
 }

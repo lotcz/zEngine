@@ -49,13 +49,19 @@ const z = {
 	show : function(idOrObject) {
 		const el = this.getElement(idOrObject);
 		if (el) {
-			el.style.display = 'block';
+			const current = el.style.display;
+			if (current != 'none') return;
+			const original = el.getAttribute('data-z-original-display');
+			el.style.display = (original) ? original : 'block';
 		}
 	},
 
 	hide : function(idOrObject) {
 		const el = this.getElement(idOrObject);
 		if (el) {
+			const old = el.style.display;
+			if (old === 'none') return;
+			el.setAttribute('data-z-original-display', old);
 			el.style.display = 'none';
 		}
 	},
@@ -96,6 +102,61 @@ const z = {
 			el.addEventListener('click', onClick);
 		}
 		return el;
+	},
+
+	stopPropagation : function(e) {
+		e.stopPropagation();
+	},
+
+	preventDefault : function(e) {
+		e.preventDefault();
+	},
+
+	preventDefaultForScrollKeys : function(e) {
+		// left: 37, up: 38, right: 39, down: 40, spacebar: 32, pageup: 33, pagedown: 34, end: 35, home: 36
+		const scroll_keys = {38: 1, 40: 1, 33: 1, 34: 1, 35: 1, 36: 1};
+		if (scroll_keys[e.keyCode]) {
+			e.preventDefault();
+			return false;
+		}
+	},
+
+	scrollingDisabled : false,
+
+	// modern Chrome requires { passive: false } when adding event
+	supportsPassive : false,
+
+	wheelEvent : 'onwheel' in document.createElement('div') ? 'wheel' : 'mousewheel',
+
+	disableScroll: function () {
+		if (this.scrollingDisabled) return;
+		const wheelOpt = this.supportsPassive ? {passive: false} : false;
+		window.addEventListener('DOMMouseScroll', this.preventDefault, false); // older FF
+		window.addEventListener('wheel', this.preventDefault, wheelOpt); // modern desktop
+		window.addEventListener('touchmove', this.preventDefault, wheelOpt); // mobile
+		window.addEventListener('keydown', this.preventDefaultForScrollKeys, false);
+		this.scrollingDisabled = true;
+	},
+
+	enableScroll: function() {
+		const wheelOpt = this.supportsPassive ? {passive: false} : false;
+		window.removeEventListener('DOMMouseScroll', this.preventDefault, false);
+		window.removeEventListener('wheel', this.preventDefault, wheelOpt);
+		window.removeEventListener('touchmove', this.preventDefault, wheelOpt);
+		window.removeEventListener('keydown', this.preventDefaultForScrollKeys, false);
+		this.scrollingDisabled = false;
 	}
 
 }
+
+try {
+	window.addEventListener(
+		'test',
+		null,
+		Object.defineProperty({}, 'passive', {
+			get: function() {
+				z.supportsPassive = true;
+			},
+		}),
+	);
+} catch (e) {}

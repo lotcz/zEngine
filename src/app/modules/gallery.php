@@ -13,8 +13,10 @@ class galleryModule extends zModule {
 	function onEnabled() {
 		$this->requireConfig();
 
-		$this->z->core->includeJS('resources/gallery.js', 'admin.bottom');
-		$this->z->core->includeCSS('resources/gallery.css', 'admin.head');
+		$this->z->core->includeJS('resources/gallery-admin.js', 'admin.bottom');
+		$this->z->core->includeCSS('resources/gallery-admin.css', 'admin.head');
+		$this->z->core->includeJS('resources/gallery.js', 'bottom');
+		$this->z->core->includeCSS('resources/gallery.css', 'head');
 	}
 
 	function createGallery(string $name = '') {
@@ -62,6 +64,11 @@ class galleryModule extends zModule {
 
 	function renderGalleryForm(int $gallery_id) {
 		$this->z->core->renderPartialView('gallery-form', ['gallery_id' => $gallery_id]);
+	}
+
+	function renderGallery(int $gallery_id) {
+		$images = $this->loadGalleryImages($gallery_id);
+		$this->z->core->renderPartialView('gallery-thumbnails', ['images' => $images]);
 	}
 
 }

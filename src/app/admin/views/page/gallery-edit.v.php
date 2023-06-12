@@ -1,4 +1,4 @@
-<div>
+<div class="gallery-admin-wrapper">
 	<div class="gallery-form">
 		<form id="image_form" method="POST" enctype="multipart/form-data">
 			<input type="hidden" name="gallery_id" value="<?=$gallery_id?>" />
@@ -8,6 +8,7 @@
 			</div>
 		</form>
 	</div>
+
 	<div class="gallery-images">
 		<?php
 			foreach ($images as $image) {
