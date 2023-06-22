@@ -110,10 +110,3 @@
 	max-width: 90%;
 	max-height:90%;
 }
-
-@media (any-pointer: coarse) {
-	#gallery_viewer .arrows {
-		top: initial;
-
-	}
-}
