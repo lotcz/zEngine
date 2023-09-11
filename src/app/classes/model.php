@@ -70,7 +70,11 @@ class zModel {
 		$strip_chars = strlen($table_name) + 1;
 		$result = [];
 		foreach ($this->data as $key => $value) {
-			$result[substr($key, $strip_chars)] = $this->data[$key];
+			if (z::startsWith($key, $table_name)) {
+				$result[substr($key, $strip_chars)] = $this->get($key);
+			} else {
+				$result[$key] = $this->get($key);
+			}
 		}
 		return $result;
 	}
@@ -250,6 +254,18 @@ class zModel {
 	}
 
 	/* static methods for working with arrays of models */
+
+	/**
+	* Return Json array
+	* @return Object
+	*/
+	static function toJson($arr) {
+		$result = [];
+		foreach ($arr as $model) {
+			$result[] = $model->getJson();
+		}
+		return $result;
+	}
 
 	/**
 	* Find an element matching the filter.

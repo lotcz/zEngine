@@ -13,10 +13,10 @@ class galleryModule extends zModule {
 	function onEnabled() {
 		$this->requireConfig();
 
-		$this->z->core->includeJS('resources/gallery-admin.js', 'admin.bottom');
-		$this->z->core->includeCSS('resources/gallery-admin.css', 'admin.head');
-		$this->z->core->includeJS('resources/gallery.js', 'bottom');
-		$this->z->core->includeCSS('resources/gallery.css', 'head');
+		$this->z->core->includeJS('resources/gallery/gallery-admin.js', 'admin.bottom');
+		$this->z->core->includeCSS('resources/gallery/gallery-admin.css', 'admin.head');
+		$this->z->core->includeJS('resources/gallery/gallery.js', 'bottom');
+		$this->z->core->includeCSS('resources/gallery/gallery.css', 'head');
 	}
 
 	function createGallery(string $name = '') {

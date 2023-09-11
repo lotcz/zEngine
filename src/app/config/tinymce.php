@@ -19,6 +19,7 @@
 			'image_dimensions' => false,
 			'relative_urls' => false,
 			'typeahead_urls' => false,
+			'promotion' => false,
 			'style_formats' => [
 				[ 'title' => 'Odstavec', 'format' => 'p' ],
 				[ 'title' => 'Nadpis', 'format' => 'h2' ],

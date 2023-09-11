@@ -43,6 +43,7 @@ class adminModule extends zModule {
 		$this->show_custom_menu_to_external = $this->getConfigValue('show_custom_menu_to_external', $this->show_custom_menu_to_external);
 
 		$this->z->core->includeJS('https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js', 'admin.bottom');
+		//$this->z->core->includeJS('https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js', 'admin.bottom');
 		$this->z->core->includeCSS('https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css', 'admin.head');
 
 	}
@@ -119,7 +120,7 @@ class adminModule extends zModule {
 	}
 
 	public function isAdmin() {
-		return $this->hasRole(AdminRoleModel::role_admin);
+		return $this->hasAnyRole([AdminRoleModel::role_superuser, AdminRoleModel::role_admin]);
 	}
 
 	/**

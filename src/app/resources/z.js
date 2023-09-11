@@ -74,7 +74,7 @@ const z = {
 		return null;
 	},
 
-	fetch : async function(url, body, method = 'GET') {
+	fetch : async function(url, body = null, method = 'GET') {
 		return fetch(url, {
 			method: method, // *GET, POST, PUT, DELETE, etc.
 			mode: 'cors', // no-cors, *cors, same-origin
@@ -85,8 +85,19 @@ const z = {
 			},
 			redirect: 'follow', // manual, *follow, error
 			referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-			body: body // body data type must match "Content-Type" header
-		});
+			body: body ? JSON.stringify(body) : undefined// body data type must match "Content-Type" header
+		})
+			.then(
+				(response) => response.json()
+					.then(
+						(json)=> new Promise((resolve, reject) => resolve({json: json, status: response.status}))
+					)
+			);
+	},
+
+	destroyElement : function(el) {
+		if (!el) return;
+		el.remove();
 	},
 
 	createElement : function(parent, tag, css = null, innerText = null, onClick = null) {
@@ -96,7 +107,7 @@ const z = {
 			parent.appendChild(el);
 		}
 		if (innerText) {
-			el.innerText = innerText;
+			el.innerHTML = innerText;
 		}
 		if (onClick) {
 			el.addEventListener('click', onClick);
@@ -145,6 +156,33 @@ const z = {
 		window.removeEventListener('touchmove', this.preventDefault, wheelOpt);
 		window.removeEventListener('keydown', this.preventDefaultForScrollKeys, false);
 		this.scrollingDisabled = false;
+	},
+
+	getDateTimeLocalVal: function (date) {
+		const d = new Date(date);
+		d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+		return d.toISOString().slice(0,16);
+	},
+
+	parseDateTimeLocalVal: function (str) {
+		const d = new Date(str);
+		d.setMinutes(d.getMinutes() + d.getTimezoneOffset());
+		return d;
+	},
+
+	valueToClipboard: function (value) {
+		if (!window.isSecureContext) {
+			console.error("Not in secure context! Use site with HTTPS.");
+			return;
+		}
+		navigator.clipboard
+			.writeText(value)
+			.then(() => {
+				console.log("Copied value to clipboard.");
+			})
+			.catch((e) => {
+				console.error("Something went wrong when copying value to clipboard.", e);
+			});
 	}
 
 }
@@ -160,3 +198,10 @@ try {
 		}),
 	);
 } catch (e) {}
+
+Date.prototype.toJSON = function() {
+	const hoursDiff = this.getHours() - this.getTimezoneOffset() / 60;
+	const zoned = new Date(this);
+	zoned.setHours(hoursDiff);
+	return zoned.toISOString();
+};

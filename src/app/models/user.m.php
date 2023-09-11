@@ -66,4 +66,11 @@ class UserModel extends zModel {
 		}
 	}
 
+	public function getJson() {
+		$json = parent::getJson();
+		unset($json->password_hash);
+		unset($json->reset_password_hash);
+		return $json;
+	}
+
 }

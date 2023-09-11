@@ -85,7 +85,7 @@
 	position:fixed;
 	top: 5px;
 	right: 5px;
-	background-image: url('close.svg');
+	background-image: url('../img/close.svg');
 }
 
 #gallery_viewer .arrows {
@@ -99,11 +99,11 @@
 }
 
 #gallery_viewer .arrows .prev-btn {
-	background-image: url('arrow-back.svg');
+	background-image: url('../img/arrow-back.svg');
 }
 
 #gallery_viewer .arrows .next-btn {
-	background-image: url('arrow-forward.svg');
+	background-image: url('../img/arrow-forward.svg');
 }
 
 #gallery_viewer img {

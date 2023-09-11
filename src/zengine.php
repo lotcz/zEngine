@@ -9,7 +9,7 @@ require_once __DIR__ . '/app/classes/module.php';
 */
 class zEngine {
 
-	public $version = 13.41;
+	public $version = 14.10;
 	public $app_dir = '';
 	public $modules = [];
 
@@ -180,7 +180,7 @@ class zEngine {
 				}
 			}
 		} catch (Exception $e) {
-			$this->fatalError(sprintf('Unrecoverable error on page \'%s\': %s', $this->core->raw_path, $e->getMessage()));
+			$this->fatalError(sprintf('Unrecoverable exception on page \'%s\': %s', $this->core->raw_path, $e->getMessage()));
 		}
 	}
 

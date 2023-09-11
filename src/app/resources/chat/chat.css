@@ -88,7 +88,7 @@
 }
 
 #chat_icon_wrapper .chat-icon {
-	background-image: url('chat.svg');
+	background-image: url('chat/chat.svg');
 	background-position: center;
 	background-repeat: no-repeat;
 	background-size: contain;
@@ -97,7 +97,7 @@
 }
 
 .chat-is-open #chat_icon_wrapper .chat-icon {
-	background-image: url('send.svg');
+	background-image: url('../send.svg');
 }
 
 #chat_close {
@@ -112,7 +112,7 @@
 	background-color: blue;
 	text-align: center;
 	cursor: pointer;
-	background-image: url('close.svg');
+	background-image: url('../img/close.svg');
 	background-position: center;
 	background-repeat: no-repeat;
 	background-size: 10px;

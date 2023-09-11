@@ -49,6 +49,10 @@ class z {
 		}
 	}
 
+	static function getRequestBody() {
+		return file_get_contents('php://input');
+	}
+
 	/**
 	* Divide two numbers, but never raise an exception. Zero is returned when dividing by zero, null is returned when one of numbers is null.
 	*/

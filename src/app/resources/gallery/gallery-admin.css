@@ -42,3 +42,9 @@
 	margin: 10px;
 }
 
+.popover-value-to-clipboard {
+	--bs-popover-max-width: auto;
+	--bs-popover-body-padding-x: .5rem;
+	--bs-popover-body-padding-y: .5rem;
+}
+

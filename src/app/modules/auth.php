@@ -18,7 +18,7 @@ class authModule extends zModule {
 
 	public $cookie_name = 'session_token';
 
-	public $public_login_home = 'custom';
+	public $public_login_home = '';
 
 	function onEnabled() {
 		$this->requireConfig();
@@ -149,6 +149,27 @@ class authModule extends zModule {
 		}
 	}
 
+	public function loadUserByLoginOrEmail($email) {
+		$usr = new UserModel($this->z->db);
+		$usr->loadByLoginOrEmail($email);
+		return $usr->is_loaded ? $usr : null;
+	}
+
+	public function emailExists($email) {
+		if ($this->isAuth() && $this->z->auth->user->get('user_email') === $email) {
+			return true;
+		}
+		$usr = $this->loadUserByLoginOrEmail($email);
+		return $usr !== null;
+	}
+
+	public function obtainAuthenticatedUser() {
+		if (!$this->isAuth()) {
+			$this->createAnonymousSession();
+		}
+		return $this->user;
+	}
+
 	/**
 	* Set current session's expiration date
 	*/
@@ -219,7 +240,17 @@ class authModule extends zModule {
 	* @return UserModel
 	*/
 	public function registerUser($full_name, $login, $email, $password) {
-		$user = $this->createUser($full_name, $login, $email, $password, UserModel::user_state_waiting_for_activation);
+		if ($this->emailExists($email)) {
+			throw new Exception("Email $email already exists!");
+		}
+		if ($this->isAuth() && $this->user->isAnonymous()) {
+			$user = $this->user;
+			$user->data->set('user_email', $email);
+			$user->data->set('user_state', UserModel::user_state_waiting_for_activation);
+			$user->save();
+		} else {
+			$user = $this->createUser($full_name, $login, $email, $password, UserModel::user_state_waiting_for_activation);
+		}
 		$activation_token = $this->generateAccountActivationToken();
 		$user->data['user_reset_password_hash'] = $this->hashPassword($activation_token);
 		$expires = time() + $this->getConfigValue('reset_password_expires');

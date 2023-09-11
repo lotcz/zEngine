@@ -43,6 +43,7 @@
 	$language_data['Thank you for your registration on our website.'] = 'Děkujeme Vám, že jste se registrovali na našem webu.';
 	$language_data['This email is already used!'] = 'Tento email je již obsazen!';
 	$language_data['E-mail address is not in correct form! Please enter valid e-mail address.'] = 'Emailová adresa není ve správném formátu! Zadejte prosím platnou emailovou adresu.';
+	$language_data['Invalid email address!'] = 'Neplatná emailová adresa!';
 	$language_data['If you forget your password, you can reset it <a href="%s">here</a>.'] = 'Pokud zapomenete Vaše heslo, můžete jej resetovat <a href="%s">zde</a>.';
 	$language_data['To activate your account, click this <a href="%s">link</a>.'] = 'Pro aktivaci Vašeho účtu klikněte prosím na tento <a href="%s">odkaz</a>.';
 	$language_data['Account Activation'] = 'Aktivace účtu';

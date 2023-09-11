@@ -172,7 +172,7 @@ class formsModule extends zModule {
 */
 					//VALIDATION
 					if ($this->validateForm($form, $form->processed_input)) {
-						$entity_id_value = z::parseInt($_POST[$model_class_name::getIdName()]);
+						$entity_id_value = z::getInt($model_class_name::getIdName());
 						if ($entity_id_value > 0) {
 							$model->loadById($entity_id_value);
 						}
@@ -443,7 +443,7 @@ class formsModule extends zModule {
 				<?php
 			} elseif ($field->type == 'buttons') {
 				?>
-					<div class="d-flex flex-row">
+					<div class="d-flex flex-row align-items-center">
 						<?php
 							foreach ($field->buttons as $button) {
 								if ($button['type'] == 'link') {
