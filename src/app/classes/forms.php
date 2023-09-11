@@ -224,7 +224,7 @@ class zForm {
 
 	public function renderStartTag() {
 		?>
-			<form id="form_<?=$this->id ?>" action="<?=$this->action ?>" method="<?=$this->method ?>" class="<?=$this->css ?>" enctype="multipart/form-data">
+			<form id="form_<?=$this->id ?>" action="<?=$this->action ?>" method="<?=$this->method ?>" class="<?=$this->css ?> form-type-<?=$this->type ?>" enctype="multipart/form-data">
 		<?php
 	}
 
@@ -265,7 +265,7 @@ class zForm {
 	}
 
 	// integer - param => allow empty
-	static function validate_integer($value, $param) {
+	static function validate_integer($value, $param = null) {
 		return ($param && ($value == '')) || (is_int($value) || ctype_digit($value));
 	}
 
@@ -277,7 +277,7 @@ class zForm {
 		return (z::parseFloat($value) <= z::parseFloat($param));
 	}
 
-	static function validate_decimal($value, $param) {
+	static function validate_decimal($value, $param = null) {
 		return ($param && ($value == '')) || is_numeric($value);
 	}
 

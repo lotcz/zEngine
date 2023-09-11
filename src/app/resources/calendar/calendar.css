@@ -1,0 +1,168 @@
+.calendar-view {
+	position: relative;
+	border: solid 1px #e0e0e0;
+	border-radius: 10px;
+	font-size: 16pt;
+}
+
+.calendar-view .loading {
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	background-color: white;
+	min-height: 250px;
+	min-width: 100%;
+}
+
+.calendar-menu button {
+	background-repeat: no-repeat;
+	background-position: center;
+	padding-left: 15px;
+	padding-right: 15px;
+	margin-right: 10px;
+}
+
+.calendar-menu button.btn-primary:hover {
+	background-color: #96b9e0;
+	border-color: #96b9e0;
+}
+
+.calendar-menu button.up-button {
+	background-image: url('../img/arrow-up.svg');
+}
+
+.calendar-menu button.prev-button {
+	background-image: url('../img/arrow-back.svg');
+}
+
+.calendar-menu button.next-button {
+	background-image: url('../img/arrow-forward.svg');
+}
+
+.calendar-menu .description {
+	margin-right: 10px;
+}
+
+.calendar .form-wrapper {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	background-color: rgba(0, 0, 0, 0.4);
+	border-radius: 10px;
+}
+
+.calendar .form-wrapper .form {
+	background-color: #fff;
+	border-radius: 10px;
+	padding: 20px;
+}
+.calendar .form-wrapper .form h4 {
+	padding-top: 0;
+}
+
+.calendar .view-month {
+	display: grid;
+	gap: 10px;
+	padding: 10px;
+	grid-template-columns: auto auto auto auto auto auto auto;
+}
+
+.calendar .view-month .slot-day {
+	position: relative;
+	border-radius: 10px;
+	padding: 20px;
+	text-align: center;
+}
+
+.calendar .view-month .slot-day .reservations {
+	position: absolute;
+	bottom: 5px;
+	display: flex;
+	flex-direction: row;
+}
+
+.calendar .view-month .slot-day .reservations .reservation {
+	width: 8px;
+	height: 8px;
+	background-color: #1e4d1e;
+	border-radius: 4px;
+	margin-right: 2px;
+}
+
+.calendar .view-month .slot-day.label {
+
+}
+
+.calendar .view-month .slot-day.available {
+	background: #c3e8c3;
+}
+
+.calendar .view-month .slot-day.available:hover {
+	cursor: pointer;
+	color: #fff;
+	background: #8ac28a;
+}
+
+.calendar .view-month .slot-day.disabled {
+	background: #E0E0E0;
+}
+
+.calendar .view-month .slot-day.occupied {
+	background: #e78383;
+	color: #fff;
+}
+
+.calendar .view-month .slot-day.weekend {
+	border: solid 1px #E0E0E0;
+}
+
+.calendar .view-month .slot-day.past {
+	background: #8a8a8a;
+	color: #fff;
+}
+
+.calendar .view-month .slot-day.today {
+	box-shadow: 0 0 8px #5172de;
+}
+
+.calendar .view-day .slot {
+	border-bottom: solid 1px #e0e0e0;
+}
+
+.calendar .view-day .slot-body {
+	display: flex;
+	flex-direction: row;
+}
+
+.calendar .view-day .slot:last-child {
+	border-bottom: none;
+}
+
+.calendar .view-day .slot .slot-time {
+	border-right: solid 1px #e0e0e0;
+}
+
+.calendar .view-day .slot-minutes {
+	font-size: 0.5em;
+}
+
+.calendar .view-day .slot-minutes {
+	flex: 1;
+}
+
+.calendar .view-day .slot-body.occupied {
+	background-color: #e78383;
+	color: #fff;
+}
+
+.calendar .view-day .slot-body.available:hover {
+	box-shadow: 0px 0px 4px #5172de;
+}

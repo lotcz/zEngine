@@ -13,12 +13,15 @@ class galleryModule extends zModule {
 	function onEnabled() {
 		$this->requireConfig();
 
-		$this->z->core->includeJS('resources/gallery.js', false, 'admin.bottom');
-		$this->z->core->includeCSS('resources/gallery.css', false, 'admin.head');
+		$this->z->core->includeJS('resources/gallery/gallery-admin.js', 'admin.bottom');
+		$this->z->core->includeCSS('resources/gallery/gallery-admin.css', 'admin.head');
+		$this->z->core->includeJS('resources/gallery/gallery.js', 'bottom');
+		$this->z->core->includeCSS('resources/gallery/gallery.css', 'head');
 	}
 
-	function createGallery() {
+	function createGallery(string $name = '') {
 		$gallery = new GalleryModel($this->z->db);
+		$gallery->set('gallery_name', $name);
 		$gallery->save();
 		return $gallery;
 	}
@@ -42,12 +45,12 @@ class galleryModule extends zModule {
 		$image->delete();
 	}
 
-	function deleteImage(int $image_id) {
+	function deleteImage(int $image_id = null) {
 		$image = new ImageModel($this->z->db, $image_id);
 		$this->deleteImageInternal($image);
 	}
 
-	function deleteGallery(int $gallery_id) {
+	function deleteGallery(int $gallery_id = null) {
 		$images = $this->loadGalleryImages($gallery_id);
 		foreach ($images as $image) {
 			$this->deleteImageInternal($image);
@@ -61,6 +64,11 @@ class galleryModule extends zModule {
 
 	function renderGalleryForm(int $gallery_id) {
 		$this->z->core->renderPartialView('gallery-form', ['gallery_id' => $gallery_id]);
+	}
+
+	function renderGallery(int $gallery_id) {
+		$images = $this->loadGalleryImages($gallery_id);
+		$this->z->core->renderPartialView('gallery-thumbnails', ['images' => $images]);
 	}
 
 }

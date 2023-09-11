@@ -19,10 +19,10 @@ class formsModule extends zModule {
 		$this->protection_enabled = $this->getConfigValue('protection_enabled', $this->protection_enabled);
 		$this->protection_token_min_delay = $this->getConfigValue('protection_token_min_delay', $this->protection_token_min_delay);
 		$this->protection_token_expires = $this->getConfigValue('protection_token_expires', $this->protection_token_expires);
-		$this->z->core->includeJS('resources/forms.js', false, 'bottom');
-		$this->z->core->includeCSS('resources/forms.css', false, 'head');
-		$this->z->core->includeJS('resources/forms.js', false, 'admin.bottom');
-		$this->z->core->includeCSS('resources/forms.css', false, 'admin.head');
+		$this->z->core->includeJS('resources/forms.js', 'bottom');
+		$this->z->core->includeCSS('resources/forms.css', 'head');
+		$this->z->core->includeJS('resources/forms.js', 'admin.bottom');
+		$this->z->core->includeCSS('resources/forms.css', 'admin.head');
 	}
 
 	public function pathParam() {
@@ -172,7 +172,7 @@ class formsModule extends zModule {
 */
 					//VALIDATION
 					if ($this->validateForm($form, $form->processed_input)) {
-						$entity_id_value = z::parseInt($_POST[$model_class_name::getIdName()]);
+						$entity_id_value = z::getInt($model_class_name::getIdName());
 						if ($entity_id_value > 0) {
 							$model->loadById($entity_id_value);
 						}
@@ -293,7 +293,7 @@ class formsModule extends zModule {
 
 	public function renderSelect($name, $items, $id_name, $label_name, $localized = false, $selected_value = null) {
 		?>
-			<select name="<?=$name ?>" class="form-control">
+			<select name="<?=$name ?>" class="form-select">
 				<?php
 					for ($i = 0, $max = count($items); $i < $max; $i++) {
 						$value = $items[$i]->ival($id_name);
@@ -360,7 +360,7 @@ class formsModule extends zModule {
 		$label_css = '';
 		$value_css = '';
 
-		if ($form->type == 'horizontal') {
+		if ($form->type === 'horizontal') {
 			$label_css = 'col-sm-4';
 			$value_css = 'col-sm-8';
 		}
@@ -388,7 +388,7 @@ class formsModule extends zModule {
 				switch ($field->type) {
 					case 'staticdate' :
 					case 'static_date' :
-						$render_value = $this->z->i18n->formatDatetime(strtotime($field->value));
+						$render_value = ($field->value === null) ? '' : $this->z->i18n->formatDatetime(strtotime($field->value));
 					break;
 					case 'staticlocalized' :
 					case 'static_localized' :
@@ -443,7 +443,7 @@ class formsModule extends zModule {
 				<?php
 			} elseif ($field->type == 'buttons') {
 				?>
-					<div class="form-buttons">
+					<div class="d-flex flex-row align-items-center">
 						<?php
 							foreach ($field->buttons as $button) {
 								if ($button['type'] == 'link') {
@@ -473,9 +473,16 @@ class formsModule extends zModule {
 				$this->z->openinghours->renderFormField($field);
 			} else {
 				?>
-					<div id="<?=$field->name ?>_form_group" class="form-group <?=($form->type) == 'horizontal' ? 'row' : '' ?>">
-						<label for="<?=$field->name ?>" class="<?=$label_css ?> control-label form-label"><?=$this->z->core->t($field->label) ?>:</label>
-						<div class="<?=$value_css ?>">
+					<div id="<?=$field->name ?>_form_group" class="form-group <?=($form->type) == 'horizontal' ? 'row me-2' : '' ?> <?=isset($field->css) ? $field->css : '' ?>">
+						<?php
+							if (strlen($field->label) > 0) {
+								?>
+									<label for="<?=$field->name ?>" class="<?=$label_css ?> control-label form-label <?=$form->type === 'inline' ? 'me-2' : '' ?>"><?=$this->z->core->t($field->label) ?>:</label>
+								<?php
+							}
+						?>
+
+						<div class="<?=$value_css ?> <?=$form->type === 'inline' ? 'me-2' : '' ?>">
 							<div class="input-group form-field">
 								<?php
 

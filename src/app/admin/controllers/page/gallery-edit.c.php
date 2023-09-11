@@ -8,7 +8,7 @@
 		if ($image_id !== null && $image_id > 0) {
 			$this->z->gallery->deleteImage($image_id);
 		} else {
-			// image upload
+			// upload image
 			$this->z->gallery->uploadImage($gallery_id, 'image_file');
 		}
 	}

@@ -8,16 +8,19 @@
 
 .gallery-form .gallery-upload {
 	position: relative;
-	padding: 20px;
 	text-align: center;
 	line-height: 2;
 }
+
+.gallery-form .gallery-upload input {
+	visibility: collapse;
+}
+
 
 .gallery-form .gallery-upload label {
 	position: absolute;
 	background-color: #007bff;
 	color: #fff;
-	padding-top: 20px;
 	top: 0;
 	left: 0;
 	right: 0;
@@ -25,6 +28,8 @@
 	border-radius: 4px;
 	font-family: sans-serif;
 	cursor: pointer;
+	height: 40px;
+	line-height: 40px;
 }
 
 .gallery-images {
@@ -36,3 +41,10 @@
 .gallery-images .gallery-image {
 	margin: 10px;
 }
+
+.popover-value-to-clipboard {
+	--bs-popover-max-width: auto;
+	--bs-popover-body-padding-x: .5rem;
+	--bs-popover-body-padding-y: .5rem;
+}
+

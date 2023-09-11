@@ -12,7 +12,7 @@ class tablesModule extends zModule {
 
 	public function onEnabled() {
 		$this->z->core->includeCSS('resources/tables.css');
-		$this->z->core->includeCSS('resources/tables.css', false, 'admin.head');
+		$this->z->core->includeCSS('resources/tables.css', 'admin.head');
 	}
 
 	public function createPaging() : zPaging {
@@ -56,7 +56,7 @@ class tablesModule extends zModule {
 				}
 			}
 			if (count($where) > 0) {
-				$table->where = implode($where, ' or ');
+				$table->where = implode(' or ', $where);
 			} else {
 				$table->where = null;
 				$table->bindings = null;

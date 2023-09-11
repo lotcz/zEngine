@@ -1,3 +1,11 @@
+.form-group {
+	margin-bottom: 1rem;
+}
+
+.form-type-inline .form-group {
+	margin-bottom: 0;
+}
+
 .form-validation {
     display: none;
     color: red;
@@ -19,7 +27,7 @@ textarea.wysiwyg,
 }
 
 #article_text_form_group textarea.wysiwyg,
-article_text_form_group .tox-tinymce {
+#article_text_form_group .tox-tinymce {
     height: 450px;
 }
 

@@ -25,8 +25,7 @@ DROP VIEW IF EXISTS `viewUsers`;
 
 CREATE VIEW viewUsers AS
 	SELECT *, u.user_id as admin_id
-	FROM user u
-	WHERE u.user_admin_role_id is null;
+	FROM user u;
 
 DROP TABLE IF EXISTS `session`;
 
@@ -36,7 +35,7 @@ CREATE TABLE `user_session` (
   `user_session_user_id` INT UNSIGNED NOT NULL,
   `user_session_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `user_session_expires` DATETIME NULL,
-  `user_session_ip` VARCHAR(15),
+  `user_session_ip` VARCHAR(46),
   PRIMARY KEY (`user_session_id`),
   CONSTRAINT `user_session_user_fk`
     FOREIGN KEY (`user_session_user_id`)

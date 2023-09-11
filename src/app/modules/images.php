@@ -5,10 +5,11 @@
 */
 class imagesModule extends zModule {
 
-	public $formats = '';
+	public $formats = [];
 	public $root_images_disk_path = '';
 	public $root_images_url = '';
 
+	public $original_format_name = 'original';
 	public $no_image = 'no-image.jpg';
 	public $image_not_found = 'image-not-found.jpg';
 
@@ -16,22 +17,23 @@ class imagesModule extends zModule {
 		$this->requireConfig();
 
 		$this->root_images_disk_path = $this->getConfigValue('images_disk_path', $this->root_images_disk_path);
-		$this->root_images_url = $this->config['images_url'];
-		$this->formats = $this->config['formats'];
+		$this->root_images_url = $this->getConfigValue('images_url');
+		$this->formats = $this->getConfigValue('formats');
+		$this->original_format_name = $this->getConfigValue('original_format_name', $this->original_format_name);
 		$this->no_image = $this->getConfigValue('no_image', $this->no_image);
 		$this->image_not_found = $this->getConfigValue('image_not_found', $this->image_not_found);
 	}
 
 	public function getImagePath($image, $format = null) {
 		if (!isset($format)) {
-			return $this->getImagePath($image, 'originals');
+			return $this->getImagePath($image, $this->original_format_name);
 		}
 		return $this->root_images_disk_path . $format . '/' . $image;
 	}
 
 	public function getImageURL($image, $format = null) {
 		if (!isset($format)) {
-			return $this->getImageURL($image, 'originals');
+			return $this->getImageURL($image, $this->original_format_name);
 		}
 		return $this->root_images_url . '/' . $format . '/' . $image;
 	}
@@ -98,10 +100,10 @@ class imagesModule extends zModule {
 					$this->z->messages->error($message);
 					return;
 				}
-				
+
 				$width = z::parseInt($info[0]);
 				$height = z::parseInt($info[1]);
-				
+
 				$src_x = 0;
 				$src_y = 0;
 				$src_width = $width;
@@ -113,12 +115,12 @@ class imagesModule extends zModule {
 						$newWidth = $format_width;
 						break;
 
-					case 'crop':						
+					case 'crop':
 						$original_aspect = $width / $height;
 						$new_aspect = $format_width / $format_height;
 
 						if ($original_aspect > $new_aspect) {
-							$src_width = $height * $new_aspect;		
+							$src_width = $height * $new_aspect;
 							$src_x = ($width - $src_width) / 2;
 						} else {
 							$src_height = $width / $new_aspect;
@@ -139,15 +141,15 @@ class imagesModule extends zModule {
 							$newHeight = $height;
 							$newWidth = $width;
 						}
-		
+
 						if ($newHeight > $format_height) {
 							$newWidth = ($newWidth / $newHeight) * $format_height;
 							$newHeight = $format_height;
 						}
 						break;
-				}		
+				}
 
-				$tmp = imagecreatetruecolor($newWidth, $newHeight);
+				$tmp = imagecreatetruecolor(round($newWidth), round($newHeight));
 
 				switch ($new_image_ext)	{
 					case "png":
@@ -180,7 +182,7 @@ class imagesModule extends zModule {
 						break;
 				}
 
-				imagecopyresampled($tmp, $img, 0, 0, $src_x, $src_y, $newWidth, $newHeight, $src_width, $src_height);
+				imagecopyresampled($tmp, $img, 0, 0, $src_x, $src_y, round($newWidth), round($newHeight), $src_width, $src_height);
 
 				if (file_exists($resized_path)) {
 					unlink($resized_path);
@@ -196,6 +198,8 @@ class imagesModule extends zModule {
 				$this->z->messages->error($message);
 			}
 		}
+
+		return $this->getImageURL($image, $format);
 	}
 
 	public function deleteImageCache($image) {
@@ -231,13 +235,13 @@ class imagesModule extends zModule {
 		if (!$this->exists($image)) {
 			$image = $this->image_not_found;
 		}
-		if ($format !== null) {
+		if ($format !== null && $format != $this->original_format_name) {
 			$this->prepareImage($image, $format);
 		}
 		return $this->getImageURL($image, $format);
 	}
 
-	public function getImgSize($image, $format) {
+	public function getImgSize($image, $format = null) {
 		$path = '';
 		if ($image === null) {
 			$path = $this->getImagePath($this->no_image, $format);
@@ -246,13 +250,16 @@ class imagesModule extends zModule {
 		} else {
 			$path = $this->getImagePath($this->image_not_found, $format);
 		}
-		$info = getimagesize($path);
-		return $info[3];
+		return getimagesize($path);
 	}
-	
+
+	public function getImgSizeAttr($image, $format = null) {
+		return $this->getImgSize($image, $format)[3];
+	}
+
 	public function renderImage($image, $format = 'thumb', $alt = '', $css = '') {
 		$url = $this->img($image, $format);
-		$size = $this->getImgSize($image, $format);
+		$size = $this->getImgSizeAttr($image, $format);
 		echo sprintf('<img src="%s" class="%s" alt="%s" %s />', $url, $css, $alt, $size);
 	}
 
@@ -267,7 +274,7 @@ class imagesModule extends zModule {
 		$file_name = z::slugify($filename_parts['filename'], $this->z->core->default_encoding);
 		$file_extension = $filename_parts['extension'];
 
-		$target_path = $this->root_images_disk_path . '/originals/';
+		$target_path = $this->root_images_disk_path . '/' . $this->original_format_name . '/';
 		if (!is_dir($target_path)) {
 			mkdir($target_path, 0777, true);
 		}

@@ -3,7 +3,7 @@
 	/*
 		MODE
 
-		fit (default value) - image will preserve aspect and always be the same or smaller than given size 
+		fit (default value) - image will preserve aspect and always be the same or smaller than given size
 		crop - image will be cropped to be exactly the given size
 		scale - scale to new format without preserving aspect
 	*/
@@ -21,6 +21,9 @@
 
 		// base url for images src, no trailing slash
 		'images_url' => 'http://images.url',
+
+		// folder name of original images
+		'original_format_name' => 'originals',
 
 		'no_image' => 'no-image.jpg',
 

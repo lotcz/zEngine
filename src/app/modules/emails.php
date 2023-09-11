@@ -110,7 +110,7 @@ class emailsModule extends zModule {
 		$interval = \DateInterval::createFromDateString(sprintf('%d days', $days));
 		$date = $now->sub($interval);
 		$mysqlTimestamp = z::mysqlTimestamp($date->getTimestamp());
-		$this->z->db->executeDeleteQuery('email', 'email_sent = 1 and email_send_date <= ?', [$mysqlTimestamp], [PDO::PARAM_STR]);
+		return $this->z->db->executeDeleteQuery('email', 'email_sent = 1 and email_send_date <= ?', [$mysqlTimestamp], [PDO::PARAM_STR]);
 	}
 
 }

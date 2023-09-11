@@ -83,13 +83,13 @@ class coreModule extends zModule {
 			$this->requireModule($module_name);
 		}
 
-		$this->includeJS('resources/z.js', false, 'head');
-		$this->includeJS('resources/z.js', false, 'admin.head');
+		$this->includeJS('resources/z.js', 'head');
+		$this->includeJS('resources/z.js', 'admin.head');
 
 		// process default includes
 		$includes = $this->getConfigValue('includes',[]);
 		foreach ($includes as $include) {
-			$this->z->core->addToIncludes(($include[1]) ? $include[0] : $this->z->core->url($include[0]), $include[2], $include[3]);
+			$this->z->core->addToIncludes($include[0], $include[1], $include[2]);
 		}
 
 		if (isset($_GET['path'])) {
@@ -205,8 +205,8 @@ class coreModule extends zModule {
 	}
 
 	public function getFullPageTitle() {
-		$page_title = $this->getData('page_title');
-		$site_title = $this->getData('site_title');
+		$page_title = $this->getData('page_title', '');
+		$site_title = $this->getData('site_title', '');
 		if ((strlen($page_title) > 0) && ($page_title != $site_title)) {
 			return $page_title . ' - ' .  $site_title;
 		} else {
@@ -384,37 +384,33 @@ class coreModule extends zModule {
 		$this->addToIncludes($js_content, 'inline_js', $placement);
 	}
 
-	public function includeJS($js_path, $abs = false, $placement = 'bottom') {
-		if (!$abs) {
-			$js_path = $this->url($js_path);
-		}
+	public function includeJS($js_path, $placement = 'bottom') {
 		$this->addToIncludes($js_path, 'link_js', $placement);
 	}
 
 	public function includeFavicon($path = 'favicon.ico') {
-		$path = $this->url($path);
 		$this->addToIncludes($path, 'favicon', 'head');
 	}
 
-	public function includeCSS($css_path, $abs = false, $placement = 'head') {
-		if (!$abs) {
-			$css_path = $this->url($css_path);
-		}
+	public function includeCSS($css_path, $placement = 'head') {
 		$this->addToIncludes($css_path, 'link_css', $placement);
 	}
 
-	public function includePrintCSS($css_path, $abs = false) {
-		if (!$abs) {
-			$css_path = $this->url($css_path);
-		}
+	public function includePrintCSS($css_path) {
 		$this->addToIncludes($css_path, 'print_css', 'head');
 	}
 
-	public function includeLESS($less_path, $abs = false, $placement = 'head') {
-		if (!$abs) {
-			$less_path = $this->url($less_path);
-		}
+	public function includeLESS($less_path, $placement = 'head') {
 		$this->addToIncludes($less_path, 'link_less', $placement);
+	}
+
+	public function processLinkUrl($url) {
+		$abs = z::startsWith($url, 'http://') || z::startsWith($url, 'https://');
+		if (!$abs) {
+			$url = $this->url($url);
+			$url .= sprintf('?v=%s', $this->app_version);
+		}
+		return $url;
 	}
 
 	public function renderIncludes($placement = 'default') {
@@ -427,7 +423,7 @@ class coreModule extends zModule {
 					if (is_object($incl[0]) || is_array($incl[0])) {
 						echo '<script>';
 						foreach ($incl[0] as $key => $value) {
-							echo sprintf('var %s = %s;', $key, z::formatForJS($value));
+							echo sprintf('const %s = %s;', $key, z::formatForJS($value));
 						}
 						echo '</script>' . z::$crlf;
 					} else {
@@ -435,22 +431,22 @@ class coreModule extends zModule {
 					}
 				break;
 				case 'link_js':
-					echo sprintf('<script src="%s?v=%s"></script>' . z::$crlf, $incl[0], $this->app_version);
+					echo sprintf('<script src="%s"></script>' . z::$crlf, $this->processLinkUrl($incl[0]));
 				break;
 				case 'link_js_module':
-					echo sprintf('<script type="module" src="%s?v=%s"></script>' . z::$crlf, $incl[0], $this->app_version);
+					echo sprintf('<script type="module" src="%s"></script>' . z::$crlf, $this->processLinkUrl($incl[0]));
 				break;
 				case 'link_css':
-					echo sprintf('<link rel="stylesheet" type="text/css" href="%s?v=%s">' . z::$crlf, $incl[0], $this->app_version);
+					echo sprintf('<link rel="stylesheet" type="text/css" href="%s">' . z::$crlf, $this->processLinkUrl($incl[0]));
 				break;
 				case 'print_css':
-					echo sprintf('<link rel="stylesheet" type="text/css" href="%s?v=%s" media="print">' . z::$crlf, $incl[0], $this->app_version);
+					echo sprintf('<link rel="stylesheet" type="text/css" href="%s" media="print">' . z::$crlf, $this->processLinkUrl($incl[0]));
 				break;
 				case 'link_less':
-					echo sprintf('<link rel="stylesheet/less" type="text/css" href="%s?v=%s" />' . z::$crlf, $incl[0], $this->app_version);
+					echo sprintf('<link rel="stylesheet/less" type="text/css" href="%s" />' . z::$crlf, $this->processLinkUrl($incl[0]));
 				break;
 				case 'favicon':
-					echo sprintf('<link rel="shortcut icon" type="image/x-icon" href="%s?v=%s" />' . z::$crlf, $incl[0], $this->app_version);
+					echo sprintf('<link rel="shortcut icon" type="image/x-icon" href="%s" />' . z::$crlf, $this->processLinkUrl($incl[0]));
 				break;
 				default:
 					throw new Exception(sprintf('Unknown include type: %s', $incl[1]));
@@ -702,9 +698,9 @@ class coreModule extends zModule {
 	public function getOgImage() {
 		return $this->og_image;
 	}
-	
+
 	public function setOgImage($image) {
 		$this->og_image = $image;
 	}
-	
+
 }

@@ -9,7 +9,7 @@ require_once __DIR__ . '/app/classes/module.php';
 */
 class zEngine {
 
-	public $version = 11.09;
+	public $version = 14.10;
 	public $app_dir = '';
 	public $modules = [];
 
@@ -27,11 +27,11 @@ class zEngine {
 	public function enableModule($module_name) {
 		try {
 			if (!$this->isModuleEnabled($module_name)) {
-				$core_modules_path = __DIR__ . "/app/modules/$module_name.php";
 				$app_modules_path = $this->app_dir . "modules/$module_name.php";
 				if (file_exists($app_modules_path)) {
 					require_once $app_modules_path;
 				} else {
+					$core_modules_path = __DIR__ . "/app/modules/$module_name.php";
 					require_once $core_modules_path;
 				}
 				$module_class = $module_name . 'Module';
@@ -180,7 +180,7 @@ class zEngine {
 				}
 			}
 		} catch (Exception $e) {
-			$this->fatalError(sprintf('Unrecoverable error on page \'%s\': %s', $this->core->raw_path, $e->getMessage()));
+			$this->fatalError(sprintf('Unrecoverable exception on page \'%s\': %s', $this->core->raw_path, $e->getMessage()));
 		}
 	}
 

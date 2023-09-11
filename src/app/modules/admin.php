@@ -34,6 +34,39 @@ class adminModule extends zModule {
 
 	public $admin = null;
 
+	public $show_custom_menu_to_external = false;
+
+	public function onEnabled() {
+		$this->base_url = $this->getConfigValue('admin_area_base_url', $this->base_url);
+		$this->base_dir = $this->getConfigValue('admin_area_base_dir', $this->base_dir);
+		$this->login_url = $this->getConfigValue('login_page_url', $this->login_url);
+		$this->show_custom_menu_to_external = $this->getConfigValue('show_custom_menu_to_external', $this->show_custom_menu_to_external);
+
+		$this->z->core->includeJS('https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js', 'admin.bottom');
+		//$this->z->core->includeJS('https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js', 'admin.bottom');
+		$this->z->core->includeCSS('https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css', 'admin.head');
+
+	}
+
+	public function onBeforeInit() {
+		$this->is_admin_area = (count($this->z->core->path) > 0 && ($this->z->core->path[0] == $this->base_url));
+		if ($this->is_admin_area) {
+			array_shift($this->z->core->path);
+			$this->z->core->app_dir .= $this->base_dir;
+			$this->z->core->default_app_dir .= $this->base_dir;
+			$this->requireModule('forms');
+			$this->requireModule('tables');
+			$this->is_login_page = (count($this->z->core->path) == 1 && ($this->z->core->path[0] == $this->login_url));
+			$this->is_public_page = (count($this->z->core->path) == 1 && (in_array($this->z->core->path[0], $this->public_pages)));
+			if (!$this->is_public_page && !$this->isAuth()) {
+				$this->z->core->path = [$this->login_url];
+			} else if ($this->is_login_page && $this->isAuth()) {
+				$this->z->core->path = [$this->base_url];
+			}
+		}
+		$this->initializeAdminMenu();
+	}
+
 	public function hasRole($role) {
 		if (!$this->isAuth()) return false;
 		return $this->admin->ival('user_admin_role_id') == $role;
@@ -87,7 +120,7 @@ class adminModule extends zModule {
 	}
 
 	public function isAdmin() {
-		return $this->hasRole(AdminRoleModel::role_admin);
+		return $this->hasAnyRole([AdminRoleModel::role_superuser, AdminRoleModel::role_admin]);
 	}
 
 	/**
@@ -117,37 +150,6 @@ class adminModule extends zModule {
 		}
 	}
 
-	public function onEnabled() {
-		$this->base_url = $this->getConfigValue('admin_area_base_url', $this->base_url);
-		$this->base_dir = $this->getConfigValue('admin_area_base_dir', $this->base_dir);
-		$this->login_url = $this->getConfigValue('login_page_url', $this->login_url);
-
-		// process default admin includes
-		$includes = $this->getConfigValue('includes', []);
-		foreach ($includes as $include) {
-			$this->z->core->addToIncludes(($include[1]) ? $include[0] : $this->z->core->url($include[0]), $include[2], $include[3]);
-		}
-	}
-
-	public function onBeforeInit() {
-		$this->is_admin_area = (count($this->z->core->path) > 0 && ($this->z->core->path[0] == $this->base_url));
-		if ($this->is_admin_area) {
-			array_shift($this->z->core->path);
-			$this->z->core->app_dir .= $this->base_dir;
-			$this->z->core->default_app_dir .= $this->base_dir;
-			$this->requireModule('forms');
-			$this->requireModule('tables');
-			$this->is_login_page = (count($this->z->core->path) == 1 && ($this->z->core->path[0] == $this->login_url));
-			$this->is_public_page = (count($this->z->core->path) == 1 && (in_array($this->z->core->path[0], $this->public_pages)));
-			if (!$this->is_public_page && !$this->isAuth()) {
-				$this->z->core->path = [$this->login_url];
-			} else if ($this->is_login_page && $this->isAuth()) {
-				$this->z->core->path = [$this->base_url];
-			}
-		}
-		$this->initializeAdminMenu();
-	}
-
 	public function getAdminAreaURL($page) {
 		return $this->base_url . '/' . $page;
 	}
@@ -160,8 +162,8 @@ class adminModule extends zModule {
 
 		if ($this->isAuth()) {
 
-			//custom menu from app's admin config
-			if ($this->hasAnyRole()) {
+			if ($this->show_custom_menu_to_external || $this->hasAnyRole()) {
+				//custom menu from app's admin config
 				$menu->loadItemsFromArray($this->getConfigValue('custom_menu'));
 			}
 
@@ -243,7 +245,7 @@ class adminModule extends zModule {
 		if (!isset($view_name)) {
 			$view_name = $entity_name;
 		}
-		$form = new zForm($entity_name, '', 'POST', 'form-inline mb-2');
+		$form = new zForm($entity_name, '', 'POST', 'admin-form d-flex flex-row align-items-center mb-2');
 		$form->is_valid = false;
 		$form->type = 'inline';
 		$form->render_wrapper = true;
@@ -251,7 +253,7 @@ class adminModule extends zModule {
 			'name' => 'form_buttons',
 			'type' => 'buttons',
 			'buttons' => [
-				['type' => 'link', 'label' => '+ Add', 'css' => 'btn btn-success mr-2' , 'link_url' => $this->base_url . '/' . $form->detail_page . '?r=' . $this->z->core->raw_path]
+				['type' => 'link', 'label' => '+', 'css' => 'button-add btn btn-success me-2' , 'link_url' => $this->base_url . '/' . $form->detail_page . '?r=' . $this->z->core->raw_path]
 			]
 		]);
 		$this->z->core->setData('form', $form);
@@ -267,20 +269,13 @@ class adminModule extends zModule {
 				[
 					[
 						'name' => $table->paging->filter_url_name,
-						'label' => 'Search',
+						'label' => '',
 						'type' => 'text',
+						'css' => 'd-flex flex-row align-items-center',
 						'filter_fields' => $filter_fields
 					]
 				]
 			);
-			$form->addField([
-				'name' => 'form_filter_button',
-				'type' => 'buttons',
-				'buttons' => [
-					['type' => 'submit', 'label' => 'Search', 'css' => 'btn btn-success mr-2'],
-					['type' => 'link', 'label' => 'Reset', 'css' => 'btn btn-default mr-2', 'link_url' => $this->z->core->raw_path]
-				]
-			]);
 
 			if (z::isPost()) {
 				$form->processInput($_POST);
@@ -288,10 +283,22 @@ class adminModule extends zModule {
 			} else {
 				$form->processInput($_GET);
 			}
+
 			$table->filter_form = $form;
 			if ($form->is_valid) {
 				$table->paging->filter = $form->processed_input[$table->paging->filter_url_name];
 			}
+
+			$buttons = [];
+			if (strlen((string)$table->paging->filter) > 0) {
+				$buttons[] = ['type' => 'link', 'label' => 'x', 'css' => 'button-reset btn btn-secondary me-2', 'link_url' => $this->z->core->raw_path];
+			}
+			$buttons[] = ['type' => 'submit', 'label' => 'Search', 'css' => 'button-search btn btn-success me-2'];
+			$form->addField([
+				'name' => 'form_filter_button',
+				'type' => 'buttons',
+				'buttons' => $buttons
+			]);
 		}
 
 		$this->z->tables->prepareTable($table);

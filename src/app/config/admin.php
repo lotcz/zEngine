@@ -2,11 +2,10 @@
 
 	return [
 
-		/* show standard admin menu */
-		'show_default_menu' => true,
+		'show_custom_menu_to_external' => true,
 
-		/* custom app admin menu */
 		'custom_menu' => [
+			['admin/table-name', 'Label'],
 		],
 
 		// additional js, css etc.
@@ -16,6 +15,7 @@
 		// type - link_css/print_css/link_less/link_js/inline_js/favicon
 		// placement - head/default/bottom
 		'includes' => [
-			['favicon.ico', false, 'favicon', 'admin.head']
+
 		]
+
 	];
