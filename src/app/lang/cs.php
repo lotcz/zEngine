@@ -83,6 +83,8 @@
 	$language_data['Payment Types'] = 'Způsoby platby';
 	$language_data['User Deactivated'] = 'Deaktivovaný uživatel';
 	$language_data['Banned IP Addresses'] = 'Zakázané IP adresy';
+	$language_data['Disk Space'] = 'Místo na disku';
+	$language_data['%s free of total %s'] = 'Na disku zbývá %s z celkové velikosti %s.';
 
 	/* SHOP */
 	$language_data['Shop'] = 'Obchod';

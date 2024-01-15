@@ -42,5 +42,3 @@ CREATE TABLE `user_session` (
     REFERENCES `user` (`user_id`)
     ON DELETE CASCADE
 ) ENGINE = InnoDB;
-
-

@@ -9,7 +9,7 @@ require_once __DIR__ . '/app/classes/module.php';
 */
 class zEngine {
 
-	public $version = 14.10;
+	public $version = 14.20;
 	public $app_dir = '';
 	public $modules = [];
 
@@ -185,7 +185,8 @@ class zEngine {
 	}
 
 	/**
-	* Handles unrecoverable application error. This is called automatically if there is unhandled exception raised anywhere in the application.
+	* Handles unrecoverable application error.
+	* This is called when there is an unhandled exception raised anywhere in the application.
 	*/
 	public function fatalError($error_message) {
 		if ($this->isDebugMode()) {

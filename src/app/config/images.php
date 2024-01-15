@@ -23,7 +23,7 @@
 		'images_url' => 'http://images.url',
 
 		// folder name of original images
-		'original_format_name' => 'originals',
+		'original_format_name' => 'original',
 
 		'no_image' => 'no-image.jpg',
 
