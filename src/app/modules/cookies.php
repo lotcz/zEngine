@@ -14,7 +14,7 @@ class cookiesModule extends zModule {
 	public function onEnabled() {
 		$this->show_warning = $this->getConfigValue('show_warning', $this->show_warning);
 		$this->show_disabled = $this->getConfigValue('show_disabled', $this->show_disabled);
-		$warning_confirmed_cookie_name = $this->getConfigValue('warning_confirmed_cookie_name', $this->warning_confirmed_cookie_name);
+		$this->warning_confirmed_cookie_name = $this->getConfigValue('warning_confirmed_cookie_name', $this->warning_confirmed_cookie_name);
 	}
 
 	function OnBeforeRender() {

@@ -105,12 +105,21 @@ class emailsModule extends zModule {
 		return '=?utf-8?B?' . base64_encode($subject) . '?=';
 	}
 
-	public function cleanSentEmails($days = 30) {
+	public function cleanSentEmails($days) {
+		if (empty($days)) {
+			$days = $this->getConfigValue('keep_sent_emails_days', 30);
+		}
+		if ($days <= 0) {
+			$this->z->errorlog->write("Number of days to keep old emails is not defined or is zero. Not deleting anything.");
+			return 0;
+		}
 		$now = new \DateTime();
 		$interval = \DateInterval::createFromDateString(sprintf('%d days', $days));
 		$date = $now->sub($interval);
 		$mysqlTimestamp = z::mysqlTimestamp($date->getTimestamp());
-		return $this->z->db->executeDeleteQuery('email', 'email_sent = 1 and email_send_date <= ?', [$mysqlTimestamp], [PDO::PARAM_STR]);
+		return $this->z->db
+			->executeDeleteQuery('email', 'email_sent = 1 and email_send_date <= ?', [$mysqlTimestamp], [PDO::PARAM_STR])
+			->rowCount();
 	}
 
 }

@@ -1,4 +1,3 @@
 <?php
-	$stmt = $this->z->emails->cleanSentEmails();
-	$count = $stmt->rowCount();
+	$count = $this->z->emails->cleanSentEmails();
 	echo "Deleted $count old emails";
