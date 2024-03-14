@@ -105,7 +105,7 @@ class emailsModule extends zModule {
 		return '=?utf-8?B?' . base64_encode($subject) . '?=';
 	}
 
-	public function cleanSentEmails($days) {
+	public function cleanSentEmails($days = null) {
 		if (empty($days)) {
 			$days = $this->getConfigValue('keep_sent_emails_days', 30);
 		}
