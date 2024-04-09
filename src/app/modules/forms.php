@@ -137,24 +137,14 @@ class formsModule extends zModule {
 	public function processForm($form, $model_class_name) {
 		$model = new $model_class_name($this->z->db);
 
-		if ($this->z->isModuleEnabled('images')) {
-			$form->images_module = $this->z->images;
-		}
-
-		if ($this->z->isModuleEnabled('files')) {
-			$form->files_module = $this->z->files;
-		}
-
-		if ($this->z->isModuleEnabled('openinghours')) {
-			$form->openinghours_module = $this->z->openinghours;
-		}
-
 		// DEFAULT VALUES
 		foreach ($form->fields as $field) {
 			if (isset($field->value)) {
 				$model->set($field->name, $field->value);
 			}
 		}
+
+		$form->z = $this->z;
 
 		if (z::isPost()) {
 			if ($form->processInput($_POST)) {
@@ -165,21 +155,17 @@ class formsModule extends zModule {
 				}
 
 				if ($form_protection_ok) {
-/*
-					foreach ($form->processed_input as $key => $value) {
-						$form->processed_input[$key] = $this->z->core->xssafe($value);
-					}
-*/
 					//VALIDATION
 					if ($this->validateForm($form, $form->processed_input)) {
 						$entity_id_value = z::getInt($model_class_name::getIdName());
 						if ($entity_id_value > 0) {
 							$model->loadById($entity_id_value);
 						}
+						$oldModel = $model->clone();
 						$model->setData($form->processed_input);
 						if ($form->onBeforeUpdate !== null) {
 							$onBeforeUpdate = $form->onBeforeUpdate;
-							$onBeforeUpdate($this->z, $form, $model);
+							$onBeforeUpdate($this->z, $form, $model, $oldModel);
 						}
 						try {
 							$model->save();
@@ -190,7 +176,7 @@ class formsModule extends zModule {
 							}
 							if ($form->onAfterUpdate !== null) {
 								$onAfterUpdate = $form->onAfterUpdate;
-								$onAfterUpdate($this->z, $form, $model);
+								$onAfterUpdate($this->z, $form, $model, $oldModel);
 							}
 							if ($form->suppress_return) {
 								$this->z->messages->success($this->z->i18n->translate('Form was successfully saved.'));

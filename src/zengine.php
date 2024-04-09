@@ -9,7 +9,7 @@ require_once __DIR__ . '/app/classes/module.php';
 */
 class zEngine {
 
-	public $version = 14.41;
+	public $version = 15.0;
 	public $app_dir = '';
 	public $modules = [];
 
