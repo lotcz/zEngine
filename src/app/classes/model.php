@@ -315,8 +315,8 @@ class zModel {
 	static function sort($arr, $field) {
 		$result = [];
 		$min = null;
-		for ($i = 0; $i < count($arr); $i++) {
-			for ($i2 = $i; $i2 < count($arr); $i2++) {
+		for ($i = 0, $max = count($arr); $i < $max; $i++) {
+			for ($i2 = $i, $max2 = count($arr); $i2 < $max2; $i2++) {
 				if ($min === null || $min->val($field) > $arr[$i2]->val($field)) {
 					$min = $arr[$i2];
 				}
