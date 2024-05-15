@@ -214,7 +214,7 @@ class zForm {
 				} elseif ($field->type == 'opening_hours') {
 					$field->value = [];
 					for ($d = 1; $d <= 7; $d++) {
-						$day_name = $this->openinghours_module->getDayName($d);
+						$day_name = $this->z->openinghours->getDayName($d);
 						$from = $field->prefix . $day_name . '_from';
 						$to = $field->prefix . $day_name . '_to';
 						$field->value[$from] = $data->val($from);
