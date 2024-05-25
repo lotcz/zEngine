@@ -9,7 +9,7 @@ class chatGPTModule extends zModule {
 	public $also_install = [];
 
 	public function ask(
-		string $userPrompt,
+		$userPrompt,
 		?string $systemPrompt = null,
 		?float $temperature = null,
 		?string $model = null,
@@ -18,18 +18,25 @@ class chatGPTModule extends zModule {
 		if (empty($userPrompt)) return 'no input provided';
 		$url = $this->getConfigValue('api_url','https://api.openai.com/v1/chat/completions');
 
+		$messages = [
+			[
+				'role' => 'system',
+				'content' => $systemPrompt ?? $this->getConfigValue('system_prompt', 'You are a helpful assistant.')
+			],
+		];
+
+		$user_messages = (is_array($userPrompt)) ? $userPrompt : [$userPrompt];
+
+		foreach ($user_messages as $user_message) {
+			$messages[] = [
+				'role' => 'user',
+				'content' => $user_message
+			];
+		}
+
 		$data = [
 			'model' => $model ?? $this->getConfigValue('model', 'gpt-3.5-turbo'),
-			'messages' => [
-				[
-					'role' => 'system',
-					'content' => $systemPrompt ?? $this->getConfigValue('system_prompt', 'You are a helpful assistant.')
-				],
-				[
-					'role' => 'user',
-					'content' => $userPrompt
-				]
-			],
+			'messages' => $messages,
 			'max_tokens' => $maxTokens ?? $this->getConfigValue('max_tokens', 2000),
 			'temperature' => $temperature ?? $this->getConfigValue('temperature',0.3)
 		];

@@ -15,14 +15,20 @@ class trainslatorModule extends zModule {
 
 	public function translateText(string $text, ?string $language = null) {
 		return $this->z->chatgpt->ask(
-			"Translate to {$this->getLanguageName($language)}: $text",
+			[
+				"Translate to {$this->getLanguageName($language)}",
+				$text
+			],
 			"You are helpful automatic translator that accurately translate texts to different languages."
 		);
 	}
 
 	public function translateHTML(string $html, ?string $language = null) {
 		return $this->z->chatgpt->ask(
-			"Translate to {$this->getLanguageName($language)}: $html",
+			[
+				"Translate to {$this->getLanguageName($language)}",
+				$html
+			],
 			"You are helpful automatic translator that accurately translate web content to different languages. You always keep HTML tags structure in place and keep all attribute values so translated content can be safely displayed on web."
 		);
 	}
