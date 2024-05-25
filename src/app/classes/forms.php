@@ -87,12 +87,12 @@ class zForm {
 						break;
 
 					case 'image': /* upload image */
-						if (!isset($this->images_module)) {
+						if (!$this->z->isModuleEnabled('images')) {
 							throw new Exception('Images module is not enabled, cannot upload image!');
 						}
 						$name = $field->name . '_image_file';
 						if (isset($_FILES[$name]) && strlen($_FILES[$name]['name'])) {
-							$image = $this->images_module->uploadImage($name);
+							$image = $this->z->images->uploadImage($name);
 							if (isset($image) && strlen($image) > 0) {
 								$result[$field->name] = $image;
 							} else {
@@ -102,12 +102,12 @@ class zForm {
 						break;
 
 					case 'file': /* upload file */
-						if (!isset($this->files_module)) {
+						if (!$this->z->isModuleEnabled('files')) {
 							throw new Exception('Files module is not enabled, cannot upload file!');
 						}
 						$name = $field->name . '_file_input';
 						if (isset($_FILES[$name]) && strlen($_FILES[$name]['name'])) {
-							$file = $this->files_module->uploadFile($name);
+							$file = $this->z->files->uploadFile($name);
 							if (isset($file) && strlen($file) > 0) {
 								$result[$field->name] = $file;
 							} else {
@@ -121,12 +121,15 @@ class zForm {
 						break;
 
 					case 'opening_hours':
+						if (!$this->z->isModuleEnabled('openinghours')) {
+							throw new Exception('OpeningHours module is not enabled, cannot upload file!');
+						}
 						for ($d = 1; $d <= 7; $d++) {
-							$day_name = $this->openinghours_module->getDayName($d);
+							$day_name = $this->z->openinghours->getDayName($d);
 							$from = $field->prefix . $day_name . '_from';
 							$to = $field->prefix . $day_name . '_to';
-							$result[$from] = $this->openinghours_module->getTime($data, $from);
-							$result[$to] = $this->openinghours_module->getTime($data, $to);
+							$result[$from] = $this->z->openinghours->getTime($data, $from);
+							$result[$to] = $this->z->openinghours->getTime($data, $to);
 						}
 						break;
 
@@ -211,7 +214,7 @@ class zForm {
 				} elseif ($field->type == 'opening_hours') {
 					$field->value = [];
 					for ($d = 1; $d <= 7; $d++) {
-						$day_name = $this->openinghours_module->getDayName($d);
+						$day_name = $this->z->openinghours->getDayName($d);
 						$from = $field->prefix . $day_name . '_from';
 						$to = $field->prefix . $day_name . '_to';
 						$field->value[$from] = $data->val($from);

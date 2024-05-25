@@ -13,7 +13,7 @@
 		// file_path - path to file
 		// is_absolute - true/false
 		// type - link_css/print_css/link_less/link_js/inline_js/favicon
-		// placement - head/default/bottom
+		// placement - admin.head/admin.default/admin.bottom
 		'includes' => [
 
 		]

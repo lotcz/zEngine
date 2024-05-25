@@ -10,6 +10,8 @@ class adminModule extends zModule {
 	public $depends_on = ['auth', 'menu', 'jobs'];
 	public $also_install = ['forms', 'tables'];
 
+	public $filesystem_root = '/';
+
 	// url part defining admin protected area
 	public $base_url = 'admin';
 
@@ -37,6 +39,7 @@ class adminModule extends zModule {
 	public $show_custom_menu_to_external = false;
 
 	public function onEnabled() {
+		$this->filesystem_root = $this->getConfigValue('filesystem_root', $this->filesystem_root);
 		$this->base_url = $this->getConfigValue('admin_area_base_url', $this->base_url);
 		$this->base_dir = $this->getConfigValue('admin_area_base_dir', $this->base_dir);
 		$this->login_url = $this->getConfigValue('login_page_url', $this->login_url);
@@ -45,6 +48,11 @@ class adminModule extends zModule {
 		$this->z->core->includeJS('https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js', 'admin.bottom');
 		//$this->z->core->includeJS('https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js', 'admin.bottom');
 		$this->z->core->includeCSS('https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css', 'admin.head');
+
+		$includes = $this->getConfigValue('includes', []);
+		foreach ($includes as $include) {
+			$this->z->core->addToIncludes($include[0], $include[1], $include[2]);
+		}
 
 	}
 
@@ -65,6 +73,19 @@ class adminModule extends zModule {
 			}
 		}
 		$this->initializeAdminMenu();
+	}
+
+	public function getFreeDiskSpace() {
+		return disk_free_space($this->filesystem_root);
+	}
+
+	public function getTotalDiskSpace() {
+		return disk_total_space($this->filesystem_root);
+	}
+
+	public function getFreeDiskSpaceRatio() {
+		$total = $this->getTotalDiskSpace();
+		return ($total > 0) ? ($this->getFreeDiskSpace() / $total) : 0;
 	}
 
 	public function hasRole($role) {

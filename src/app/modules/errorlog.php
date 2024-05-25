@@ -5,7 +5,7 @@
 */
 class errorlogModule extends zModule {
 
-	public $path = 'zEngine.log';
+	public $path = './zEngine.log';
 
 	public function onEnabled() {
 		$this->path = $this->getConfigValue('error_log_path', $this->path);

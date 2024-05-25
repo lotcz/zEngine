@@ -235,6 +235,18 @@ class zModel {
 		return $this->db->executeDeleteQuery($class_name::getTableName(), sprintf('%s = ?', $class_name::getIdName()), [$id], [PDO::PARAM_INT]);
 	}
 
+	public function clone() {
+		$class = get_called_class();
+		$m = new $class($this->db);
+		$id_name = $class::getIdName();
+		foreach ($this->data as $key => $value) {
+			if ($key != $id_name) {
+				$m->set($key, $this->get($key));
+			}
+		}
+		return $m;
+	}
+
 	static function deleteById(dbModule $db, int $id) {
 		$class = get_called_class();
 		$m = new $class($db);
@@ -297,14 +309,14 @@ class zModel {
 	}
 
 	/**
-	* Sort by array values in a single column.
-	* @return Array
+	* Sort array of model entities by column.
+	* @return Array New sorted array
 	*/
 	static function sort($arr, $field) {
 		$result = [];
 		$min = null;
-		for ($i = 0; $i < count($arr); $i++) {
-			for ($i2 = $i; $i2 < count($arr); $i2++) {
+		for ($i = 0, $max = count($arr); $i < $max; $i++) {
+			for ($i2 = $i, $max2 = count($arr); $i2 < $max2; $i2++) {
 				if ($min === null || $min->val($field) > $arr[$i2]->val($field)) {
 					$min = $arr[$i2];
 				}

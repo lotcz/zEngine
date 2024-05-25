@@ -32,7 +32,23 @@
 	display: none;
 }
 
+#gallery_viewer .loading {
+	opacity: 0;
+}
+
+#gallery_viewer.is-loading img {
+	display: none;
+}
+
+#gallery_viewer.is-loading .loading {
+	opacity: 1;
+	color: white;
+	animation: fadeIn 1s;
+}
+
 #gallery_viewer .close-btn,
+#gallery_viewer .zoom-in-btn,
+#gallery_viewer .zoom-out-btn,
 #gallery_viewer .arrows div {
 	font-size: 2rem;
 	text-align: center;
@@ -63,6 +79,38 @@
 
 #gallery_viewer .close-btn:active {
 	margin-top: 6px;
+}
+
+#gallery_viewer .zoom-info {
+	background-color: rgba(0,0,0,0.5);
+	border-radius: 1.5rem;
+	z-index: 1000000;
+	display: flex;
+	position:fixed;
+	top: 5px;
+	left: 5px;
+	flex-direction:row;
+	justify-content: space-between;
+}
+
+#gallery_viewer .zoom-info div {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	color: white;
+	cursor: default;
+	-webkit-user-select: none; /* Safari */
+	-ms-user-select: none; /* IE 10 and IE 11 */
+	user-select: none; /* Standard syntax */
+}
+
+#gallery_viewer .zoom-amount {
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+#gallery_viewer .zoom-info div:hover {
+	background-color: #444;
 }
 
 #gallery_viewer .arrows div {
@@ -109,4 +157,9 @@
 #gallery_viewer img {
 	max-width: 90%;
 	max-height:90%;
+}
+
+@keyframes fadeIn {
+	0% { opacity: 0; }
+	100% { opacity: 1; }
 }
