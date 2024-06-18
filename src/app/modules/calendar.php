@@ -10,7 +10,7 @@ class calendarModule extends zModule {
 
 	}
 
-	function OnBeforeRender() {
+	function onBeforeRender() {
 		$this->z->core->includeCSS('resources/calendar/calendar.css', 'head');
 		$this->z->core->includeCSS('resources/calendar/calendar.css', 'admin.head');
 	}

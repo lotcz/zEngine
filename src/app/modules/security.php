@@ -18,7 +18,7 @@ class securityModule extends zModule {
 		$this->max_failed_attempts = $this->getConfigValue('max_failed_attempts', $this->max_failed_attempts);
 	}
 
-	public function OnBeforeInit() {
+	public function onBeforeInit() {
 		$ip = z::getClientIP();
 		if ($this->isBannedIP($ip)) {
 			http_response_code(403);

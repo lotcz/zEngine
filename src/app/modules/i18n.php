@@ -83,22 +83,36 @@ class i18nModule extends zModule {
 
 	}
 
-	public function selectLanguage($language) {
-		$this->selected_language = $language;
-		if (isset($this->selected_language)) {
-			$this->loadLanguage($this->selected_language->val('language_code'));
-			if (!isset($this->selected_currency)) {
-				$this->selectCurrencyByID($this->selected_language->ival('language_default_currency_id'));
-			}
-		}
+	public function getSelectedLanguage() {
+		return $this->selected_language;
 	}
 
-	public function selectLanguageByID($language_id) {
-		$this->selectLanguage(zModel::find($this->available_languages, 'language_id', $language_id));
+	public function getSelectedLanguageId() {
+		return $this->selected_language->val('language_id');
+	}
+
+	public function getSelectedLanguageCode() {
+		return $this->selected_language->val('language_code');
+	}
+
+	public function getSelectedLanguageName() {
+		return $this->selected_language->val('language_name');
+	}
+
+	public function getLanguageById($language_id) {
+		return zModel::find($this->available_languages, 'language_id', $language_id);
+	}
+
+	public function getLanguageByCode($language_code) {
+		return zModel::find($this->available_languages, 'language_code', $language_code);
+	}
+
+	public function selectLanguageById($language_id) {
+		$this->selectLanguage($this->getLanguageById($language_id));
 	}
 
 	public function selectLanguageByCode($language_code) {
-		$this->selectLanguage(zModel::find($this->available_languages, 'language_code', $language_code));
+		$this->selectLanguage($this->getLanguageByCode($language_code));
 	}
 
 	public function selectCurrency($currency) {
@@ -133,10 +147,25 @@ class i18nModule extends zModule {
 		$this->language_data = $this->loadLanguageData($lang_code);
 	}
 
+	public function selectLanguage($language) {
+		$this->selected_language = $language;
+		if (isset($this->selected_language)) {
+			$this->loadLanguage($this->selected_language->val('language_code'));
+			if (!isset($this->selected_currency)) {
+				$this->selectCurrencyByID($this->selected_language->ival('language_default_currency_id'));
+			}
+		}
+	}
+
+	// return true if static string translation exists in lang files for current language
+	public function translationExists($s) {
+		return isset($this->language_data) and isset($this->language_data[$s]);
+	}
+
 	// directly translates string if translation exists
 	// if you want to process tokens use 'core->t()' function instead
 	public function translate($s) {
-		if (isset($this->language_data) and isset($this->language_data[$s])) {
+		if ($this->translationExists($s)) {
 			$t = $this->language_data[$s];
 		} else {
 			$t = $s;
@@ -168,20 +197,6 @@ class i18nModule extends zModule {
 		$s = sprintf('function convertPrice(price) { return price / %d; }', $selected_currency->fval('currency_value'));
 		$s.= sprintf('function formatPrice(price) { return (\'%s\').replace(\'%s\', price.formatMoney(%d, \'%s\', \'%s\')); }', $selected_currency->val('currency_format'), '%s', $selected_currency->ival('currency_decimals'), $this->selected_language->val('language_decimal_separator'), $this->selected_language->val('language_thousands_separator') );
 		return $s;
-	}
-
-	// experimental, not used
-	public function saveUntranslated() {
-		require_once $home_dir . 'models/translation.m.php';
-		$language = new Language($db);
-		$language->loadByCode($language_data['language_code']);
-		$t = new Translation($db);
-		$t->load($language->ival('language_id'), $s);
-		if (!$t->is_loaded) {
-			$t->data['translation_name'] = $s;
-			$t->data['translation_language_id'] = $language->ival('language_id');
-			$t->save();
-		}
 	}
 
 }

@@ -17,7 +17,7 @@ class cookiesModule extends zModule {
 		$this->warning_confirmed_cookie_name = $this->getConfigValue('warning_confirmed_cookie_name', $this->warning_confirmed_cookie_name);
 	}
 
-	function OnBeforeRender() {
+	function onBeforeRender() {
 		$this->z->core->includeCSS('resources/cookies.css');
 		$this->z->core->includeJS('resources/cookies.js');
 		$this->z->core->insertJS(

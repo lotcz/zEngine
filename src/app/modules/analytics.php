@@ -8,7 +8,7 @@ class analyticsModule extends zModule {
 		$this->id = $this->getConfigValue('id');
 	}
 
-	function OnBeforeRender() {
+	function onBeforeRender() {
 		if ($this->z->isDebugMode()) {
 			$this->z->core->insertJS('console.log(\'Analytics disabled in debug mode. GA-ID: ' . $this->id . '\');', 'bottom');
 			return;
