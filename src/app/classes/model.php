@@ -175,6 +175,20 @@ class zModel {
 		return $list;
 	}
 
+	static function selectSql($db, $sql, $bindings = null, $types = null) {
+		$statement = $db->executeQuery($sql, $bindings, $types);
+		$list = [];
+		$class_name = get_called_class();
+		while ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
+			$model = new $class_name($db);
+			$model->setData($row);
+			$model->is_loaded = true;
+			$list[] = $model;
+		}
+		$statement->closeCursor();
+		return $list;
+	}
+
 	static function selectSingle($db, $table_name, $where = null, $orderby = null, $limit = null, $bindings = null, $types = null) {
 		$result = zModel::select($db, $table_name, $where, $orderby, $limit, $bindings, $types);
 		if (count($result) > 0) {

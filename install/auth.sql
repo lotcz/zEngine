@@ -21,9 +21,9 @@ CREATE TABLE `user` (
     REFERENCES `language` (`language_id`)
 ) ENGINE = InnoDB;
 
-DROP VIEW IF EXISTS `viewUsers`;
+DROP VIEW IF EXISTS `view_users`;
 
-CREATE VIEW viewUsers AS
+CREATE VIEW view_users AS
 	SELECT *, u.user_id as admin_id
 	FROM user u;
 

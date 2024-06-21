@@ -16,23 +16,23 @@ ALTER TABLE `user` add CONSTRAINT `user_admin_role_fk`
     FOREIGN KEY (`user_admin_role_id`)
     REFERENCES `admin_role` (`admin_role_id`);
 
-DROP VIEW IF EXISTS `viewUsers`;
+DROP VIEW IF EXISTS `view_users`;
 
-CREATE VIEW viewUsers AS
+CREATE VIEW view_users AS
 	SELECT *, u.user_id as admin_id
 	FROM user u
 	WHERE u.user_admin_role_id is null;
 
-DROP VIEW IF EXISTS `viewAdministrators`;
+DROP VIEW IF EXISTS `view_administrators`;
 
-CREATE VIEW viewAdministrators AS
+CREATE VIEW view_administrators AS
 	SELECT *
   	FROM user u
   	JOIN admin_role r ON (u.user_admin_role_id = r.admin_role_id);
 
-DROP VIEW IF EXISTS `viewSessionsStats`;
+DROP VIEW IF EXISTS `view_session_stats`;
 
-CREATE VIEW viewSessionsStats AS
+CREATE VIEW view_session_stats AS
 	SELECT count(*) as c, r.admin_role_name as n
 	FROM user_session us
 	JOIN `user` u ON (u.user_id = us.user_session_user_id)

@@ -28,7 +28,7 @@
 				'type' => 'datetime'
 			]
 		],
-		'viewUsers',
+		'view_users',
 		['user_id', 'user_name', 'user_login', 'user_email', 'user_state', 'user_last_access'],
 		'user_id'
 	);

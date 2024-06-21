@@ -28,7 +28,7 @@
 				'type' => 'datetime'
 			]
 		],
-		'viewAdministrators',
+		'view_administrators',
 		['user_id', 'user_name', 'user_login', 'user_email', 'user_last_access', 'admin_role_name'],
 		'user_id'
 	);

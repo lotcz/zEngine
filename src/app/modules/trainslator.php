@@ -134,7 +134,7 @@ class trainslatorModule extends zModule {
 		}
 	}
 
-	public function translate(string $text, string $language_name, ?string $mode = 'text') {
+	private function performTranslate(string $text, string $language_name, ?string $mode = 'text') {
 		return $this->z->chatgpt->ask(
 			[
 				"Translate to $language_name",
@@ -144,23 +144,23 @@ class trainslatorModule extends zModule {
 		);
 	}
 
-	public function translateHTML(string $html, string $language_name) {
-		return $this->translate($html, $language_name, 'html');
+	private function performTranslateHTML(string $html, string $language_name) {
+		return $this->performTranslate($html, $language_name, 'html');
 	}
 
-	public function getTranslation(string $text, ?int $language_id = null, ?string $mode = 'text') {
+	public function translate(string $text, ?int $language_id = null, ?string $mode = 'text') {
 		$language = $this->getLanguage($language_id);
 		$language_id = $language->ival('language_id');
 		if ($language_id == $this->zero_language_id) return $text;
 		$cached = $this->loadCacheByKey($language_id, $text);
 		if (isset($cached)) return $cached->val('trainslator_cache_value');
-		$translated = $this->translate($text, $language->val('language_name'), $mode);
+		$translated = $this->performTranslate($text, $language->val('language_name'), $mode);
 		$this->updateCacheValue($language_id, $text, $translated);
 		return $translated;
 	}
 
-	public function getHTMLTranslation(string $html, ?int $language_id = null) {
-		return $this->getTranslation($html, $language_id, 'html');
+	public function translateHTML(string $html, ?int $language_id = null) {
+		return $this->translate($html, $language_id, 'html');
 	}
 
 }
