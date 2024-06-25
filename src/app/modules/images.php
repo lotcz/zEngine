@@ -5,6 +5,8 @@
 */
 class imagesModule extends zModule {
 
+	public $depends_on = ['files'];
+
 	public $formats = [];
 	public $root_images_disk_path = '';
 	public $root_images_url = '';
@@ -263,14 +265,8 @@ class imagesModule extends zModule {
 		echo sprintf('<img src="%s" class="%s" alt="%s" %s />', $url, $css, $alt, $size);
 	}
 
-	public function uploadImage($name) {
-		if (!(isset($_FILES[$name]) && strlen($_FILES[$name]['name']) > 0))
-		{
-			$this->z->messages->add('No uploaded file detected!', 'error');
-			return null;
-		}
-
-		$filename_parts = pathinfo($_FILES[$name]['name']);
+	private function uploadImageInternal($file_input) {
+		$filename_parts = pathinfo($file_input['name']);
 		$file_name = z::slugify($filename_parts['filename'], $this->z->core->default_encoding);
 		$file_extension = $filename_parts['extension'];
 
@@ -286,20 +282,44 @@ class imagesModule extends zModule {
 			$image = $file_name . '_' . $i . '.' . $file_extension;
 		}
 		$target_file = $target_path . $image;
-		$uploadOk = true;
 
 		// Check if image file is an actual image
-		$check = getimagesize($_FILES[$name]['tmp_name']);
+		$check = getimagesize($file_input['tmp_name']);
 		if($check === false) {
 			$this->z->messages->add('Uploaded file is not an image!', 'error');
 			return null;
 		}
 
-		if (!move_uploaded_file($_FILES[$name]['tmp_name'], $target_file)) {
+		if (!move_uploaded_file($file_input['tmp_name'], $target_file)) {
 			$this->z->messages->add(sprintf('Cannot upload image to %s', $target_file), 'error');
 			return null;
 		}
 
 		return $image;
+	}
+
+	public function uploadImage($file_input_name) {
+		if (!isset($_FILES[$file_input_name])) {
+			$this->z->messages->add('No uploaded file detected!', 'error');
+			return null;
+		}
+
+		$file_input = $_FILES[$file_input_name];
+
+		if (empty($file_input['name'])) {
+			$this->z->messages->add('No uploaded file name detected!', 'error');
+			return null;
+		}
+
+		if (is_array($file_input['name'])) {
+			$results = [];
+			$file_inputs = $this->z->files->reArrayFiles($file_input);
+			foreach ($file_inputs as $input) {
+				$results[] = $this->uploadImageInternal($input);
+			}
+			return $results;
+		}
+
+		return $this->uploadImageInternal($file_input);
 	}
 }

@@ -26,18 +26,29 @@ class galleryModule extends zModule {
 		return $gallery;
 	}
 
-	function uploadImage(int $gallery_id, string $image_field_name) {
-		$image = null;
-		if (isset($_FILES[$image_field_name]) && strlen($_FILES[$image_field_name]['name'])) {
-			$file_name = $this->z->images->uploadImage($image_field_name);
-			if (isset($file_name) && strlen($file_name) > 0) {
-				$image = new ImageModel($this->z->db);
-				$image->set('image_gallery_id', $gallery_id);
-				$image->set('image_path', $file_name);
-				$image->save();
-			}
-		}
+	private function saveImageInternal(int $gallery_id, string $image_path) {
+		$image = new ImageModel($this->z->db);
+		$image->set('image_gallery_id', $gallery_id);
+		$image->set('image_path', $image_path);
+		$image->save();
 		return $image;
+	}
+
+	function uploadImage(int $gallery_id, string $image_field_name) {
+		$upload_result = $this->z->images->uploadImage($image_field_name);
+		if (empty($upload_result)) {
+			return null;
+		}
+
+		if (is_array($upload_result)) {
+			$results = [];
+			foreach ($upload_result as $image_path) {
+				$results[] = $this->saveImageInternal($gallery_id, $image_path);
+			}
+			return $results;
+		}
+
+		return $this->saveImageInternal($gallery_id, $upload_result);
 	}
 
 	private function deleteImageInternal(ImageModel $image) {

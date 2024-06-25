@@ -7,7 +7,7 @@
 		'app_version' => 0.0,
 
 		// this is minimum required zEngine version
-		'minimum_z_version' => 12.0,
+		'minimum_z_version' => 15.0,
 
 		'site_title' => 'Your site title',
 		'site_description' => 'Your site description.',
