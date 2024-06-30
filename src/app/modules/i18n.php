@@ -23,12 +23,11 @@ class i18nModule extends zModule {
 	public function onEnabled() {
 		$this->language_cookie_name = $this->getConfigValue('language_cookie_name', $this->language_cookie_name);
 		$this->currency_cookie_name = $this->getConfigValue('currency_cookie_name', $this->currency_cookie_name);
+		$this->available_currencies = CurrencyModel::all($this->z->db);
+		$this->available_languages = LanguageModel::all($this->z->db);
 	}
 
 	public function onBeforeInit() {
-
-		$this->available_currencies = CurrencyModel::all($this->z->db);
-		$this->available_languages = LanguageModel::all($this->z->db);
 
 		if (!$this->getConfigValue('force_default_language')) {
 

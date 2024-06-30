@@ -1,9 +1,10 @@
 <?php
 
-	return [
+return [
 
-		'cache_hashing_algorithm' => 'md5',
+	'cache_hashing_algorithm' => 'md5',
 
-		'zero_language_id' => 2,
+	/* language, in which content is originally written */
+	'zero_language' => 'cs',
 
-	];
+];

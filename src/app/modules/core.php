@@ -474,6 +474,10 @@ class coreModule extends zModule {
 		}
 	}
 
+	public function pageNotFound() {
+		$this->showNotFoundView();
+	}
+
 	/*
 		RENDERING
 	*/

@@ -13,16 +13,21 @@ class trainslatorModule extends zModule {
 
 	public $cache_hashing_algorithm = 'md5';
 
-	public $zero_language_id = 1;
+	public $zero_language_id = null;
 
 	private $system_prompts = [
 		'text' => "You are helpful automatic translator that accurately translate texts to different languages.",
-		'html' => "You are helpful automatic translator that accurately translate web content to different languages. You always keep HTML tags structure in place and keep all attribute values so translated content can be safely displayed on web."
+		'html' => "You are helpful automatic translator that accurately translate web content to different languages. 
+			You always keep HTML tags structure in place and keep all attribute values so translated content can be safely displayed on web.
+			You never remove images or heading tags from original content.
+			"
 	];
 
 	public function onEnabled() {
 		$this->cache_hashing_algorithm = $this->getConfigValue('cache_hashing_algorithm', $this->cache_hashing_algorithm);
-		$this->zero_language_id = $this->getConfigValue('zero_language_id', $this->zero_language_id);
+		$zero_language_code = $this->getConfigValue('zero_language', 'cs');
+		$zero_language = $this->z->i18n->getLanguageByCode($zero_language_code);
+		$this->zero_language_id = $zero_language->ival('language_id');
 	}
 
 	private function getLanguage(?int $language_id): LanguageModel {
@@ -148,7 +153,8 @@ class trainslatorModule extends zModule {
 		return $this->performTranslate($html, $language_name, 'html');
 	}
 
-	public function translate(string $text, ?int $language_id = null, ?string $mode = 'text') {
+	public function translate(?string $text, ?int $language_id = null, ?string $mode = 'text') {
+		if (empty($text)) return $text;
 		$language = $this->getLanguage($language_id);
 		$language_id = $language->ival('language_id');
 		if ($language_id == $this->zero_language_id) return $text;
@@ -159,7 +165,7 @@ class trainslatorModule extends zModule {
 		return $translated;
 	}
 
-	public function translateHTML(string $html, ?int $language_id = null) {
+	public function translateHTML(?string $html, ?int $language_id = null) {
 		return $this->translate($html, $language_id, 'html');
 	}
 
