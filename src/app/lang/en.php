@@ -3,6 +3,7 @@
 	$language_data = [];
 	$language_data['language_code'] = 'en';
 	$language_data['language_name'] = 'English';
+	$language_data['VYBRANÉ AKCE'] = 'Picked events';
 
 	$language_data['--cookies-disabled--'] = 'This site cannot be used without browser cookies! Please enable cookies in your browser settings.';
 	$language_data['--cookies-warning--'] = 'This site uses 3rd party cookies. If you are worried about your privacy, you can disable cookies in your browser settings.';

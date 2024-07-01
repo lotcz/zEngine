@@ -15,12 +15,13 @@ class trainslatorModule extends zModule {
 
 	public $zero_language_id = null;
 
+	public $internal_cache = [];
+
 	private $system_prompts = [
 		'text' => "You are helpful automatic translator that accurately translate texts to different languages.",
-		'html' => "You are helpful automatic translator that accurately translate web content to different languages. 
-			You always keep HTML tags structure in place and keep all attribute values so translated content can be safely displayed on web.
-			You never remove images or heading tags from original content.
-			"
+		'html' => "You are helpful automatic translator that accurately translate web content to different languages. " .
+			"You always keep HTML tags structure in place and keep all attribute values so translated content can be safely displayed on web. " .
+			"You never remove images or heading tags from original content."
 	];
 
 	public function onEnabled() {
@@ -154,14 +155,32 @@ class trainslatorModule extends zModule {
 	}
 
 	public function translate(?string $text, ?int $language_id = null, ?string $mode = 'text') {
+		// empty
 		if (empty($text)) return $text;
+
+		// zero lang
 		$language = $this->getLanguage($language_id);
 		$language_id = $language->ival('language_id');
 		if ($language_id == $this->zero_language_id) return $text;
-		$cached = $this->loadCacheByKey($language_id, $text);
-		if (isset($cached)) return $cached->val('trainslator_cache_value');
+
+		// core translation
+		if ($this->z->i18n->translationExists($text)) return $this->z->i18n->translate($text);
+
+		// internal cache
+		$hash = $this->getCacheKeyHash($text);
+		if (isset($this->internal_cache[$hash])) return $this->internal_cache[$hash];
+
+		// db cache
+		$cached = $this->loadCacheByHash($language_id, $hash);
+		if (isset($cached)) {
+			$this->internal_cache[$hash] = $cached->val('trainslator_cache_value');
+			return $this->internal_cache[$hash];
+		}
+
+		// translate
 		$translated = $this->performTranslate($text, $language->val('language_name'), $mode);
 		$this->updateCacheValue($language_id, $text, $translated);
+		$this->internal_cache[$hash] = $translated;
 		return $translated;
 	}
 
