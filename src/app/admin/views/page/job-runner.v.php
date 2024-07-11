@@ -33,9 +33,8 @@
 	function runJob(name) {
 		const el = addToConsole(`Running job ${name}...`);
 		const finished = (response) => jobFinished(el, response);
-		z
-			.fetch(`<?=$this->url('jobs') ?>?job=${name}&security_token=<?=$this->z->jobs->getConfigValue('security_token') ?>`)
-			.then(finished);
+		fetch(`<?=$this->url('jobs') ?>?job=${name}&security_token=<?=$this->z->jobs->getConfigValue('security_token') ?>`)
+		.then(finished);
 	}
 
 </script>

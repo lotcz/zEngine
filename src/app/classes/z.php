@@ -292,6 +292,10 @@ class z {
 		return strip_tags($text, $allowed_tags);
 	}
 
+	static function containsHtmlTags($text) {
+		return strip_tags($text) !== $text;
+	}
+
 	static function formatDiskSpace($bytes) {
 		$symbols = array('B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB');
 		$exp = floor(log($bytes)/log(1024));

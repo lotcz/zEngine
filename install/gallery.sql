@@ -21,9 +21,9 @@ CREATE TABLE IF NOT EXISTS `image` (
 	UNIQUE INDEX `image_path_unique` (`image_path` ASC)
 ) ENGINE = InnoDB;
 
-DROP VIEW IF EXISTS `viewImages`;
+DROP VIEW IF EXISTS `view_images`;
 
-CREATE VIEW viewImages AS
+CREATE VIEW view_images AS
 	SELECT *
 	FROM image i
 	LEFT OUTER JOIN gallery g ON (i.image_gallery_id = g.gallery_id);

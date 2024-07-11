@@ -20,9 +20,9 @@ CREATE TABLE `calendar_reservation` (
 		ON DELETE cascade
 ) ENGINE=InnoDB;
 
-DROP VIEW IF EXISTS `viewCalendarReservations`;
+DROP VIEW IF EXISTS `view_calendar_reservations`;
 
-CREATE VIEW viewCalendarReservations AS
+CREATE VIEW view_calendar_reservations AS
 	SELECT cr.*, u.user_email as `email`
 	FROM `calendar_reservation` cr
 	LEFT OUTER JOIN `user` u ON (u.user_id = cr.calendar_reservation_user_id);

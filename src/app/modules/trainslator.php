@@ -31,16 +31,54 @@ class trainslatorModule extends zModule {
 		$this->zero_language_id = $zero_language->ival('language_id');
 	}
 
-	private function getLanguage(?int $language_id): LanguageModel {
-		if (empty($language_id)) {
-			return $this->z->i18n->getSelectedLanguage();
-		}
+	public function getLanguages() {
+		return $this->z->i18n->available_languages;
+	}
+
+	private function getLanguage(?int $language_id = null): LanguageModel {
 		$language = $this->z->i18n->getLanguageById($language_id);
 		if (empty($language)) {
 			return $this->z->i18n->getSelectedLanguage();
 		}
 		return $language;
 	}
+
+	public function isZeroLanguage(?int $language_id = null) {
+		if (empty($language_id)) {
+			$language = $this->getLanguage();
+			$language_id = $language->ival('language_id');
+		}
+		return $language_id == $this->zero_language_id;
+	}
+
+	/*
+	 * INTERNAL CACHE
+	*/
+
+	private function internalCacheExists($language_id, $key) {
+		if (!isset($this->internal_cache[$language_id])) {
+			return false;
+		}
+		return isset($this->internal_cache[$language_id][$key]);
+	}
+
+	private function setInternalCache($language_id, $key, $value) {
+		if (!isset($this->internal_cache[$language_id])) {
+			$this->internal_cache[$language_id] = [];
+		}
+		$this->internal_cache[$language_id][$key] = $value;
+	}
+
+	private function getInternalCache($language_id, $key) {
+		if (!$this->internalCacheExists($language_id, $key)) {
+			return null;
+		}
+		return $this->internal_cache[$language_id][$key];
+	}
+
+	/*
+	 * DB CACHE
+	*/
 
 	private function getCacheKeyHash(string $key): string {
 		return hash($this->cache_hashing_algorithm, $key);
@@ -121,25 +159,6 @@ class trainslatorModule extends zModule {
 		$this->deleteCacheByHashes($language_id, $hashes);
 	}
 
-	private function updateCacheValue(int $language_id, string $key, string $value) {
-		$hash = $this->getCacheKeyHash($key);
-		$cached = $this->loadCacheByHash($language_id, $hash);
-		if (!$cached) {
-			$cached = new TrainslatorCacheModel($this->z->db);
-			$cached->set('trainslator_cache_key', $key);
-			$cached->set('trainslator_cache_key_hash', $hash);
-			$cached->set('trainslator_cache_language_id', $language_id);
-		}
-		$cached->set('trainslator_cache_value', $value);
-		$cached->save();
-	}
-
-	private function updateCacheValues(int $language_id, array $values) {
-		foreach ($values as $key => $value) {
-			$this->updateCacheValue($language_id, $key, $value);
-		}
-	}
-
 	private function performTranslate(string $text, string $language_name, ?string $mode = 'text') {
 		return $this->z->chatgpt->ask(
 			[
@@ -150,42 +169,46 @@ class trainslatorModule extends zModule {
 		);
 	}
 
-	private function performTranslateHTML(string $html, string $language_name) {
-		return $this->performTranslate($html, $language_name, 'html');
-	}
-
-	public function translate(?string $text, ?int $language_id = null, ?string $mode = 'text') {
+	public function translate(?string $text, ?int $language_id = null) {
 		// empty
 		if (empty($text)) return $text;
 
-		// zero lang
 		$language = $this->getLanguage($language_id);
 		$language_id = $language->ival('language_id');
-		if ($language_id == $this->zero_language_id) return $text;
+
+		// zero lang
+		if ($this->isZeroLanguage($language_id)) return $text;
 
 		// core translation
 		if ($this->z->i18n->translationExists($text)) return $this->z->i18n->translate($text);
 
 		// internal cache
 		$hash = $this->getCacheKeyHash($text);
-		if (isset($this->internal_cache[$hash])) return $this->internal_cache[$hash];
+		$icache = $this->getInternalCache($language_id, $hash);
+		if (!empty($icache)) return $icache;
 
 		// db cache
+
 		$cached = $this->loadCacheByHash($language_id, $hash);
 		if (isset($cached)) {
-			$this->internal_cache[$hash] = $cached->val('trainslator_cache_value');
-			return $this->internal_cache[$hash];
+			$t = $cached->val('trainslator_cache_value');
+			$this->setInternalCache($language_id, $hash, $t);
+			return $t;
 		}
 
-		// translate
-		$translated = $this->performTranslate($text, $language->val('language_name'), $mode);
-		$this->updateCacheValue($language_id, $text, $translated);
-		$this->internal_cache[$hash] = $translated;
-		return $translated;
-	}
+		// perform AI translate
+		$translated = $this->performTranslate($text, $language->val('language_name'), z::containsHtmlTags($text) ? 'html' : 'text');
 
-	public function translateHTML(?string $html, ?int $language_id = null) {
-		return $this->translate($html, $language_id, 'html');
+		// save to db cache
+		$cached = new TrainslatorCacheModel($this->z->db);
+		$cached->set('trainslator_cache_key', $text);
+		$cached->set('trainslator_cache_key_hash', $hash);
+		$cached->set('trainslator_cache_language_id', $language_id);
+		$cached->set('trainslator_cache_value', $translated);
+		$cached->save();
+
+		$this->setInternalCache($language_id, $hash, $translated);
+		return $translated;
 	}
 
 }

@@ -56,7 +56,7 @@ class chatGPTModule extends zModule {
 		curl_close($ch);
 
 		$responseData = json_decode($response, true);
-		$this->z->errorlog->write(print_r($responseData, true));
+		//$this->z->errorlog->write(print_r($responseData, true));
 		return $responseData['choices'][0]['message']['content'] ?? null;
 	}
 

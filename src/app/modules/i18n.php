@@ -99,6 +99,7 @@ class i18nModule extends zModule {
 	}
 
 	public function getLanguageById($language_id) {
+		if (empty($language_id)) return null;
 		return zModel::find($this->available_languages, 'language_id', $language_id);
 	}
 
