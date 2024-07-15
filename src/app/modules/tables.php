@@ -101,7 +101,7 @@ class tablesModule extends zModule {
 								<?php
 									foreach ($table->fields as $field) {
 										?>
-											<th>
+											<th class="text-nowrap">
 												<?php
 													if (in_array($field->name, $table->sort_fields)) {
 														if ($field->name == $table->paging->active_sorting) {

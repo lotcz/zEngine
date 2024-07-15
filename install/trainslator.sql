@@ -16,3 +16,11 @@ CREATE TABLE `trainslator_cache` (
 		  REFERENCES `language` (`language_id`)
 		  ON DELETE cascade
 ) ENGINE = InnoDB;
+
+
+DROP VIEW IF EXISTS `view_trainslator_cache`;
+
+CREATE VIEW view_trainslator_cache AS
+	SELECT *
+	FROM trainslator_cache c
+	JOIN `language` l ON (l.language_id = c.trainslator_cache_language_id);

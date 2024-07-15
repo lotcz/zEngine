@@ -192,23 +192,32 @@ class adminModule extends zModule {
 			if ($this->isSuperUser() || $this->isAdmin()) {
 				$submenu = $menu->addRightSubmenu('Administration');
 
-				$submenu->addHeader('Users');
 				$submenu->addItem('admin/users', 'External Users');
-				if ($this->isSuperUser() || $this->isAdmin()) {
-					$submenu->addItem('admin/admins', 'Administrators');
+				$submenu->addItem('admin/admins', 'Administrators');
+				if ($this->z->isModuleEnabled('alias')) {
+					$submenu->addItem('admin/aliases', 'Aliases');
 				}
+				if ($this->z->isModuleEnabled('emails')) {
+					$submenu->addItem('admin/emails', 'Emails');
+				}
+				if ($this->z->isModuleEnabled('gallery')) {
+					$submenu->addItem('admin/galleries', 'Galleries');
+				}
+
+				$submenu->addSeparator();
+				$submenu->addHeader('i18n');
+				$submenu->addItem('admin/languages', 'Languages');
+				$submenu->addItem('admin/currencies', 'Currencies');
+				if ($this->z->isModuleEnabled('trainslator')) {
+					$submenu->addItem('admin/trainslator-caches', 'AI Cache');
+				}
+
 
 				if ($this->z->isModuleEnabled('newsletter')) {
 					$submenu->addSeparator();
 					$submenu->addHeader('Newsletters');
 					$submenu->addItem('admin/newsletter-subscriptions', 'Subscriptions');
 					$submenu->addItem('admin/newsletter-address-import', 'Import');
-				}
-
-				if ($this->z->isModuleEnabled('emails')) {
-					$submenu->addSeparator();
-					$submenu->addHeader('Emails');
-					$submenu->addItem('admin/emails', 'Emails');
 				}
 
 				// SHOP
@@ -221,22 +230,11 @@ class adminModule extends zModule {
 				}
 
 				if ($this->isSuperUser()) {
-					// GALLERY
-					if ($this->z->isModuleEnabled('gallery')) {
-						$submenu->addSeparator();
-						$submenu->addHeader('Gallery');
-						$submenu->addItem('admin/galleries', 'Galleries');
-					}
-
 					// ADVANCED
 					$submenu->addSeparator();
 					$submenu->addHeader('Advanced');
 					$submenu->addItem('admin/job-runner', 'Jobs');
-					if ($this->z->isModuleEnabled('alias')) {
-						$submenu->addItem('admin/aliases', 'Aliases');
-					}
-					$submenu->addItem('admin/languages', 'Languages');
-					$submenu->addItem('admin/currencies', 'Currencies');
+
 					if ($this->z->isModuleEnabled('security')) {
 						$submenu->addItem('admin/ip-failed-attempts', 'Failed Attempts');
 						$submenu->addItem('admin/banned-ips', 'Banned IP Addresses');

@@ -1,7 +1,5 @@
 <?php
 
-	require_once __DIR__ . '/../../../models/gallery.m.php';
-
 	$this->requireModule('gallery');
 
 	$this->renderAdminForm(

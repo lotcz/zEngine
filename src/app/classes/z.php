@@ -115,7 +115,7 @@ class z {
 		return $result_array;
 	}
 
-	static function shorten($str, $len, $ellipsis = "...") {
+	static function shorten($str, $len = 100, $ellipsis = "...") {
 		if (mb_strlen($str) > $len) {
 			$length = $len - mb_strlen($ellipsis);
 			return z::trimSpecial(mb_substr($str, 0, $length)) . $ellipsis;

@@ -18,7 +18,7 @@ class trainslatorModule extends zModule {
 	public $internal_cache = [];
 
 	private $system_prompts = [
-		'text' => "You are helpful automatic translator that accurately translate texts to different languages.",
+		'text' => "You are helpful automatic translator that accurately translate texts to different languages. You always answer with exact translation.",
 		'html' => "You are helpful automatic translator that accurately translate web content to different languages. " .
 			"You always keep HTML tags structure in place and keep all attribute values so translated content can be safely displayed on web. " .
 			"You never remove images or heading tags from original content."
@@ -51,6 +51,10 @@ class trainslatorModule extends zModule {
 		return $language_id == $this->zero_language_id;
 	}
 
+	public function getZeroLanguage() {
+		return $this->getLanguage($this->zero_language_id);
+	}
+
 	/*
 	 * INTERNAL CACHE
 	*/
@@ -79,6 +83,20 @@ class trainslatorModule extends zModule {
 	/*
 	 * DB CACHE
 	*/
+
+	public function loadDbCacheStats() {
+		$stats = zModel::selectSql(
+			$this->z->db,
+			"select language_id, language_name as n, count(trainslator_cache_id) as c
+					from view_trainslator_cache
+					group by language_id, language_name
+				");
+		$info = [];
+		foreach ($stats as $stat) {
+			$info[$stat->val('n')] = $stat->val('c');
+		}
+		return $info;
+	}
 
 	private function getCacheKeyHash(string $key): string {
 		return hash($this->cache_hashing_algorithm, $key);
@@ -160,9 +178,11 @@ class trainslatorModule extends zModule {
 	}
 
 	private function performTranslate(string $text, string $language_name, ?string $mode = 'text') {
+		$zero_language = $this->getZeroLanguage();
+		$zero_language_name = $zero_language->get('language_name');
 		return $this->z->chatgpt->ask(
 			[
-				"Translate to $language_name",
+				"Translate from $zero_language_name to $language_name",
 				$text
 			],
 			$this->system_prompts[$mode]
