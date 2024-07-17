@@ -3,6 +3,7 @@
 /**
 * This class simplifies generation of html forms.
 */
+#[\AllowDynamicProperties]
 class zForm {
 
 	public $id;

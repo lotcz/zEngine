@@ -3,6 +3,7 @@
 /**
 * This class simplifies paging in mysql recordsets.
 */
+#[\AllowDynamicProperties]
 class zPaging {
 
 	public $offset = 0;

@@ -3,6 +3,7 @@
 /**
 * This class represents a table for tables module.
 */
+#[\AllowDynamicProperties]
 class zTable {
 
 	public $name;

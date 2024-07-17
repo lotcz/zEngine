@@ -182,7 +182,18 @@ class imagesModule extends zModule {
 						break;
 				}
 
-				imagecopyresampled($tmp, $img, 0, 0, $src_x, $src_y, round($newWidth), round($newHeight), $src_width, $src_height);
+				imagecopyresampled(
+					$tmp,
+					$img,
+					0,
+					0,
+					intval($src_x),
+					intval($src_y),
+					intval(round($newWidth)),
+					intval(round($newHeight)),
+					intval($src_width),
+					intval($src_height)
+				);
 
 				if (file_exists($resized_path)) {
 					unlink($resized_path);

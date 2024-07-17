@@ -134,6 +134,16 @@ class formsModule extends zModule {
 		return $token_verified;
 	}
 
+	public function deleteExpiredFormTokens() {
+		$before = z::mysqlTimestamp(time() - $this->protection_token_expires);
+		$this->z->db->executeDeleteQuery(
+			'form_protection_token',
+			'form_protection_token_created < ?',
+			[$before],
+			[PDO::PARAM_STR]
+		);
+	}
+
 	public function processForm($form, $model_class_name) {
 		$model = new $model_class_name($this->z->db);
 

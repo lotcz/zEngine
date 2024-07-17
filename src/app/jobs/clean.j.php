@@ -19,4 +19,9 @@
 		}
 	}
 
-	echo 'Sessions cleared.';
+	echo 'Sessions cleared. ';
+
+	$this->requireModule('forms');
+	$this->z->forms->deleteExpiredFormTokens();
+
+	echo 'Expired form tokens cleared.';
