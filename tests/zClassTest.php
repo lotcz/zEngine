@@ -20,6 +20,21 @@ final class zClassTest extends TestCase
 			15,
 			z::parseInt('15')
 		);
+
+		$this->assertEquals(
+			15,
+			z::parseInt(15)
+		);
+
+		$this->assertEquals(
+			0,
+			z::parseInt(0)
+		);
+
+		$this->assertEquals(
+			0,
+			z::parseInt('0')
+		);
 	}
 
 	public function testParseFloat(): void
@@ -83,8 +98,8 @@ final class zClassTest extends TestCase
 		$str = '   test   ';
 
 		$this->assertEquals(
-			z::trim($str),
-			'test'
+			'test',
+			z::trim($str)
 		);
 
 	}
@@ -94,8 +109,8 @@ final class zClassTest extends TestCase
 		$str = ' .,-*/test.,-*/ ';
 
 		$this->assertEquals(
-			z::trimSpecial($str),
-			'test'
+			'test',
+			z::trimSpecial($str)
 		);
 
 	}
@@ -105,8 +120,54 @@ final class zClassTest extends TestCase
 		$str = '/test/';
 
 		$this->assertEquals(
-			z::trimSlashes($str),
-			'test'
+			'test',
+			z::trimSlashes($str)
+		);
+
+	}
+
+	public function testStrlen(): void	{
+		$str = '123456789';
+
+		$this->assertEquals(
+			9,
+			z::strlen($str)
+		);
+
+		$str = 'test';
+
+		$this->assertEquals(
+			4,
+			z::strlen($str)
+		);
+
+		$str = 'příliš žluťoučký kůň';
+
+		$this->assertEquals(
+			20,
+			z::strlen($str)
+		);
+
+		$str = 0;
+
+		$this->assertEquals(
+			1,
+			z::strlen($str)
+		);
+
+
+		$str = 15;
+
+		$this->assertEquals(
+			2,
+			z::strlen($str)
+		);
+
+		$str = null;
+
+		$this->assertEquals(
+			0,
+			z::strlen($str)
 		);
 
 	}
