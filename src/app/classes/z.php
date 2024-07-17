@@ -336,6 +336,7 @@ class z {
 	}
 
 	static function getExternalUrl($url) {
+		if (empty($url)) return null;
 		if (strlen($url) > 0) {
 			$url = strtolower($url);
 			if (!z::startsWith($url, 'http')) {
