@@ -51,10 +51,19 @@ class newsletterModule extends zModule {
 		$all_active = $this->getActiveSubscriptions();
 		$deleted = 0;
 		foreach ($all_active as $subscription) {
-			if (!zForm::validate_email($subscription->val('newsletter_subscription_email'))) {
-				// $subscription->delete();
+			$email = $subscription->val('newsletter_subscription_email');
+			if (!zForm::validate_email($email)) {
+				$trimmed = z::trim($email);
+				if (zForm::validate_email($trimmed)) {
+					$subscription->set('newsletter_subscription_email', $trimmed);
+					$subscription->save();
+					echo "Email \"$email\" trimmed to $trimmed" . PHP_EOL;
+					continue;
+				}
+
+				$subscription->delete();
 				$deleted += 1;
-				echo sprintf("Deleted <strong>%s</strong> (DELETE DISABLED!).\r\n", $subscription->val('newsletter_subscription_email'));
+				echo "Deleted <strong>\"$email\"</strong> (DELETE DISABLED!)." . PHP_EOL;
 			}
 		}
 		return $deleted;

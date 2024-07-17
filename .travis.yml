@@ -1,6 +1,0 @@
-language: php
-php:
-  - '7.3'
-script: make test
-after_failure:
-  - cat zEngine.log

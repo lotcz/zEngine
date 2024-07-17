@@ -1,5 +1,9 @@
 <?php
-	$this->requireModule('auth');
+
+	if (!$this->z->isModuleEnabled('auth')) {
+		echo "Auth module disabled!" . PHP_EOL;
+		die();
+	}
 
 	$sessions = UserSessionModel::select(
 		$this->z->db, /* db */
@@ -19,9 +23,5 @@
 		}
 	}
 
-	echo 'Sessions cleared. ';
-
-	$this->requireModule('forms');
-	$this->z->forms->deleteExpiredFormTokens();
-
-	echo 'Expired form tokens cleared.';
+	$count = count($sessions);
+	echo "Deleted <strong>$count</strong> old sessions." . PHP_EOL;

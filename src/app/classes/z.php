@@ -125,6 +125,7 @@ class z {
 	}
 
 	static function trim($s, $chrs = ' ') {
+		if ($s === null) return null;
 		$result = trim($s, $chrs);
 		if (z::strlen($result) === 0) {
 			return null;
@@ -133,7 +134,7 @@ class z {
 	}
 
 	static function trimSpecial($s) {
-		return trim($s, ' .,-*/?!\'"');
+		return z::trim($s, ' .,-*/?!\'"');
 	}
 
 	static function trimSlashes($s) {
@@ -243,8 +244,8 @@ class z {
 		}
 	}
 
-	static function strlen(?string $str): int {
-		if (empty($str)) return 0;
+	static function strlen($str): int {
+		if (!isset($str)) return 0;
 		return mb_strlen($str);
 	}
 

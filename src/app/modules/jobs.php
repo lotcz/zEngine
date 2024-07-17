@@ -16,19 +16,13 @@ class jobsModule extends zModule {
 	}
 
 	public function onBeforeInit() {
+		// if in /jobs, execute the job and exit
 		if ($this->z->core->getPath(0) == $this->base_url) {
 			$security_token = z::get('security_token', $this->z->core->getPath(-1));
 			if ($security_token == $this->security_token) {
 				$job_name = z::get('job', $this->z->core->getPath(-2));
-				$job_path = $this->z->core->app_dir . "jobs/$job_name.j.php";
-
-				if (!file_exists($job_path)) {
-					$job_path = $this->z->core->default_app_dir . "jobs/$job_name.j.php";
-				}
-
-				include $job_path;
-				exit;
-
+				$this->executeJob($job_name);
+				die();
 			} else {
 				http_response_code(403);
 				die('Wrong security token.');
@@ -54,6 +48,23 @@ class jobsModule extends zModule {
 
 	public function getJobUrl($name) {
 		return $this->z->core->url('jobs?job=' . $name . '&security_token=' . $this->security_token);
+	}
+
+	public function getJobPath($name) {
+		$job_path = $this->z->core->app_dir . "jobs/$name.j.php";
+		if (!file_exists($job_path)) {
+			$job_path = $this->z->core->default_app_dir . "jobs/$name.j.php";
+		}
+		return $job_path;
+	}
+
+	public function executeJob($name) {
+		$path = $this->getJobPath($name);
+		if (file_exists($path)) {
+			include $path;
+		} else {
+			throw new Exception("Job $name doesn't exist!");
+		}
 	}
 
 }

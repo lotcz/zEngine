@@ -2,10 +2,11 @@
 	<div class="jobs">
 		<?php
 			foreach ($jobs as $job) {
+				$url = $this->z->jobs->getJobUrl($job);
 				?>
 					<div class="my-1">
-						<button type="button" onclick="javascript:runJob('<?=$job?>');" class="btn btn-primary mr-1"><?=$job ?></button>
-						<span><?=$this->z->jobs->getJobUrl($job) ?></span>
+						<button type="button" onclick="javascript:runJob('<?=$job?>', '<?=$url?>');" class="btn btn-primary mr-1"><?=$job ?></button>
+						<span><?=$url?></span>
 					</div>
 				<?php
 			}
@@ -20,21 +21,30 @@
 
 <script>
 
-	function addToConsole(str) {
-		return z.createElement(z.getById('console_inner'), 'div', 'border-1 mt-2', str);
+	function addToConsole(title) {
+		const item = z.createElement(null, 'div', 'border rounded p-1 mt-2');
+		z.getById('console_inner').prepend(item);
+		const itemhead = z.createElement(item, 'div', 'd-flex gap-2 border-bottom');
+		z.createElement(itemhead, 'span', '', new Date().toLocaleTimeString());
+		z.createElement(itemhead, 'strong', '', title);
+		const itemcontent = z.createElement(item, 'div');
+		z.createElement(itemcontent, 'div', 'spinner-border spinner-border-sm');
+		return itemcontent;
 	}
 
-	function jobFinished(el, response) {
+	function jobFinished(itemel, response) {
 		response.text().then(
-			(text) => el.innerHTML = `${response.statusText} : ${text}`
+			(text) => {
+				itemel.innerHTML = '';
+				z.createElement(itemel, 'strong', '', `${response.status} - ${response.statusText}`);
+				z.createElement(itemel, 'pre', 'border-1', text);
+			}
 		);
 	}
 
-	function runJob(name) {
-		const el = addToConsole(`Running job ${name}...`);
-		const finished = (response) => jobFinished(el, response);
-		fetch(`<?=$this->url('jobs') ?>?job=${name}&security_token=<?=$this->z->jobs->getConfigValue('security_token') ?>`)
-		.then(finished);
+	function runJob(name, url) {
+		const el = addToConsole(name);
+		fetch(url).then((response) => jobFinished(el, response));
 	}
 
 </script>
