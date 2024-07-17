@@ -31,7 +31,7 @@ class z {
 	* @return int
 	*/
 	static function parseInt($val) {
-		if (isset($val) && strlen(trim($val)) > 0) {
+		if (isset($val) && z::strlen(trim($val)) > 0) {
 			return intval($val);
 		} else {
 			return null;
@@ -42,7 +42,7 @@ class z {
 	* If value can be interpreted as floating point decimal number, then return it. Return null otherwise.
 	*/
 	static function parseFloat($val) {
-		if (isset($val) && strlen(trim($val)) > 0) {
+		if (isset($val) && z::strlen(trim($val)) > 0) {
 			return floatval($val);
 		} else {
 			return null;
@@ -102,7 +102,7 @@ class z {
 		if (is_array($value)) {
 			$str_array = $value;
 		} else {
-			if ($value === null || strlen($value) === 0) {
+			if ($value === null || z::strlen($value) === 0) {
 				return $def;
 			}
 			$str_array = explode(',', $value);
@@ -116,8 +116,8 @@ class z {
 	}
 
 	static function shorten($str, $len = 100, $ellipsis = "...") {
-		if (mb_strlen($str) > $len) {
-			$length = $len - mb_strlen($ellipsis);
+		if (z::strlen($str) > $len) {
+			$length = $len - z::strlen($ellipsis);
 			return z::trimSpecial(mb_substr($str, 0, $length)) . $ellipsis;
 		} else {
 			return $str;
@@ -126,7 +126,7 @@ class z {
 
 	static function trim($s, $chrs = ' ') {
 		$result = trim($s, $chrs);
-		if (strlen($result) === 0) {
+		if (z::strlen($result) === 0) {
 			return null;
 		}
 		return $result;
@@ -187,7 +187,7 @@ class z {
 	* Convert mysql Datetime to php time (int)
 	*/
 	static function phpDatetime($mysqldate) {
-		if (isset($mysqldate) && (strlen($mysqldate) > 0)) {
+		if (isset($mysqldate) && (z::strlen($mysqldate) > 0)) {
 			return strtotime($mysqldate);
 		} else {
 			return null;
@@ -243,12 +243,17 @@ class z {
 		}
 	}
 
+	static function strlen(?string $str): int {
+		if (empty($str)) return 0;
+		return mb_strlen($str);
+	}
+
 	static function startsWith($haystack, $needle)	{
-		 return (mb_substr($haystack, 0, strlen($needle)) === $needle);
+		 return (mb_substr($haystack, 0, z::strlen($needle)) === $needle);
 	}
 
 	static function endsWith($haystack, $needle) {
-		$length = mb_strlen($needle);
+		$length = z::strlen($needle);
 		return $length === 0 || (substr($haystack, -$length) === $needle);
 	}
 
@@ -336,8 +341,7 @@ class z {
 	}
 
 	static function getExternalUrl($url) {
-		if (empty($url)) return null;
-		if (strlen($url) > 0) {
+		if (z::strlen($url) > 0) {
 			$url = strtolower($url);
 			if (!z::startsWith($url, 'http')) {
 				$url = 'http://' . $url;
