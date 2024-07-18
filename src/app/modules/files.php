@@ -17,6 +17,25 @@ class filesModule extends zModule {
 		$this->root_files_url = ($absolute) ? $files_url : $this->z->url($files_url);
 	}
 
+	/**
+	 * Turn array with multiple uploaded files into more practical array
+	 *
+	 * https://www.php.net/manual/en/features.file-upload.multiple.php#53240
+	 */
+	public function reArrayFiles(&$file_post) {
+		$file_ary = array();
+		$file_count = count($file_post['name']);
+		$file_keys = array_keys($file_post);
+
+		for ($i=0; $i<$file_count; $i++) {
+			foreach ($file_keys as $key) {
+				$file_ary[$i][$key] = $file_post[$key][$i];
+			}
+		}
+
+		return $file_ary;
+	}
+
 	public function getFilePath($file) {
 		return $this->root_files_disk_path . $file;
 	}
