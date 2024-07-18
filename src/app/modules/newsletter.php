@@ -63,7 +63,7 @@ class newsletterModule extends zModule {
 
 				$subscription->delete();
 				$deleted += 1;
-				echo "Deleted <strong>\"$email\"</strong> (DELETE DISABLED!)." . PHP_EOL;
+				echo "Deleted subscription <strong>\"$email\"</strong>." . PHP_EOL;
 			}
 		}
 		return $deleted;
