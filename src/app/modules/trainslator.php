@@ -98,7 +98,7 @@ class trainslatorModule extends zModule {
 		return $info;
 	}
 
-	private function getCacheKeyHash(string $key): string {
+	public function getCacheKeyHash(string $key): string {
 		return hash($this->cache_hashing_algorithm, $key);
 	}
 
@@ -177,6 +177,10 @@ class trainslatorModule extends zModule {
 		$this->deleteCacheByHashes($language_id, $hashes);
 	}
 
+	/*
+	 * TRANSLATE
+	 */
+
 	private function performTranslate(string $text, string $language_name, ?string $mode = 'text') {
 		$zero_language = $this->getZeroLanguage();
 		$zero_language_name = $zero_language->get('language_name');
@@ -200,7 +204,9 @@ class trainslatorModule extends zModule {
 		if ($this->isZeroLanguage($language_id)) return $text;
 
 		// core translation
-		if ($this->z->i18n->translationExists($text)) return $this->z->i18n->translate($text);
+		if ($this->z->i18n->isSelectedLanguage($language_id)) {
+			if ($this->z->i18n->translationExists($text)) return $this->z->i18n->translate($text);
+		}
 
 		// internal cache
 		$hash = $this->getCacheKeyHash($text);
@@ -208,7 +214,6 @@ class trainslatorModule extends zModule {
 		if (!empty($icache)) return $icache;
 
 		// db cache
-
 		$cached = $this->loadCacheByHash($language_id, $hash);
 		if (isset($cached)) {
 			$t = $cached->val('trainslator_cache_value');

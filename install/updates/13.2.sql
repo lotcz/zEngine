@@ -43,7 +43,6 @@ CREATE VIEW view_administrators AS
 
 CREATE TABLE `trainslator_cache` (
   `trainslator_cache_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `trainslator_cache_ready` BOOL NOT NULL,
   `trainslator_cache_language_id` TINYINT UNSIGNED NOT NULL,
   `trainslator_cache_key_hash` CHAR(32) NOT NULL,
   `trainslator_cache_key` TEXT,
@@ -58,6 +57,8 @@ CREATE TABLE `trainslator_cache` (
 		  REFERENCES `language` (`language_id`)
 		  ON DELETE cascade
 ) ENGINE = InnoDB;
+
+DROP VIEW IF EXISTS `view_trainslator_cache`;
 
 CREATE VIEW view_trainslator_cache AS
 	SELECT *

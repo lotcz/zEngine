@@ -67,4 +67,9 @@ class jobsModule extends zModule {
 		}
 	}
 
+	public function executeJobRemote($name, $url, $security_token = null) {
+		if (empty($security_token)) $security_token = $this->security_token;
+		$jobUrl = z::trimSlashes($url) . '/jobs?job=' . $name . '&security_token=' . $security_token;
+		echo file_get_contents($jobUrl);
+	}
 }

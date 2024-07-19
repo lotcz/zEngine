@@ -86,6 +86,10 @@ class i18nModule extends zModule {
 		return $this->selected_language;
 	}
 
+	public function isSelectedLanguage($language_id) {
+		return $this->getSelectedLanguageId() == $language_id;
+	}
+
 	public function getSelectedLanguageId() {
 		return $this->selected_language->val('language_id');
 	}
