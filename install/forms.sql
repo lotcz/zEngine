@@ -5,7 +5,7 @@ CREATE TABLE `form_protection_token` (
   `form_protection_token_user_session_id` INT UNSIGNED NULL,
   `form_protection_token_hash` VARCHAR(255) NOT NULL,
   `form_protection_token_created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `form_protection_token_ip` VARCHAR(15) NOT NULL,
+  `form_protection_token_ip` VARCHAR(46) NOT NULL,
   `form_protection_token_form_name` VARCHAR(50),
 
   PRIMARY KEY (`form_protection_token_id`),

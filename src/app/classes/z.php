@@ -31,7 +31,7 @@ class z {
 	* @return int
 	*/
 	static function parseInt($val) {
-		if (isset($val) && z::strlen(trim($val)) > 0) {
+		if (isset($val) && z::strlen(z::trim($val)) > 0) {
 			return intval($val);
 		} else {
 			return null;
@@ -42,8 +42,16 @@ class z {
 	* If value can be interpreted as floating point decimal number, then return it. Return null otherwise.
 	*/
 	static function parseFloat($val) {
-		if (isset($val) && z::strlen(trim($val)) > 0) {
+		if (isset($val) && z::strlen(z::trim($val)) > 0) {
 			return floatval($val);
+		} else {
+			return null;
+		}
+	}
+
+	static function parseDatetime(?string $timeStr) {
+		if (z::isValidDatetime($timeStr)) {
+			return date_create($timeStr);
 		} else {
 			return null;
 		}
@@ -184,6 +192,14 @@ class z {
 		return $result;
 	}
 
+	static function isValidDatetime(?string $timeStr) {
+		if (empty($timeStr)) {
+			return false;
+		} else {
+			return date_create($timeStr) != false;
+		}
+	}
+
 	/**
 	* Convert mysql Datetime to php time (int)
 	*/
@@ -199,7 +215,12 @@ class z {
 	* Convert php Datetime to mysql Datetime
 	*/
 	static function mysqlDatetime($time) {
-		if (isset($time)) {
+		if (empty($time)) return null;
+		if (is_string($time)) {
+			$dt = z::parseDatetime($time);
+			if (!empty($dt)) $time = $dt->getTimestamp();
+		}
+		if (is_int($time)) {
 			return date('Y-m-d H:i:s', $time);
 		} else {
 			return null;
@@ -207,14 +228,10 @@ class z {
 	}
 
 	/**
-	* Convert php time to mysql Datetime
+	* Convert php time to mysql Timestamp
 	*/
 	static function mysqlTimestamp($time) {
-		if (isset($time)) {
-			return date('Y-m-d H:i:s', $time);
-		} else {
-			return null;
-		}
+		return z::mysqlDatetime($time);
 	}
 
 	static function formatDateForHtml($time) {

@@ -195,6 +195,7 @@ class trainslatorModule extends zModule {
 
 	public function translate(?string $text, ?int $language_id = null) {
 		// empty
+		$text = z::trim($text);
 		if (empty($text)) return $text;
 
 		$language = $this->getLanguage($language_id);
