@@ -18,10 +18,14 @@ class chatGPTModule extends zModule {
 		if (empty($userPrompt)) return 'no input provided';
 		$url = $this->getConfigValue('api_url','https://api.openai.com/v1/chat/completions');
 
+		if (empty($systemPrompt)) {
+			$systemPrompt = $this->getConfigValue('system_prompt', 'You are a helpful assistant.');
+		}
+
 		$messages = [
 			[
 				'role' => 'system',
-				'content' => $systemPrompt ?? $this->getConfigValue('system_prompt', 'You are a helpful assistant.')
+				'content' => $systemPrompt
 			],
 		];
 

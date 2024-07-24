@@ -337,7 +337,7 @@ class z {
 		return array_merge($array_seed, $array_addition);
 	}
 
-	/***
+	/**
 	 * select random element, remove it from the array and return it
 	 */
 	static function extractRandomElement(&$array) {

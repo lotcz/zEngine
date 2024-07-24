@@ -18,7 +18,8 @@ class trainslatorModule extends zModule {
 	public $internal_cache = [];
 
 	private $system_prompts = [
-		'text' => "You are helpful automatic translator that accurately translate texts to different languages. You always answer with exact translation.",
+		'text' => "You are helpful automatic translator that accurately translates texts to different languages." .
+			"Your answer consists of only the translated string in language that was specified.",
 		'html' => "You are helpful automatic translator that accurately translate web content to different languages. " .
 			"You always keep HTML tags structure in place and keep all attribute values so translated content can be safely displayed on web. " .
 			"You never remove images or heading tags from original content."

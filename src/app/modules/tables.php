@@ -47,7 +47,7 @@ class tablesModule extends zModule {
 				if ($field->type == 'text') {
 					foreach ($field->filter_fields as $filter_field) {
 						$field->value = $filter_values[$field->name];
-						if (strlen($filter_values[$field->name]) > 0) {
+						if (z::strlen($filter_values[$field->name]) > 0) {
 							$where[] = sprintf('%s like ?', $filter_field);
 							$table->bindings[] = '%' . $filter_values[$field->name] . '%';
 							$table->types[] = PDO::PARAM_STR;
