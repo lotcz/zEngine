@@ -123,6 +123,75 @@ class z {
 		return $result_array;
 	}
 
+	static function isValidDatetime(?string $timeStr) {
+		if (empty($timeStr)) {
+			return false;
+		} else {
+			return date_create($timeStr) != false;
+		}
+	}
+
+	// MySQL
+
+	/**
+	* Convert mysql Datetime to php time (int)
+	*/
+	static function phpDatetime($mysqldate) {
+		if (isset($mysqldate) && (z::strlen($mysqldate) > 0)) {
+			return strtotime($mysqldate);
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	* Convert php Datetime to mysql Datetime
+	*/
+	static function mysqlDatetime($time) {
+		if (empty($time)) return null;
+		if (is_string($time)) {
+			$dt = z::parseDatetime($time);
+			if (!empty($dt)) $time = $dt->getTimestamp();
+		}
+		if (is_int($time)) {
+			return date('Y-m-d H:i:s', $time);
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	* Convert php time to mysql Timestamp
+	*/
+	static function mysqlTimestamp($time) {
+		return z::mysqlDatetime($time);
+	}
+
+	static function formatDateForHtml($time) {
+		if (isset($time) && $time != null) {
+			return z::shorten(date_format(date_timestamp_set(new DateTime(), $time), 'c'), 19, "");
+		} else {
+			return '';
+		}
+	}
+
+	static function getDbType($val) {
+		if (is_int($val)) {
+			return PDO::PARAM_INT;
+		} else {
+			return PDO::PARAM_STR;
+		}
+	}
+
+	// STRINGS
+
+	static function replace($str, $find, $replace) {
+		if (z::strlen($str) == 0 || z::strlen($find) == 0) {
+			return '';
+		}
+		return str_replace($str, $find, $replace);
+	}
+
 	static function shorten($str, $len = 100, $ellipsis = "...") {
 		if (z::strlen($str) > $len) {
 			$length = $len - z::strlen($ellipsis);
@@ -192,64 +261,6 @@ class z {
 		return $result;
 	}
 
-	static function isValidDatetime(?string $timeStr) {
-		if (empty($timeStr)) {
-			return false;
-		} else {
-			return date_create($timeStr) != false;
-		}
-	}
-
-	/**
-	* Convert mysql Datetime to php time (int)
-	*/
-	static function phpDatetime($mysqldate) {
-		if (isset($mysqldate) && (z::strlen($mysqldate) > 0)) {
-			return strtotime($mysqldate);
-		} else {
-			return null;
-		}
-	}
-
-	/**
-	* Convert php Datetime to mysql Datetime
-	*/
-	static function mysqlDatetime($time) {
-		if (empty($time)) return null;
-		if (is_string($time)) {
-			$dt = z::parseDatetime($time);
-			if (!empty($dt)) $time = $dt->getTimestamp();
-		}
-		if (is_int($time)) {
-			return date('Y-m-d H:i:s', $time);
-		} else {
-			return null;
-		}
-	}
-
-	/**
-	* Convert php time to mysql Timestamp
-	*/
-	static function mysqlTimestamp($time) {
-		return z::mysqlDatetime($time);
-	}
-
-	static function formatDateForHtml($time) {
-		if (isset($time) && $time != null) {
-			return z::shorten(date_format(date_timestamp_set(new DateTime(), $time), 'c'), 19, "");
-		} else {
-			return '';
-		}
-	}
-
-	static function getDbType($val) {
-		if (is_int($val)) {
-			return PDO::PARAM_INT;
-		} else {
-			return PDO::PARAM_STR;
-		}
-	}
-
 	/**
 	* Remove dangerous characters from string. Crucial for XSS protection.
 	*/
@@ -276,6 +287,7 @@ class z {
 	}
 
 	static function contains($str, $sub) {
+
 		return (mb_strpos($str, $sub) !== false);
 	}
 
@@ -309,7 +321,7 @@ class z {
 	}
 
 	static function stripHtmlTags($text, $allowed_tags = '<br><i><b><p><strong>') {
-		if (!$text) {
+		if (empty($text)) {
 			return '';
 		}
 		return strip_tags($text, $allowed_tags);

@@ -8,7 +8,7 @@ require_once __DIR__ . '/../models/session.m.php';
 */
 class authModule extends zModule {
 
-	public $depends_on = ['resources', 'db', 'i18n', 'cookies', 'messages', 'security'];
+	public array $depends_on = ['resources', 'db', 'i18n', 'cookies', 'messages', 'security'];
 
 	private $authentication_checked = false;
 

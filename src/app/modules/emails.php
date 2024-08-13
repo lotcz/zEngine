@@ -1,13 +1,14 @@
 <?php
 
 require_once __DIR__ . '/../models/email.m.php';
+require_once __DIR__ . '/../classes/send-email-async-job.php';
 
 /**
 * Module that handles sending of emails.
 */
 class emailsModule extends zModule {
 
-	private function sendEmail($to, $subject, $body, $content_type, $from = null, $reply_to = null) {
+	public function sendEmail($to, $subject, $body, $content_type, $from = null, $reply_to = null) {
 		if ($from == null) {
 			$from = $this->getConfigValue('from_address');
 		}
@@ -63,28 +64,26 @@ class emailsModule extends zModule {
 		return $this->z->db->getRecordCount('email', 'email_sent = 0 and email_send_date <= CURRENT_TIMESTAMP()');
 	}
 
+	public function getProcessingEmailsCount() {
+		return $this->z->db->getRecordCount('email', 'email_sent IS NULL and email_send_date <= CURRENT_TIMESTAMP()');
+	}
+
 	public function loadUnsentEmails() {
 		$limit = $this->getConfigValue('limit_emails_per_cron', 4);
 		return EmailModel::select($this->z->db, 'email', 'email_sent = 0 and email_send_date <= CURRENT_TIMESTAMP()', 'email_send_date', "0,$limit");
 	}
 
-	public function processQueue() {
-		$unsent = $this->loadUnsentEmails();
-		$total = count($unsent);
-
-		foreach($unsent as $email) {
-			$email->set('email_sent', 1);
-			$email->save();
-			$this->sendEmail(
-				$email->val('email_to'),
-				$email->val('email_subject'),
-				$email->val('email_body'),
-				$email->val('email_content_type'),
-				$email->val('email_from')
-			);
-		}
-
-		return $total;
+	public function loadExpiredUnsentEmails() {
+		$threshold = (new DateTime())->sub(new DateInterval("PT3M"));
+		return EmailModel::select(
+			$this->z->db,
+			'email',
+			'email_sent IS NULL and email_send_date <= ?',
+			'email_send_date',
+			null,
+			[z::mysqlDatetime($threshold->getTimestamp())],
+			[PDO::PARAM_STR]
+		);
 	}
 
 	public function addEmailToQueue($to, $subject, $content_type, $body, $from = null) {
@@ -120,6 +119,10 @@ class emailsModule extends zModule {
 		return $this->z->db
 			->executeDeleteQuery('email', 'email_sent = 1 and email_send_date <= ?', [$mysqlTimestamp], [PDO::PARAM_STR])
 			->rowCount();
+	}
+
+	public function getSendEmailsAsyncJob(): SendEmailAsyncJob {
+		return new SendEmailAsyncJob($this);
 	}
 
 }

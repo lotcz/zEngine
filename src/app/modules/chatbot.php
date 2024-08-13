@@ -5,8 +5,8 @@
 */
 class chatbotModule extends zModule {
 
-	public $depends_on = ['resources', 'cookies'];
-	public $also_install = [];
+	public array $depends_on = ['resources', 'cookies'];
+	public array $also_install = [];
 
 	public function onBeforeRender() {
 		$this->z->core->includeCSS('resources/chat.css');

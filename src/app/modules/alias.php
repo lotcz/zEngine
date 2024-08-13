@@ -7,7 +7,7 @@ require_once __DIR__ . '/../models/alias.m.php';
 */
 class aliasModule extends zModule {
 
-	public $depends_on = ['db'];
+	public array $depends_on = ['db'];
 
 	public function onBeforeInit() {
 		$alias = new AliasModel($this->z->db);

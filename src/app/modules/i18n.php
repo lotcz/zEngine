@@ -9,8 +9,8 @@ require_once __DIR__ . '/../models/currency.m.php';
 */
 class i18nModule extends zModule {
 
-	public $depends_on = ['cookies', 'resources', 'db'];
-	public $also_install = [];
+	public array $depends_on = ['cookies', 'resources', 'db'];
+	public array $also_install = [];
 
 	public $language_cookie_name = 'language';
 	public $currency_cookie_name = 'currency';

@@ -8,33 +8,33 @@ class zModule {
 	/**
 	* Reference to zEngine that owns this module.
 	*/
-	public $z = null;
+	public zEngine $z;
 
 	/**
 	* Short name of this module.
 	* Must be identical with php file names. Important when loading config files etc.
 	*/
-	public $name = null;
+	public string $name;
 
 	/**
 	* Final config for this module merged from zEngine's default, app's default and local.
 	*/
-	public $config = null;
+	public array $config;
 
 	/**
 	* Array of module names that this module depends on.
 	* These modules will be installed on installAllModules command and always enabled when this module is enabled.
 	*/
-	public $depends_on = [];
+	public array $depends_on = [];
 
 	/**
 	* Array of module names that must also be installed.
 	* This can be modules that are activated only sometimes.
 	* These modules will be also installed on installAllModules command, but not automatically enabled.
 	*/
-	public $also_install = [];
+	public array $also_install = [];
 
-	function __construct($z) {
+	function __construct(zEngine $z) {
 		$this->z = $z;
 	}
 

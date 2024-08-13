@@ -7,8 +7,8 @@
 */
 class coreModule extends zModule {
 
-	public $depends_on = ['errorlog'];
-	public $also_install = [];
+	public array $depends_on = ['errorlog'];
+	public array $also_install = [];
 
 	public $app_version = 1.0;
 	public $minimum_z_version = 10.5;

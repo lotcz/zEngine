@@ -8,7 +8,7 @@ require_once __DIR__ . '/../classes/table.php';
 */
 class tablesModule extends zModule {
 
-	public $depends_on = ['db', 'resources'];
+	public array $depends_on = ['db', 'resources'];
 
 	public function onEnabled() {
 		$this->z->core->includeCSS('resources/tables.css');

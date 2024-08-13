@@ -16,7 +16,7 @@ require_once __DIR__ . '/../models/customer.m.php';
 */
 class shopModule extends zModule {
 
-	public $depends_on = ['db', 'images', 'auth'];
+	public array $depends_on = ['db', 'images', 'auth'];
 
 	public $customer = null;
 

@@ -5,7 +5,7 @@
 */
 class cookiesModule extends zModule {
 
-	public $depends_on = ['resources'];
+	public array $depends_on = ['resources'];
 
 	public $show_warning = false;
 	public $show_disabled = true;

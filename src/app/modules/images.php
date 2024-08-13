@@ -5,7 +5,7 @@
 */
 class imagesModule extends zModule {
 
-	public $depends_on = ['files'];
+	public array $depends_on = ['files'];
 
 	public $formats = [];
 	public $root_images_disk_path = '';

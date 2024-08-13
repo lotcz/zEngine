@@ -8,6 +8,11 @@
 		'EmailModel',
 		[
 			[
+				'name' => 'email_from',
+				'label' => 'From',
+				'type' => 'text'
+			],
+			[
 				'name' => 'email_to',
 				'label' => 'To',
 				'type' => 'text'

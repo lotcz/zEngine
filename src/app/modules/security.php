@@ -9,7 +9,7 @@ require_once __DIR__ . '/../models/banned_ip.m.php';
 */
 class securityModule extends zModule {
 
-	public $depends_on = ['db'];
+	public array $depends_on = ['db'];
 
 	// if an IP exceedes this number of failed attempts, it will be banned
 	public $max_failed_attempts = 100;

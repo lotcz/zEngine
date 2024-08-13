@@ -4,7 +4,7 @@ require_once __DIR__ . '/../models/calendar_reservation.m.php';
 
 class calendarModule extends zModule {
 
-	public $depends_on = ['resources'];
+	public array $depends_on = ['resources'];
 
 	public function onEnabled() {
 

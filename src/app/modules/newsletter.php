@@ -7,7 +7,7 @@ require_once __DIR__ . '/../models/newsletter_subscription.m.php';
 */
 class newsletterModule extends zModule {
 
-	public $depends_on = ['db', 'emails', 'forms'];
+	public array $depends_on = ['db', 'emails', 'forms'];
 
 	public function addSubscription($email) {
 		$subs = new NewsletterSubscriptionModel($this->z->db);

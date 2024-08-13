@@ -5,8 +5,8 @@
 */
 class chatGPTModule extends zModule {
 
-	public $depends_on = [];
-	public $also_install = [];
+	public array $depends_on = [];
+	public array $also_install = [];
 
 	public function ask(
 		$userPrompt,

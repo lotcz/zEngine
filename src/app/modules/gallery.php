@@ -8,7 +8,7 @@ require_once __DIR__ . '/../models/image.m.php';
 */
 class galleryModule extends zModule {
 
-	public $depends_on = ['db', 'images'];
+	public array $depends_on = ['db', 'images'];
 
 	function onEnabled() {
 		$this->requireConfig();

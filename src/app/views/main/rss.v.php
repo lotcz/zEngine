@@ -1,6 +1,6 @@
 <channel>
     <title><?=$this->getFullPageTitle() ?></title>
-    <link><?=$this->url('') ?></link>
+    <link rel="self"><?=$this->url('') ?></link>
     <description><?=$this->getConfigValue('site_description') ?></description>
 
     <?php

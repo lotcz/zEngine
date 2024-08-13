@@ -7,9 +7,9 @@ require_once __DIR__ . '/../models/trainslator_cache.m.php';
 */
 class trainslatorModule extends zModule {
 
-	public $depends_on = ['i18n', 'db', 'chatgpt'];
+	public array $depends_on = ['i18n', 'db', 'chatgpt'];
 
-	public $also_install = [];
+	public array $also_install = [];
 
 	public $cache_hashing_algorithm = 'md5';
 

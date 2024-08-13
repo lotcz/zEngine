@@ -8,8 +8,8 @@ require_once __DIR__ . '/../models/form_protection_token.m.php';
 */
 class formsModule extends zModule {
 
-	public $depends_on = ['db', 'messages', 'resources'];
-	public $also_install = ['auth'];
+	public array $depends_on = ['db', 'messages', 'resources'];
+	public array $also_install = ['auth'];
 
 	private $protection_enabled = false;
 	private $protection_token_min_delay = 3;
