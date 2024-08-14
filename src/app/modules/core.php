@@ -468,7 +468,7 @@ class coreModule extends zModule {
 		if (!empty($not_found_template)) {
 			$this->controllers['page'] = $this->not_found_page;
 			$this->runController('page');
-			include $not_found_template;
+			//include $not_found_template;
 		} else {
 			echo "404 - Not found!";
 		}
