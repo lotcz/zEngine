@@ -197,6 +197,7 @@ class zEngine {
 			die($error_message);
 		} else {
 			$this->errorlog->write($error_message);
+			// TODO: render error
 			$this->core->redirect($this->core->error_page);
 		}
 	}
