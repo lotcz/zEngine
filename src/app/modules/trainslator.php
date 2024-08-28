@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../models/trainslator_cache.m.php';
+require_once __DIR__ . '/../classes/trainslate-async-job.php';
 
 /**
 * Module that automatically translates text using chatGPT API

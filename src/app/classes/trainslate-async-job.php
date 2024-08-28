@@ -4,7 +4,7 @@ require_once "async-standard-job.php";
 
 abstract class TrainslateAsyncJob extends AsyncStandardJob {
 
-	private trainslatorModule $trainslator;
+	protected trainslatorModule $trainslator;
 
 	function __construct(
 		trainslatorModule $trainslator
@@ -16,17 +16,12 @@ abstract class TrainslateAsyncJob extends AsyncStandardJob {
 		return "Trainslate - {$this->getTableName()}";
 	}
 
-	public function processItem(zModel $item): void {
-		// TODO: Implement processItem() method.
+	public function getStateFieldName(): string {
+		return "{$this->getTableName()}_translation_ready";
 	}
 
 	public function getDb(): dbModule {
 		return $this->trainslator->z->db;
 	}
-
-	public function getChunkSize(): int	{
-		// TODO: Implement getChunkSize() method.
-	}
-
 
 }

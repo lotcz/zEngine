@@ -68,9 +68,13 @@ class emailsModule extends zModule {
 		return $this->z->db->getRecordCount('email', 'email_sent IS NULL and email_send_date <= CURRENT_TIMESTAMP()');
 	}
 
-	public function loadUnsentEmails() {
-		$limit = $this->getConfigValue('limit_emails_per_cron', 4);
-		return EmailModel::select($this->z->db, 'email', 'email_sent = 0 and email_send_date <= CURRENT_TIMESTAMP()', 'email_send_date', "0,$limit");
+	public function loadNextUnsentEmail(): ?zModel {
+		return EmailModel::selectSingle(
+			$this->z->db,
+			'email',
+			'email_sent = 0 and email_send_date <= CURRENT_TIMESTAMP()',
+			'email_send_date'
+		);
 	}
 
 	public function loadExpiredUnsentEmails() {

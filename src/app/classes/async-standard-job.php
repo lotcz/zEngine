@@ -15,8 +15,6 @@ abstract class AsyncStandardJob extends AsyncJob {
 
 	public abstract function getDb(): dbModule;
 
-	public abstract function getChunkSize(): int;
-
 	public abstract function getExpiration(): DateInterval;
 
 	public abstract function getTableName(): string;
@@ -27,23 +25,37 @@ abstract class AsyncStandardJob extends AsyncJob {
 
 	public abstract function getStateFieldName(): string;
 
+	public function getIdFieldName(): string {
+		return "{$this->getTableName()}_id";
+	}
+
 	public function getStateChangedFieldName(): string {
 		return "{$this->getStateFieldName()}_changed";
+	}
+
+	protected function getAdditionalFilterSql(): ?string {
+		return null;
+	}
+
+	protected function getStateValueSql(?bool $state): ?string {
+		return ($state === null) ? 'null' : ($state ? '1' : '0');
 	}
 
 	protected function getStateSql(?bool $state): string {
 		if ($state === null) {
 			return "{$this->getStateFieldName()} is null";
 		}
-		return "{$this->getStateFieldName()} = $state";
+		return sprintf('%s = %s', $this->getStateFieldName(), $this->getStateValueSql($state));
 	}
 
-	protected function loadItems(?bool $state, ?int $limit): array {
-		return zModel::select($this->getDb(), $this->getTableName(), $this->getStateSql($state), null, $limit);
+	protected function getFilterSql(?bool $state): ?string {
+		$stateSql = $this->getStateSql($state);
+		$additional = $this->getAdditionalFilterSql();
+		return (empty($additional)) ? $stateSql : "($stateSql) and ($additional)";
 	}
 
 	protected function getItemsCount(?bool $state): int {
-		return $this->getDb()->getRecordCount($this->getDb(), $this->getStateSql($state));
+		return $this->getDb()->getRecordCount($this->getTableName(), $this->getFilterSql($state));
 	}
 
 	public function getItemsCountWaiting(): int {
@@ -54,29 +66,41 @@ abstract class AsyncStandardJob extends AsyncJob {
 		return $this->getItemsCount(self::ITEM_STATE_PROCESSING);
 	}
 
-	public function loadItemsWaiting(): array {
-		return $this->loadItems(self::ITEM_STATE_WAITING, $this->getChunkSize());
+	public function loadNextWaiting(): ?zModel {
+		$items = zModel::select(
+			$this->getDb(),
+			$this->getTableName(),
+			$this->getFilterSql(self::ITEM_STATE_WAITING),
+			$this->getStateChangedFieldName(),
+			1
+		);
+		if (count($items) > 0) return $items[0];
+		return null;
 	}
 
 	public function loadItemsExpired(): array {
-		$stateSql = $this->getStateSql(self::ITEM_STATE_PROCESSING);
+		$filterSql = $this->getFilterSql(self::ITEM_STATE_PROCESSING);
 		$threshold = (new DateTime())->sub($this->getExpiration());
-		$sql = "($stateSql) and {$this->getStateChangedFieldName()} < ?";
+		$sql = "($filterSql) and {$this->getStateChangedFieldName()} < ?";
 		return zModel::select(
 			$this->getDb(),
 			$this->getTableName(),
 			$sql,
 			null,
 			null,
-			[$threshold],
+			[z::mysqlDatetime($threshold)],
 			[PDO::PARAM_STR]
 		);
 	}
 
 	protected function markItem(zModel $item, ?bool $state): void {
-		$item->set($this->getStateFieldName(), $state);
-		$item->set($this->getStateChangedFieldName(), new DateTime());
-		$item->save();
+		$this->getDb()->executeUpdateQuery(
+			$this->getTableName(),
+			[$this->getStateFieldName(), $this->getStateChangedFieldName()],
+			sprintf('%s = ?', $this->getIdFieldName()),
+			[$this->getStateValueSql($state), z::mysqlDatetime(new DateTime()), $item->ival($this->getIdFieldName())],
+			[PDO::PARAM_INT, PDO::PARAM_STR, PDO::PARAM_INT]
+		);
 	}
 
 	public function markItemReady(zModel $item): void {

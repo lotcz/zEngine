@@ -149,6 +149,9 @@ class z {
 	*/
 	static function mysqlDatetime($time) {
 		if (empty($time)) return null;
+		if ($time instanceof DateTime) {
+			$time = $time->getTimestamp();
+		}
 		if (is_string($time)) {
 			$dt = z::parseDatetime($time);
 			if (!empty($dt)) $time = $dt->getTimestamp();

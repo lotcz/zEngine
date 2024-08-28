@@ -72,6 +72,17 @@ class dbModule extends zModule {
 	* @return PDOStatement
 	*/
 	public function executeQuery($sql, $bindings = null, $types = null) {
+		if ($this->z->isDebugMode()) {
+			$values = sprintf('[%s]', empty($bindings) ? '' : implode(", ", $bindings));
+			$this->z->errorlog->write(
+				sprintf(
+					"Running query: %s\r\nValues: %s",
+					$sql,
+					$values
+				)
+			);
+		}
+
 		$connection = $this->getConnection();
 		$stmt = $connection->prepare($sql);
 		if (!$stmt) {
@@ -82,14 +93,31 @@ class dbModule extends zModule {
 				$stmt->bindValue($i+1, $bindings[$i], $types[$i]);
 			}
 		}
-		$result = $stmt->execute();
-	 	if ($result) {
-			return $stmt;
-		} else {
-			$info = $stmt->errorInfo();
-			$code = $info[1];
-			$desc = $info[2];
-			throw new Exception(sprintf('Error %s - %s in query: %s.', $code, $desc, $sql));
+
+		try {
+			$result = $stmt->execute();
+			if ($result) {
+				return $stmt;
+			} else {
+				$info = $stmt->errorInfo();
+				$code = $info[1];
+				$desc = $info[2];
+				throw new Exception(sprintf('Error %s - %s', $code, $desc));
+			}
+		} catch (Exception $e) {
+			$values = implode(", ", $bindings);
+			$typenames = implode(", ", $types);
+			throw new Exception(
+				sprintf(
+					"Error in query: %s\r\nValues: %s\r\nTypes: %s\r\n%s",
+					$sql,
+					$values,
+					$typenames,
+					$e->getMessage()
+				),
+				500,
+				$e
+			);
 		}
 	}
 

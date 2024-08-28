@@ -14,6 +14,10 @@ class SendEmailAsyncJob extends AsyncJob {
 		return "Rozesílání e-mailů";
 	}
 
+	public function getProcessingChunkSize(): int {
+		return $this->emails->getConfigValue('limit_emails_per_cron', 4);
+	}
+
 	public function getItemsCountWaiting(): int	{
 		return $this->emails->getUnsentEmailsCount();
 	}
@@ -22,8 +26,8 @@ class SendEmailAsyncJob extends AsyncJob {
 		return $this->emails->getProcessingEmailsCount();
 	}
 
-	public function loadItemsWaiting(): array {
-		return $this->emails->loadUnsentEmails();
+	public function loadNextWaiting(): ?zModel {
+		return $this->emails->loadNextUnsentEmail();
 	}
 
 	public function loadItemsExpired(): array {

@@ -189,8 +189,9 @@ class zModel {
 		return $list;
 	}
 
-	static function selectSingle($db, $table_name, $where = null, $orderby = null, $limit = null, $bindings = null, $types = null) {
-		$result = zModel::select($db, $table_name, $where, $orderby, $limit, $bindings, $types);
+	static function selectSingle($db, $table_name, $where = null, $orderby = null, $bindings = null, $types = null) {
+		$class_name = get_called_class();
+		$result = $class_name::select($db, $table_name, $where, $orderby, 1, $bindings, $types);
 		if (count($result) > 0) {
 			return $result[0];
 		} else {

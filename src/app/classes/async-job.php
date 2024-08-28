@@ -4,12 +4,19 @@ abstract class AsyncJob {
 
 	public abstract function getJobName(): string;
 
+	public function getProcessingChunkSize(): int {
+		return 1;
+	}
+
 	public abstract function getItemsCountWaiting(): int;
 
 	public abstract function getItemsCountProcessing(): int;
 
-	public abstract function loadItemsWaiting(): array;
+	public abstract function loadNextWaiting(): ?zModel;
 
+	/**
+	 * These will be requeued
+	 */
 	public abstract function loadItemsExpired(): array;
 
 	public abstract function markItemReady(zModel $item): void;
@@ -24,28 +31,32 @@ abstract class AsyncJob {
 		$expired = $this->loadItemsExpired();
 		$expiredCount = count($expired);
 		if ($expiredCount > 0) {
-			echo "Requeuing $expiredCount expired async jobs" . PHP_EOL;
 			foreach ($expired as $expiredItem) {
 				$this->markItemWaiting($expiredItem);
 			}
 		}
 
-		$waiting = $this->loadItemsWaiting();
-		$waitingCount = count($waiting);
+		$max = $this->getProcessingChunkSize();
+		$processed = 0;
 
-		if ($waitingCount > 0) {
-			echo "Starting processing of $waitingCount waiting async jobs" . PHP_EOL;
-			foreach ($waiting as $waitingItem) {
-				$this->markItemProcessing($waitingItem);
+		$waitingCount = $this->getItemsCountWaiting();
+		echo "Waiting: $waitingCount, Chunk size: $max, Expired & requeued: $expiredCount" . PHP_EOL;
+
+		$waiting = $this->loadNextWaiting();
+		while ($processed < $max && isset($waiting)) {
+			$processed++;
+			$this->markItemProcessing($waiting);
+			try {
+				$this->processItem($waiting);
+				$this->markItemReady($waiting);
+			} catch (Exception $e) {
+				echo "Error when processing async job: " . $e->getMessage() . PHP_EOL;
 			}
 
-			foreach ($waiting as $waitingItem) {
-				$this->processItem($waitingItem);
-				$this->markItemReady($waitingItem);
-			}
-		} else {
-			echo "0 waiting async jobs" . PHP_EOL;
+			$waiting = $this->loadNextWaiting();
 		}
+
+		echo "Processed $processed items" . PHP_EOL;
 
 	}
 }
