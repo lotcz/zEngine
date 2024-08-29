@@ -66,12 +66,12 @@ class dbModule extends zModule {
 
 	/**
 	* Executes sql query.
-	* @param String $sql Sql query to execute. Replace binded variables with "?".
+	* @param String $sql Sql query to execute. Replace "?" with values of bound.
 	* @param Array $bindings Array of values to be subject to binding.
 	* @param Array $types Array of PDO type specifications for binding values.
 	* @return PDOStatement
 	*/
-	public function executeQuery($sql, $bindings = null, $types = null) {
+	public function executeQuery(string $sql, array|null $bindings = null, array|null $types = null) {
 		if ($this->z->isDebugMode()) {
 			$values = sprintf('[%s]', empty($bindings) ? '' : implode(", ", $bindings));
 			$this->z->errorlog->write(
