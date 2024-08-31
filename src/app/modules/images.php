@@ -58,8 +58,13 @@ class imagesModule extends zModule {
 
 			if (file_exists($original_path)) {
 				$info = getimagesize($original_path);
+				if (!$info) {
+					$this->z->errorlog->write(sprintf('Image %s has incomplete no info', $image));
+					return;
+				}
 				if ((!isset($info[0])) || (!isset($info[1]))) {
-					$this->z->errorlog->write(sprintf('Image %s has incomplete info: [%s].', $image, implode(',', $info)));
+					$this->z->errorlog->write(sprintf('Image %s has incomplete info: %s.', $image, print_r($info, true)));
+					return;
 				}
 				$mime = $info['mime'];
 
@@ -263,7 +268,8 @@ class imagesModule extends zModule {
 		} else {
 			$path = $this->getImagePath($this->image_not_found, $format);
 		}
-		return getimagesize($path);
+		$size = getimagesize($path);
+		return $size ? $size : [0, 0];
 	}
 
 	public function getImgSizeAttr($image, $format = null) {

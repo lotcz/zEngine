@@ -25,7 +25,8 @@
 			[
 				'name' => 'email_content_type',
 				'label' => 'Content Type',
-				'type' => 'text'
+				'type' => 'text',
+				'value' => 'text/html'
 			],
 			[
 				'name' => 'email_body',

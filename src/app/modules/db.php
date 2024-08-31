@@ -105,15 +105,26 @@ class dbModule extends zModule {
 				throw new Exception(sprintf('Error %s - %s', $code, $desc));
 			}
 		} catch (Exception $e) {
+			$exceptionMessage = $e->getMessage();
+			$shortMessage =  sprintf(
+				"Error in query: %s\r\n%s",
+				$sql,
+				$exceptionMessage
+			);
 			$values = implode(", ", $bindings);
 			$typenames = implode(", ", $types);
+			$fullMessage = sprintf(
+				"Error in query: %s\r\nValues: %s\r\nTypes: %s\r\n%s",
+				$sql,
+				$values,
+				$typenames,
+				$exceptionMessage
+			);
+			$this->z->errorlog->write($fullMessage);
 			throw new Exception(
 				sprintf(
-					"Error in query: %s\r\nValues: %s\r\nTypes: %s\r\n%s",
-					$sql,
-					$values,
-					$typenames,
-					$e->getMessage()
+					"%s\r\nSee zEngine error log for more details.",
+					$shortMessage
 				),
 				500,
 				$e

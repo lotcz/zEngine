@@ -195,6 +195,10 @@ class z {
 		return str_replace($str, $find, $replace);
 	}
 
+	static function stripNewlines($str) {
+		return z::replace(z::replace($str, '\n', ''), '\r\n', '');
+	}
+
 	static function shorten($str, $len = 100, $ellipsis = "...") {
 		if (z::strlen($str) > $len) {
 			$length = $len - z::strlen($ellipsis);
@@ -290,7 +294,6 @@ class z {
 	}
 
 	static function contains($str, $sub) {
-
 		return (mb_strpos($str, $sub) !== false);
 	}
 

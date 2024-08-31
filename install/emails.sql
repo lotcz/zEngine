@@ -8,6 +8,6 @@ CREATE TABLE IF NOT EXISTS `email` (
   `email_content_type` VARCHAR(255) not NULL,
   `email_body` TEXT,
   `email_send_date` TIMESTAMP not null DEFAULT CURRENT_TIMESTAMP,
-  `email_sent` tinyint not null default 0,
+  `email_sent` tinyint null default 0,
   PRIMARY KEY (`email_id`)
 ) ENGINE = InnoDB;

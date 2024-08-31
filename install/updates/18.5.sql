@@ -1,0 +1,2 @@
+ALTER TABLE email
+	MODIFY COLUMN `email_sent` BIT DEFAULT 0 NULL;
