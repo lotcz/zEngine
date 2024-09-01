@@ -225,12 +225,17 @@ class z {
 		return z::trim($s, '/');
 	}
 
+	static function explode($separator, $str) {
+		if (empty($separator) || empty($str)) return [$str];
+		return explode($separator, $str);
+	}
+
 	static function splitString($str, $separators) {
 		$results = [$str];
 		foreach($separators as $separator) {
 			$nresults = [];
 			foreach($results as $result) {
-				$arr = explode($separator, $result);
+				$arr = z::explode($separator, $result);
 				$nresults = array_merge($nresults, $arr);
 			}
 			$results = $nresults;
@@ -352,6 +357,8 @@ class z {
 	* @return Array
 	*/
 	static function mergeAssocArrays($array_seed, $array_addition) {
+		if (empty($array_seed)) return $array_addition;
+		if (empty($array_addition)) return $array_seed;
 		return array_merge($array_seed, $array_addition);
 	}
 

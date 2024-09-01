@@ -100,7 +100,7 @@ class formsModule extends zModule {
 			$user_session_id = $this->z->auth->session->ival('user_session_id');
 		}
 
-		$arr = explode('-', $token_raw_value);
+		$arr = z::explode('-', $token_raw_value);
 		if (count($arr) != 2) {
 			return false;
 		}
