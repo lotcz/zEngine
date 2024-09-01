@@ -19,7 +19,7 @@ class cookiesModule extends zModule {
 
 	function onBeforeRender() {
 		$this->z->core->includeCSS('resources/cookies.css');
-		$this->z->core->includeJS('resources/cookies.js');
+		$this->z->core->includeJS('resources/cookies.js', 'head');
 		$this->z->core->insertJS(
 			[
 				'z_cookies' => [

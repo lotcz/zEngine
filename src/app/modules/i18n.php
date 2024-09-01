@@ -28,7 +28,6 @@ class i18nModule extends zModule {
 	}
 
 	public function onBeforeInit() {
-
 		if (!$this->getConfigValue('force_default_language')) {
 
 			// first, use currency and language from cookies, if available
