@@ -10,7 +10,7 @@ require_once __DIR__ . '/app/classes/module.php';
 #[\AllowDynamicProperties]
 class zEngine {
 
-	public $version = 18.5;
+	public $version = 18.8;
 
 	public $app_dir = '';
 
@@ -22,6 +22,22 @@ class zEngine {
 		foreach ($modules as $module_name) {
 			$this->enableModule($module_name);
 		}
+
+		register_shutdown_function(function() {
+			$error = error_get_last();
+			if (empty($error)) return;
+			// Fatal error, E_ERROR === 1
+			if ($error['type'] === E_ERROR) {
+				$this->fatalError(
+					sprintf(
+						"FATAL ERROR: %s\r\n%s[line: %s]",
+						$error['message'],
+						$error['file'],
+						$error['line']
+					)
+				);
+			}
+		});
 	}
 
 	/**
@@ -182,7 +198,7 @@ class zEngine {
 					$module->onAfterRender();
 				}
 			}
-		} catch (Exception $e) {
+		} catch (Throwable $e) {
 			$this->fatalError(sprintf('Unrecoverable exception on page \'%s\': %s', $this->core->raw_path, $e->getMessage()));
 		}
 	}

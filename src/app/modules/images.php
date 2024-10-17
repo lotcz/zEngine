@@ -99,9 +99,11 @@ class imagesModule extends zModule {
 				$format_height = $format_conf['height'];
 				$format_mode = isset($format_conf['mode']) ? $format_conf['mode'] : 'fit';
 
+				$this->z->errorlog->write("Resizing image $original_path");
+
 				try {
-					$img = $image_create_func($original_path);
-				} catch (Exception $e) {
+					$img = @$image_create_func($original_path);
+				} catch (Throwable $e) {
 					$message = sprintf('Creating image \'%s\' failed: %s', $image, $e->getMessage());
 					$this->z->errorlog->write($message);
 					$this->z->messages->error($message);

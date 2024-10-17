@@ -327,18 +327,18 @@ class z {
 	* Convert all characters in a string to html entities.
 	*/
 	static function toHtmlEntities($string) {
+		if (empty($string)) return $string;
 		$convmap = array(0, 0xffffff, 0, 0xffffff);
 		return mb_encode_numericentity($string, $convmap);
 	}
 
 	static function stripHtmlTags($text, $allowed_tags = '<br><i><b><p><strong>') {
-		if (empty($text)) {
-			return '';
-		}
+		if (empty($text)) return $text;
 		return strip_tags($text, $allowed_tags);
 	}
 
 	static function containsHtmlTags($text) {
+		if (empty($text)) return false;
 		return strip_tags($text) !== $text;
 	}
 

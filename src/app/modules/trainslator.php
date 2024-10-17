@@ -23,7 +23,7 @@ class trainslatorModule extends zModule {
 			"Your answer consists of only the translated string in language that was specified.",
 		'html' => "You are helpful automatic translator that accurately translate web content to different languages. " .
 			"You always keep HTML tags structure in place and keep all attribute values so translated content can be safely displayed on web. " .
-			"You never remove images or heading tags from original content."
+			"You never remove img or iframe html tags from original content and you never encode existing html tags into html entities."
 	];
 
 	public function onEnabled() {

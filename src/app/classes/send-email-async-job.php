@@ -11,7 +11,7 @@ class SendEmailAsyncJob extends AsyncJob {
 	}
 
 	public function getJobName(): string {
-		return "Rozesílání e-mailů";
+		return "Rozesílání emailů";
 	}
 
 	public function getProcessingChunkSize(): int {

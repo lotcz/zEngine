@@ -37,15 +37,15 @@ abstract class AsyncStandardJob extends AsyncJob {
 		return null;
 	}
 
-	protected function getStateValueSql(?bool $state): ?string {
-		return ($state === null) ? 'null' : ($state ? '1' : '0');
+	protected function getStateValueSql(?bool $state): ?int {
+		return ($state === null) ? null : ($state ? 1 : 0);
 	}
 
 	protected function getStateSql(?bool $state): string {
 		if ($state === null) {
 			return "{$this->getStateFieldName()} is null";
 		}
-		return sprintf('%s = %s', $this->getStateFieldName(), $this->getStateValueSql($state));
+		return sprintf('%s = %d', $this->getStateFieldName(), $this->getStateValueSql($state));
 	}
 
 	protected function getFilterSql(?bool $state): ?string {
