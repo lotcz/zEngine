@@ -10,7 +10,7 @@ require_once __DIR__ . '/app/classes/module.php';
 #[\AllowDynamicProperties]
 class zEngine {
 
-	public $version = 19.1;
+	public $version = 19.2;
 
 	public $app_dir = '';
 
@@ -199,7 +199,11 @@ class zEngine {
 				}
 			}
 		} catch (Throwable $e) {
-			$this->fatalError(sprintf('Unrecoverable exception on page \'%s\': %s', $this->core->raw_path, $e->getMessage()));
+			$message = sprintf('Unrecoverable exception on page \'%s\': %s', $this->core->raw_path, $e->getMessage());
+			if ($this->isDebugMode()) {
+				$message .= '\r\n' . $e->getTraceAsString();
+			}
+			$this->fatalError($message);
 		}
 	}
 
