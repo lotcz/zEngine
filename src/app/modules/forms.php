@@ -209,7 +209,7 @@ class formsModule extends zModule {
 				}
 
 			} else {
-				$this->z->messages->error('Input does not validate.');
+				$this->z->messages->error('Form does not validate!');
 				$model->setData($form->processed_input);
 			}
 

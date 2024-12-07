@@ -270,17 +270,18 @@ class imagesModule extends zModule {
 		} else {
 			$path = $this->getImagePath($this->image_not_found, $format);
 		}
-		$size = getimagesize($path);
-		return $size ? $size : [0, 0];
+		$size = @getimagesize($path);
+		return isset($size) ? $size : null;
 	}
 
 	public function getImgSizeAttr($image, $format = null) {
-		return $this->getImgSize($image, $format)[3];
+		$size = $this->getImgSize($image, $format);
+		return empty($size) ? null : $size[3];
 	}
 
 	public function renderImage($image, $format = 'thumb', $alt = '', $css = '') {
-		$url = $this->img($image, $format);
 		$size = $this->getImgSizeAttr($image, $format);
+		$url = empty($size) ? $this->img($this->no_image, $format) : $this->img($image, $format);
 		echo sprintf('<img src="%s" class="%s" alt="%s" %s />', $url, $css, $alt, $size);
 	}
 
@@ -301,6 +302,11 @@ class imagesModule extends zModule {
 			$image = $file_name . '_' . $i . '.' . $file_extension;
 		}
 		$target_file = $target_path . $image;
+
+		if ($file_input['error'] !== UPLOAD_ERR_OK) {
+			$this->z->messages->add(sprintf('File upload error: %s', $file_input['error']), 'error');
+			return null;
+		}
 
 		// Check if image file is an actual image
 		$check = getimagesize($file_input['tmp_name']);
