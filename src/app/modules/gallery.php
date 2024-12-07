@@ -43,7 +43,9 @@ class galleryModule extends zModule {
 		if (is_array($upload_result)) {
 			$results = [];
 			foreach ($upload_result as $image_path) {
-				$results[] = $this->saveImageInternal($gallery_id, $image_path);
+				if (is_string($image_path)) {
+					$results[] = $this->saveImageInternal($gallery_id, $image_path);
+				}
 			}
 			return $results;
 		}
