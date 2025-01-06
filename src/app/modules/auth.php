@@ -35,7 +35,6 @@ class authModule extends zModule {
 	}
 
 	function onBeforeRender() {
-		$this->dbg($this->isModuleEnabled('admin'), $this->z->admin->is_admin_area);
 		$this->z->core->insertJS(
 			[
 				'z_auth' => [
