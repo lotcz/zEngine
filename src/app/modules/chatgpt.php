@@ -59,7 +59,7 @@ class chatGPTModule extends zModule {
 		$response = curl_exec($ch);
 		curl_close($ch);
 
-		$responseData = json_decode($response, true);
+		$responseData = z::parseJson($response);
 
 		if (empty($responseData)) {
 			throw new Exception("AI response was empty!");

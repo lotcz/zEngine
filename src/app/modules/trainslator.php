@@ -227,6 +227,10 @@ class trainslatorModule extends zModule {
 		// perform AI translate
 		$translated = $this->performTranslate($text, $language->val('language_name'), z::containsHtmlTags($text) ? 'html' : 'text');
 
+		if (empty($translated)) {
+			throw new Exception(sprintf("AI translation for %s was empty!", $text));
+		}
+
 		// save to db cache
 		$cached = new TrainslatorCacheModel($this->z->db);
 		$cached->set('trainslator_cache_key', $text);
