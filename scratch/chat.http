@@ -1,0 +1,5 @@
+POST http://pragmoon.loc/json/default/chatbot
+
+{
+    "message": "hello"
+}

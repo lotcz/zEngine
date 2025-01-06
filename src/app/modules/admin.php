@@ -46,7 +46,6 @@ class adminModule extends zModule {
 		$this->show_custom_menu_to_external = $this->getConfigValue('show_custom_menu_to_external', $this->show_custom_menu_to_external);
 
 		$this->z->core->includeJS('https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js', 'admin.bottom');
-		//$this->z->core->includeJS('https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js', 'admin.bottom');
 		$this->z->core->includeCSS('https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css', 'admin.head');
 
 		$includes = $this->getConfigValue('includes', []);
@@ -202,6 +201,9 @@ class adminModule extends zModule {
 				}
 				if ($this->z->isModuleEnabled('gallery')) {
 					$submenu->addItem('admin/galleries', 'Galleries');
+				}
+				if ($this->z->isModuleEnabled('chatgpt')) {
+					$submenu->addItem('admin/chat', 'Chat with Chatbot');
 				}
 
 				$submenu->addSeparator();

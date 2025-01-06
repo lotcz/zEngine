@@ -12,6 +12,14 @@ const z = {
 		return (o !== null && typeof o === 'object');
 	},
 
+	isEmpty : function(o) {
+		return (o === null || o === undefined || o === '');
+	},
+
+	notEmpty : function(o) {
+		return !this.isEmpty(o);
+	},
+
 	getElement : function(idOrObject) {
 		const el = (this.isString(idOrObject)) ? this.getById(idOrObject) : idOrObject;
 		if (this.isObject(el)) {
@@ -22,8 +30,12 @@ const z = {
 		return null;
 	},
 
-	hasClass : function(element, css) {
-		return element.classList.contains(css);
+	hasClass : function(idOrObject, css) {
+		const el = this.getElement(idOrObject);
+		if (el) {
+			return el.classList.contains(css);
+		}
+		return false;
 	},
 
 	addClass : function(idOrObject, css) {

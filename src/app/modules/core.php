@@ -147,7 +147,7 @@ class coreModule extends zModule {
 	}
 
 	public function parseURL($url_path) {
-		$this->path = explode('/', z::trimSlashes(strtolower($url_path)));
+		$this->path = explode('/', '' . z::trimSlashes(strtolower($url_path)));
 		$this->raw_path = implode('/', $this->path);
 	}
 

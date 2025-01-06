@@ -60,7 +60,16 @@ class chatGPTModule extends zModule {
 		curl_close($ch);
 
 		$responseData = json_decode($response, true);
-		//$this->z->errorlog->write(print_r($responseData, true));
+
+		if (empty($responseData)) {
+			throw new Exception("AI response was empty!");
+		}
+
+		if (!empty($responseData['error'])) {
+			$responseString = print_r($responseData, true);
+			throw new Exception(sprintf("AI response has errors: %s", $responseString));
+		}
+
 		return $responseData['choices'][0]['message']['content'] ?? null;
 	}
 

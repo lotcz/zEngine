@@ -26,14 +26,23 @@ class authModule extends zModule {
 		$this->public_login_home = $this->getConfigValue('public_login_home', $this->public_login_home);
 	}
 
+	public function getPlacement() {
+		return $this->getAdminPlacement('bottom');
+	}
+
 	function onBeforeInit() {
 		$this->checkAuthentication();
+	}
+
+	function onBeforeRender() {
+		$this->dbg($this->isModuleEnabled('admin'), $this->z->admin->is_admin_area);
 		$this->z->core->insertJS(
 			[
 				'z_auth' => [
 					'session_token_cookie_name' => $this->cookie_name
 				]
-			]
+			],
+			$this->getPlacement()
 		);
 	}
 

@@ -17,9 +17,13 @@ class cookiesModule extends zModule {
 		$this->warning_confirmed_cookie_name = $this->getConfigValue('warning_confirmed_cookie_name', $this->warning_confirmed_cookie_name);
 	}
 
+	public function getPlacement() {
+		return $this->getAdminPlacement('bottom');
+	}
+
 	function onBeforeRender() {
-		$this->z->core->includeCSS('resources/cookies.css');
-		$this->z->core->includeJS('resources/cookies.js', 'head');
+		$this->z->core->includeCSS('resources/cookies.css', $this->getPlacement());
+		$this->z->core->includeJS('resources/cookies.js', $this->getPlacement());
 		$this->z->core->insertJS(
 			[
 				'z_cookies' => [
@@ -27,13 +31,14 @@ class cookiesModule extends zModule {
 					'show_disabled' => $this->show_disabled,
 					'warning_confirmed_cookie_name' => $this->warning_confirmed_cookie_name
 				]
-			]
+			],
+			$this->getPlacement()
 		);
 		if ($this->show_warning) {
-			$this->z->core->includePartial('cookies-warning', $this->getConfigValue('warning_placement', 'bottom'));
+			$this->z->core->includePartial('cookies-warning', $this->getConfigValue('warning_placement', $this->getPlacement()));
 		}
 		if ($this->show_disabled) {
-			$this->z->core->includePartial('cookies-disabled', $this->getConfigValue('disabled_placement', 'bottom'));
+			$this->z->core->includePartial('cookies-disabled', $this->getConfigValue('disabled_placement', $this->getPlacement()));
 		}
 	}
 

@@ -2,14 +2,16 @@
 
 	return [
 
-		// RASA chatbot URL
-		'url' => 'http://rasa-server.loc:5005/webhooks/rest/webhook',
+		// chatbot URL
+		'url' => '/json/default/chatbot',
 
-		'bot_name' => 'ChatBot',
+		'bot_name' => 'ChatGPT Test',
 
-		'slogan' => 'Company slogan goes here...',
+		'placement' => 'bottom',
 
-		'placeholder' => 'Write something...',
+		'slogan' => 'Prompt will be sent to ChatGPT unchanged.',
+
+		'placeholder' => 'Prompt me...',
 
 		// delay between displaying messages. In miliseconds.
 		'messages_delay' => 1000,
@@ -21,6 +23,6 @@
 		'auto_start_delay' => 15000,
 
 		// start conversation with this message
-		'start_message' => 'Dobrý den. Jsem chatbot, jak Vám mohu pomoci?',
+		'start_message' => 'Hello, just ask anything you would ask ChatGPT',
 
 	];

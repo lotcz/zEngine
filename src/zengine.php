@@ -10,7 +10,7 @@ require_once __DIR__ . '/app/classes/module.php';
 #[\AllowDynamicProperties]
 class zEngine {
 
-	public $version = 19.4;
+	public $version = 19.5;
 
 	public $app_dir = '';
 
@@ -207,18 +207,21 @@ class zEngine {
 		}
 	}
 
+	public function dbg($args) {
+		$this->errorlog->write(func_get_args());
+	}
+
 	/**
 	* Handles unrecoverable application error.
 	* This is called when there is an unhandled exception raised anywhere in the application.
 	*/
 	public function fatalError($error_message) {
+		$this->errorlog->write($error_message);
 		if ($this->isDebugMode()) {
 			http_response_code(500);
 			die($error_message);
 		} else {
-			$this->errorlog->write($error_message);
-			// TODO: render error
-			$this->core->redirect($this->core->error_page);
+			$this->core->showNotFoundView();
 		}
 	}
 

@@ -48,6 +48,21 @@ class zModule {
 		}
 	}
 
+	public function dbg($args) {
+		$this->z->dbg(func_get_args());
+	}
+
+	public function getAdminPlacement($placement) {
+		if (!$this->isModuleEnabled('admin')) {
+			return $placement;
+		}
+		return $this->z->admin->is_admin_area ? sprintf('admin.%s', $placement) : $placement;
+	}
+
+	public function isModuleEnabled($module_name) {
+		return $this->z->isModuleEnabled($module_name);
+	}
+
 	public function requireModule($module_name) {
 		$this->z->enableModule($module_name);
 	}

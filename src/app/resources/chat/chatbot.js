@@ -3,34 +3,12 @@
  * @param  {object} item [description]
  */
 function chatAppendMessageItem(item) {
-	const chat = $('#chat_messages');
-
-	// stop animation
-	if (chat.stop) {
-		chat.stop();
-	}
+	const chat = z.getById('chat_messages');
 
 	// append element
 	chat.append(item);
-
-	// scroll to message
-	let itemTop = chat.prop('scrollHeight');
-	if (chat.animate) {
-		chat.animate({
-			scrollTop: itemTop
-		}, 500, 'swing');
-	} else {
-		chat.scrollTop(itemTop);
-	}
 }
 
-/**
- * Check if queue is being processed at the moment.
- * @return {boolen} True is queue is being processed.
- */
-function chatIsProcessingQueue() {
-	return (z_chatbot.message_queue_timer != null);
-}
 
 /**
  * Process queue if not empty.
@@ -39,7 +17,7 @@ function chatProcessMessageQueue() {
 	z_chatbot.message_queue_timer = null;
 	if (z_chatbot.message_queue.length > 0) {
 		const item = z_chatbot.message_queue.shift();
-		chatAppendMessageItem(item);
+
 		z_chatbot.message_queue_timer = setTimeout(chatProcessMessageQueue, z_chatbot.messages_delay);
 	}
 }
@@ -49,13 +27,7 @@ function chatProcessMessageQueue() {
  * @param  {object} item [description]
  */
 function chatQueueMessageItem(item) {
-	if (!z_chatbot.message_queue) {
-		z_chatbot.message_queue = [];
-	}
-	z_chatbot.message_queue.push(item);
-	if (!chatIsProcessingQueue()) {
-		chatProcessMessageQueue();
-	}
+	chatAppendMessageItem(item);
 }
 
 /**
@@ -69,7 +41,8 @@ function chatQueueMessage(sender, text) {
 		for (message of messages) {
 			const trimmed = message.trim();
 			if (trimmed.length > 0) {
-				const item = $('<div class="item ' + sender + '"><div class="avatar"></div><div class="message">' + trimmed + '</div></div>');
+				const item = document.createElement('div');
+				item.innerHTML = '<div class="item ' + sender + '"><div class="avatar"></div><div class="message">' + trimmed + '</div></div>';
 				chatQueueMessageItem(item);
 			}
 		}
@@ -82,8 +55,8 @@ function chatQueueMessage(sender, text) {
  */
 function chatGetUserID() {
 	if (!z_chatbot.session_id) {
-		let cookieValue = null;
-		if (z_auth) {
+		let cookieValue = '';
+		if (z_auth !== undefined) {
 			cookieValue = getCookie(z_auth.session_token_cookie_name);
 		}
 		if (!(cookieValue.length > 0)) {
@@ -108,26 +81,23 @@ function chatSendMessage(e) {
 		e.preventDefault();
 	}
 
-	let text_input = $('#chat_form #chat_text');
-	let message = text_input.val().trim();
+	const text_input = z.getById('chat_text');
+	const message = z.val('chat_text');
 
 	if (message.length > 0) {
 		chatQueueMessage('user', message);
-		text_input.val('');
+		text_input.value = '';
 
-		$.post(
+		z.fetch(
 			z_chatbot.url,
-			JSON.stringify({
+			{
 				sender: chatGetUserID(),
 				message: message
-			}),
-			function (data, status) {
-				for(var i = 0, max = data.length; i < max; i++) {
-					chatQueueMessage('bot', data[i].text);
-				}
 			},
-			'json'
-		);
+			'POST'
+		).then(function (response) {
+			chatQueueMessage('bot', response.json.response);
+		});
 	}
 
 	return false;
@@ -135,14 +105,14 @@ function chatSendMessage(e) {
 
 function chatCloseWindow(e) {
 	e.preventDefault();
-	$('#chat_wrapper').removeClass('chat-is-open');
+	z.removeClass('chat_wrapper', 'chat-is-open');
 }
 
 /**
  * Display initial chatbot message to start the conversation.
  */
 function chatStartConversation() {
-	if (!z_chatbot.started) {
+	if (z.notEmpty(z_chatbot.start_message) && !z_chatbot.started) {
 		z_chatbot.started = true;
 		chatQueueMessage('bot', z_chatbot.start_message);
 	}
@@ -152,10 +122,8 @@ function chatStartConversation() {
  * Open chat window and display initial chatbot message if conversation hasn't started yet.
  */
 function chatOpenWindow(e) {
-	let w = $('#chat_wrapper');
-	if (w.hasClass('chat-is-open')) {
+	if (z.hasClass('chat_wrapper', 'chat-is-open')) {
 		chatSendMessage(e);
-		$('#chat_form #chat_text', w).focus();
 	} else {
 		if (e) {
 			e.preventDefault();
@@ -163,9 +131,9 @@ function chatOpenWindow(e) {
 		if (!z_chatbot.started) {
 			chatStartConversation();
 		}
-		w.addClass('chat-is-open')
-		$('#chat_text', w).focus();
+		z.addClass('chat_wrapper', 'chat-is-open')
 	}
+	z.getById('chat_text').focus();
 }
 
 /**
@@ -180,9 +148,12 @@ function chatAutoStart() {
 /**
  * Initialize chat.
  */
-$(function() {
-	if (z_chatbot.auto_start && !z_chatbot.started) {
-		// Start timer to open chat window automatically after some time.
-		setTimeout(chatAutoStart, z_chatbot.auto_start_delay);
+document.addEventListener(
+	'load',
+	function () {
+		if (z_chatbot.auto_start && !z_chatbot.started) {
+			// Start timer to open chat window automatically after some time.
+			setTimeout(chatAutoStart, z_chatbot.auto_start_delay);
+		}
 	}
-});
+);

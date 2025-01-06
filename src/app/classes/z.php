@@ -57,6 +57,15 @@ class z {
 		}
 	}
 
+	static function parseJson(string $json) {
+		// Decode the JSON input
+		$data = json_decode($json, true);
+		if (json_last_error() !== JSON_ERROR_NONE) {
+			throw new Exception(json_last_error_msg());
+		}
+		return $data;
+	}
+
 	static function getRequestBody() {
 		return file_get_contents('php://input');
 	}
@@ -92,6 +101,14 @@ class z {
 	*/
 	static function get($name, $def = null) {
 		return isset($_GET[$name]) ? $_GET[$name] : (isset($_POST[$name]) ? $_POST[$name] : $def);
+	}
+
+	static function getPostJson() {
+		$jsonInput = z::getRequestBody();
+		if (empty($jsonInput)) {
+			throw new Exception("No input found in POST body!");
+		}
+		return z::parseJson($jsonInput);
 	}
 
 	static function getInt($name, $def = null) {
