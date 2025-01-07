@@ -14,6 +14,7 @@ class imagesModule extends zModule {
 	public $original_format_name = 'original';
 	public $no_image = 'no-image.jpg';
 	public $image_not_found = 'image-not-found.jpg';
+	public $invalid_image = 'invalid-image.jpg';
 
 	function onEnabled() {
 		$this->requireConfig();
@@ -24,6 +25,7 @@ class imagesModule extends zModule {
 		$this->original_format_name = $this->getConfigValue('original_format_name', $this->original_format_name);
 		$this->no_image = $this->getConfigValue('no_image', $this->no_image);
 		$this->image_not_found = $this->getConfigValue('image_not_found', $this->image_not_found);
+		$this->invalid_image = $this->getConfigValue('invalid_image', $this->invalid_image);
 	}
 
 	public function getImagePath($image, $format = null) {
@@ -41,11 +43,15 @@ class imagesModule extends zModule {
 	}
 
 	public function prepareImage($image, $format = null ) {
+		if (empty($format) || $format === $this->original_format_name) {
+			return null;
+		}
+
 		if (!isset($this->formats[$format])) {
 			$message = sprintf('Preparing \'%s\'. Format \'%s\' doesn\'t exist.', $image, $format);
 			$this->z->errorlog->write($message);
 			$this->z->messages->error($message);
-			return;
+			return null;
 		}
 
 		if (!$this->exists($image, $format)) {
@@ -57,14 +63,14 @@ class imagesModule extends zModule {
 			}
 
 			if (file_exists($original_path)) {
-				$info = getimagesize($original_path);
-				if (!$info) {
-					$this->z->errorlog->write(sprintf('Image %s has incomplete no info', $image));
-					return;
+				$info = $this->getImgSize($image);
+				if (empty($info)) {
+					$this->z->errorlog->write(sprintf('Image %s has no info', $image));
+					return null;
 				}
 				if ((!isset($info[0])) || (!isset($info[1]))) {
 					$this->z->errorlog->write(sprintf('Image %s has incomplete info: %s.', $image, print_r($info, true)));
-					return;
+					return null;
 				}
 				$mime = $info['mime'];
 
@@ -107,7 +113,7 @@ class imagesModule extends zModule {
 					$message = sprintf('Creating image \'%s\' failed: %s', $image, $e->getMessage());
 					$this->z->errorlog->write($message);
 					$this->z->messages->error($message);
-					return;
+					return null;
 				}
 
 				$width = z::parseInt($info[0]);
@@ -242,35 +248,44 @@ class imagesModule extends zModule {
 	}
 
 	public function exists($image, $format = null ) {
-		if (!(isset($image) && strlen($image) > 0)) {
+		if (empty($image)) {
 			return false;
 		}
 		return file_exists($this->getImagePath($image, $format));
 	}
 
-	public function img($image, $format = null) {
+	public function isValidImage($image, $format = null) {
+		return $this->getImgSize($image, $format) !== null;
+	}
+
+	public function getImageForRendering($image, $format = null) {
 		if (!(isset($image) && strlen($image) > 0)) {
 			$image = $this->no_image;
-		}
-		if (!$this->exists($image)) {
+		} else if (!$this->exists($image)) {
 			$image = $this->image_not_found;
+		} else if (!$this->isValidImage($image)) {
+			$image = $this->invalid_image;
 		}
-		if ($format !== null && $format != $this->original_format_name) {
+		$url = $this->prepareImage($image, $format);
+		if (empty($url)) {
+			$image = $this->invalid_image;
 			$this->prepareImage($image, $format);
 		}
+		return $image;
+	}
+
+	public function img($image, $format = null) {
+		$image = $this->getImageForRendering($image, $format);
 		return $this->getImageURL($image, $format);
 	}
 
 	public function getImgSize($image, $format = null) {
-		$path = '';
-		if ($image === null) {
-			$path = $this->getImagePath($this->no_image, $format);
-		} else if ($this->exists($image, $format)) {
-			$path = $this->getImagePath($image, $format);
-		} else {
-			$path = $this->getImagePath($this->image_not_found, $format);
+		$path = $this->getImagePath($image, $format);
+		try {
+			$size = @getimagesize($path);
+		} catch (Exception $e) {
+			$this->z->errorlog->write(sprintf("Error when reading image size of '%s': %s", $path, $e->getMessage()));
 		}
-		$size = @getimagesize($path);
 		return isset($size) ? $size : null;
 	}
 
@@ -280,9 +295,9 @@ class imagesModule extends zModule {
 	}
 
 	public function renderImage($image, $format = 'thumb', $alt = '', $css = '') {
+		$image = $this->getImageForRendering($image, $format);
 		$size = $this->getImgSizeAttr($image, $format);
-		$url = empty($size) ? $this->img($this->no_image, $format) : $this->img($image, $format);
-		echo sprintf('<img src="%s" class="%s" alt="%s" %s />', $url, $css, $alt, $size);
+		echo sprintf('<img src="%s" class="%s" alt="%s" %s />', $this->img($image, $format), $css, $alt, $size);
 	}
 
 	private function uploadImageInternal($file_input) {
