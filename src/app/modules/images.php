@@ -29,14 +29,14 @@ class imagesModule extends zModule {
 	}
 
 	public function getImagePath($image, $format = null) {
-		if (!isset($format)) {
+		if (empty($format)) {
 			return $this->getImagePath($image, $this->original_format_name);
 		}
 		return $this->root_images_disk_path . $format . '/' . $image;
 	}
 
 	public function getImageURL($image, $format = null) {
-		if (!isset($format)) {
+		if (empty($format)) {
 			return $this->getImageURL($image, $this->original_format_name);
 		}
 		return $this->root_images_url . '/' . $format . '/' . $image;
@@ -44,7 +44,7 @@ class imagesModule extends zModule {
 
 	public function prepareImage($image, $format = null ) {
 		if (empty($format) || $format === $this->original_format_name) {
-			return null;
+			return $this->getImageURL($image, $format);
 		}
 
 		if (!isset($this->formats[$format])) {
@@ -105,12 +105,10 @@ class imagesModule extends zModule {
 				$format_height = $format_conf['height'];
 				$format_mode = isset($format_conf['mode']) ? $format_conf['mode'] : 'fit';
 
-				$this->z->errorlog->write("Resizing image $original_path");
-
 				try {
 					$img = @$image_create_func($original_path);
 				} catch (Throwable $e) {
-					$message = sprintf('Creating image \'%s\' failed: %s', $image, $e->getMessage());
+					$message = sprintf('Error when resizing %s to format %s: %s', $original_path, $format, $e->getMessage());
 					$this->z->errorlog->write($message);
 					$this->z->messages->error($message);
 					return null;
