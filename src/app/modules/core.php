@@ -57,19 +57,25 @@ class coreModule extends zModule {
 		$this->default_app_dir = __DIR__ . '/../';
 		$this->app_dir = $this->z->app_dir;
 		$this->base_url = $this->getConfigValue('base_url');
-		$this->debug_mode = $this->getConfigValue('debug_mode', $this->debug_mode);
 		$this->error_page = $this->getConfigValue('error_page', $this->error_page);
 		$this->not_found_page = $this->getConfigValue('not_found_page', $this->not_found_page);
 
+		$this->debug_mode = $this->getConfigValue('debug_mode', $this->debug_mode);
+		if ($this->debug_mode) {
+			error_reporting(E_ALL);
+			ini_set('display_errors', 1);
+		} else {
+			error_reporting(E_ERROR);
+			ini_set('display_errors', 0);
+		}
+
 		$this->app_version = $this->getConfigValue('app_version', $this->app_version);
 		$this->minimum_z_version = $this->getConfigValue('minimum_z_version', $this->minimum_z_version);
-
 		$require_z_major_version = intval(floor($this->minimum_z_version));
 		$actual_z_major_version = intval(floor($this->z->version));
 		if ($actual_z_major_version != $require_z_major_version) {
 			throw new Exception(sprintf('Application is for zEngine version %d! Actual zEngine version is %s.', $require_z_major_version, $this->z->version));
 		}
-
 		if ($this->z->version < $this->minimum_z_version) {
 			throw new Exception(sprintf('zEngine version %s is too old. Application requires at least version %s.', $this->z->version, $this->minimum_z_version));
 		}

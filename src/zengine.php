@@ -10,18 +10,16 @@ require_once __DIR__ . '/app/classes/module.php';
 #[\AllowDynamicProperties]
 class zEngine {
 
-	public $version = 19.9;
+	public $version = 20.0;
 
 	public $app_dir = '';
 
 	public $modules = [];
 
-	function __construct($app_dir = 'app/', $modules = []) {
+	function __construct($app_dir = 'app/') {
 		$this->app_dir = $app_dir;
+
 		$this->enableModule('core');
-		foreach ($modules as $module_name) {
-			$this->enableModule($module_name);
-		}
 
 		register_shutdown_function(function() {
 			$error = error_get_last();

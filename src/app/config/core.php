@@ -15,7 +15,7 @@
 		'site_keywords' => 'comma,separated,keywords',
 
 		// modules that are enabled by default
-		'default_modules' => ['auth', 'admin'],
+		'default_modules' => ['errorlog'],
 
 		// modules that are not enabled by default, but need to be installed
 		'also_install_modules' => [],

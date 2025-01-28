@@ -111,8 +111,8 @@ class dbModule extends zModule {
 				$sql,
 				$exceptionMessage
 			);
-			$values = implode(", ", $bindings);
-			$typenames = implode(", ", $types);
+			$values = is_array($bindings) ? implode(", ", $bindings) : $bindings;
+			$typenames = is_array($types) ? implode(", ", $types) : $types;
 			$fullMessage = sprintf(
 				"Error in query: %s\r\nValues: %s\r\nTypes: %s\r\n%s",
 				$sql,
@@ -299,7 +299,7 @@ class dbModule extends zModule {
 			$db_user = $db_user ?? $this->config['user'];
 			$password = $password ?? $this->config['password'];
 			$db_name = $db_name ?? $this->config['database'];
-			$command = "mysql --default-character-set=utf8 -h $hostname -D $db_name --user=$db_user --password=$password < $file_path";
+			$command = "mysql --skip_ssl --default-character-set=utf8 -h $hostname -D $db_name --user=$db_user --password=$password < $file_path";
 			return shell_exec($command);
 		} else {
 			$sql = file_get_contents($file_path);

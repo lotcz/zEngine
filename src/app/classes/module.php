@@ -79,6 +79,7 @@ class zModule {
 	}
 
 	public function install($db_login = null, $db_password = null, $db_name = null) {
+		$this->z->errorlog->write(sprintf("installing %s", $this->name));
 		$file_pattern = __DIR__ . '/../../../install/' . $this->name . '.%s';
 		$install_script_file = '';
 		$db_specific_file = sprintf($file_pattern, $this->z->db->connection_type);
@@ -88,7 +89,10 @@ class zModule {
 			$install_script_file = sprintf($file_pattern, 'sql');
 		}
 		if (file_exists($install_script_file)) {
+			$this->z->errorlog->write(sprintf("running sql file %s", $install_script_file));
 			$this->z->db->executeFile($install_script_file, $db_login, $db_password, $db_name);
+		} else {
+			$this->z->errorlog->write(sprintf("sql file %s doesn't exist", $install_script_file));
 		}
 	}
 
