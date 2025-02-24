@@ -183,8 +183,8 @@ class z {
 	/**
 	* Convert php time to mysql Timestamp
 	*/
-	static function mysqlTimestamp($time) {
-		return z::mysqlDatetime($time);
+	static function mysqlTimestamp($time = null) {
+		return z::mysqlDatetime($time ? $time : new DateTime());
 	}
 
 	static function formatDateForHtml($time) {
