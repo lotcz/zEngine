@@ -1,8 +1,8 @@
 <?php
 
 /**
-* Module that handles images. Mostly image uploading and resizing.
-*/
+ * Module that handles images. Mostly image uploading and resizing.
+ */
 class imagesModule extends zModule {
 
 	public array $depends_on = ['files'];
@@ -42,7 +42,7 @@ class imagesModule extends zModule {
 		return $this->root_images_url . '/' . $format . '/' . $image;
 	}
 
-	public function prepareImage($image, $format = null ) {
+	public function prepareImage($image, $format = null) {
 		if (empty($format) || $format === $this->original_format_name) {
 			return $this->getImageURL($image, $format);
 		}
@@ -62,165 +62,171 @@ class imagesModule extends zModule {
 				mkdir($resized_dir, 0777, true);
 			}
 
-			if (file_exists($original_path)) {
-				$info = $this->getImgSize($image);
-				if (empty($info)) {
-					$this->z->errorlog->write(sprintf('Image %s has no info', $image));
-					return null;
-				}
-				if ((!isset($info[0])) || (!isset($info[1]))) {
-					$this->z->errorlog->write(sprintf('Image %s has incomplete info: %s.', $image, print_r($info, true)));
-					return null;
-				}
-				$mime = $info['mime'];
-
-				switch ($mime) {
-					case 'image/png':
-						$image_create_func = 'imagecreatefrompng';
-						$image_save_func = 'imagepng';
-						$new_image_ext = 'png';
-						break;
-
-					case 'image/gif':
-						$image_create_func = 'imagecreatefromgif';
-						$image_save_func = 'imagegif';
-						$new_image_ext = 'gif';
-						break;
-
-					case 'image/webp':
-						$image_create_func = 'imagecreatefromwebp';
-						$image_save_func = 'imagewebp';
-						$new_image_ext = 'webp';
-						break;
-
-					default: //case 'image/jpeg':
-						$image_create_func = 'imagecreatefromjpeg';
-						$image_save_func = 'imagejpeg';
-						$new_image_ext = 'jpg';
-						break;
-				}
-
-				$format_conf = $this->formats[$format];
-				$format_width = $format_conf['width'];
-				$format_height = $format_conf['height'];
-				$format_mode = isset($format_conf['mode']) ? $format_conf['mode'] : 'fit';
-
-				try {
-					$img = @$image_create_func($original_path);
-				} catch (Throwable $e) {
-					$message = sprintf('Error when resizing %s to format %s: %s', $original_path, $format, $e->getMessage());
-					$this->z->errorlog->write($message);
-					$this->z->messages->error($message);
-					return null;
-				}
-
-				$width = z::parseInt($info[0]);
-				$height = z::parseInt($info[1]);
-
-				$src_x = 0;
-				$src_y = 0;
-				$src_width = $width;
-				$src_height = $height;
-
-				switch ($format_mode) {
-					case 'scale':
-						$newHeight = $format_height;
-						$newWidth = $format_width;
-						break;
-
-					case 'crop':
-						$original_aspect = $width / $height;
-						$new_aspect = $format_width / $format_height;
-
-						if ($original_aspect > $new_aspect) {
-							$src_width = $height * $new_aspect;
-							$src_x = ($width - $src_width) / 2;
-						} else {
-							$src_height = $width / $new_aspect;
-							$src_y = ($height - $src_height) / 2;
-						}
-
-						$newHeight = $format_height;
-						$newWidth = $format_width;
-
-						break;
-
-					case 'fit':
-					default:
-						if ($width > $format_width) {
-							$newHeight = ($height / $width) * $format_width;
-							$newWidth = $format_width;
-						} else {
-							$newHeight = $height;
-							$newWidth = $width;
-						}
-
-						if ($newHeight > $format_height) {
-							$newWidth = ($newWidth / $newHeight) * $format_height;
-							$newHeight = $format_height;
-						}
-						break;
-				}
-
-				$tmp = imagecreatetruecolor(round($newWidth), round($newHeight));
-
-				switch ($new_image_ext)	{
-					case "png":
-					case "webp":
-
-						// integer representation of the color black (rgb: 0,0,0)
-						$background = imagecolorallocate($tmp, 0, 0, 0);
-
-						// removing the black from the placeholder
-						imagecolortransparent($tmp, $background);
-
-						// turning off alpha blending (to ensure alpha channel information
-						// is preserved, rather than removed (blending with the rest of the
-						// image in the form of black))
-						imagealphablending($tmp, false);
-
-						// turning on alpha channel information saving (to ensure the full range
-						// of transparency is preserved)
-						imagesavealpha($tmp, true);
-
-						break;
-					case "gif":
-
-						// integer representation of the color black (rgb: 0,0,0)
-						$background = imagecolorallocate($tmp, 0, 0, 0);
-
-						// removing the black from the placeholder
-						imagecolortransparent($tmp, $background);
-
-						break;
-				}
-
-				imagecopyresampled(
-					$tmp,
-					$img,
-					0,
-					0,
-					intval($src_x),
-					intval($src_y),
-					intval(round($newWidth)),
-					intval(round($newHeight)),
-					intval($src_width),
-					intval($src_height)
-				);
-
-				if (file_exists($resized_path)) {
-					unlink($resized_path);
-				}
-				$image_save_func($tmp, "$resized_path");
-
-				imagedestroy($img);
-				imagedestroy($tmp);
-
-			} else {
+			if (!file_exists($original_path)) {
 				$message = "Image original $original_path not found. Cannot resize.";
 				$this->z->errorlog->write($message);
 				$this->z->messages->error($message);
+				return null;
 			}
+
+			$info = $this->getImgSize($image);
+			if (empty($info)) {
+				$this->z->errorlog->write(sprintf('Image %s has no info', $image));
+				return null;
+			}
+			if ((!isset($info[0])) || (!isset($info[1]))) {
+				$this->z->errorlog->write(sprintf('Image %s has incomplete info: %s.', $image, print_r($info, true)));
+				return null;
+			}
+			$mime = $info['mime'];
+
+			switch ($mime) {
+				case 'image/png':
+					$image_create_func = 'imagecreatefrompng';
+					$image_save_func = 'imagepng';
+					$new_image_ext = 'png';
+					break;
+
+				case 'image/gif':
+					$image_create_func = 'imagecreatefromgif';
+					$image_save_func = 'imagegif';
+					$new_image_ext = 'gif';
+					break;
+
+				case 'image/webp':
+					$image_create_func = 'imagecreatefromwebp';
+					$image_save_func = 'imagewebp';
+					$new_image_ext = 'webp';
+					break;
+
+				default: //case 'image/jpeg':
+					$image_create_func = 'imagecreatefromjpeg';
+					$image_save_func = 'imagejpeg';
+					$new_image_ext = 'jpg';
+					break;
+			}
+
+			$format_conf = $this->formats[$format];
+			$format_width = $format_conf['width'];
+			$format_height = $format_conf['height'];
+			$format_mode = isset($format_conf['mode']) ? $format_conf['mode'] : 'fit';
+
+			if ($this->z->isDebugMode()) {
+				$this->z->errorlog->write("Resizing image $original_path ($format_width x $format_height, $format_mode, $new_image_ext)");
+			}
+
+			try {
+				$img = @$image_create_func($original_path);
+			} catch (Throwable $e) {
+				$message = sprintf('Error when resizing %s to format %s: %s', $original_path, $format, $e->getMessage());
+				$this->z->errorlog->write($message);
+				$this->z->messages->error($message);
+				return null;
+			}
+
+			$width = z::parseInt($info[0]);
+			$height = z::parseInt($info[1]);
+
+			$src_x = 0;
+			$src_y = 0;
+			$src_width = $width;
+			$src_height = $height;
+
+			switch ($format_mode) {
+				case 'scale':
+					$newHeight = $format_height;
+					$newWidth = $format_width;
+					break;
+
+				case 'crop':
+					$original_aspect = $width / $height;
+					$new_aspect = $format_width / $format_height;
+
+					if ($original_aspect > $new_aspect) {
+						$src_width = $height * $new_aspect;
+						$src_x = ($width - $src_width) / 2;
+					} else {
+						$src_height = $width / $new_aspect;
+						$src_y = ($height - $src_height) / 2;
+					}
+
+					$newHeight = $format_height;
+					$newWidth = $format_width;
+
+					break;
+
+				case 'fit':
+				default:
+					if ($width > $format_width) {
+						$newHeight = ($height / $width) * $format_width;
+						$newWidth = $format_width;
+					} else {
+						$newHeight = $height;
+						$newWidth = $width;
+					}
+
+					if ($newHeight > $format_height) {
+						$newWidth = ($newWidth / $newHeight) * $format_height;
+						$newHeight = $format_height;
+					}
+					break;
+			}
+
+			$tmp = imagecreatetruecolor(round($newWidth), round($newHeight));
+
+			switch ($new_image_ext) {
+				case "png":
+				case "webp":
+
+					// integer representation of the color black (rgb: 0,0,0)
+					$background = imagecolorallocate($tmp, 0, 0, 0);
+
+					// removing the black from the placeholder
+					imagecolortransparent($tmp, $background);
+
+					// turning off alpha blending (to ensure alpha channel information
+					// is preserved, rather than removed (blending with the rest of the
+					// image in the form of black))
+					imagealphablending($tmp, false);
+
+					// turning on alpha channel information saving (to ensure the full range
+					// of transparency is preserved)
+					imagesavealpha($tmp, true);
+
+					break;
+				case "gif":
+
+					// integer representation of the color black (rgb: 0,0,0)
+					$background = imagecolorallocate($tmp, 0, 0, 0);
+
+					// removing the black from the placeholder
+					imagecolortransparent($tmp, $background);
+
+					break;
+			}
+
+			imagecopyresampled(
+				$tmp,
+				$img,
+				0,
+				0,
+				intval($src_x),
+				intval($src_y),
+				intval(round($newWidth)),
+				intval(round($newHeight)),
+				intval($src_width),
+				intval($src_height)
+			);
+
+			if (file_exists($resized_path)) {
+				unlink($resized_path);
+			}
+			$image_save_func($tmp, "$resized_path");
+
+			imagedestroy($img);
+			imagedestroy($tmp);
+
+
 		}
 
 		return $this->getImageURL($image, $format);
@@ -229,8 +235,8 @@ class imagesModule extends zModule {
 	public function deleteImageCache($image) {
 		foreach ($this->formats as $key => $format) {
 			$resized_path = $this->getImagePath($image, $key);
-				if (file_exists($resized_path)) {
-					unlink($resized_path);
+			if (file_exists($resized_path)) {
+				unlink($resized_path);
 			}
 		}
 	}
@@ -238,14 +244,14 @@ class imagesModule extends zModule {
 	public function deleteImage($image) {
 		if ($image !== null && strlen($image) > 0) {
 			$this->deleteImageCache($image);
-			$original_path = $this->getImagePath( $image );
+			$original_path = $this->getImagePath($image);
 			if (file_exists($original_path)) {
 				unlink($original_path);
 			}
 		}
 	}
 
-	public function exists($image, $format = null ) {
+	public function exists($image, $format = null) {
 		if (empty($image)) {
 			return false;
 		}
@@ -323,7 +329,7 @@ class imagesModule extends zModule {
 
 		// Check if image file is an actual image
 		$check = getimagesize($file_input['tmp_name']);
-		if($check === false) {
+		if ($check === false) {
 			$this->z->messages->add('Uploaded file is not an image!', 'error');
 			return null;
 		}
