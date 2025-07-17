@@ -528,10 +528,20 @@ class formsModule extends zModule {
 											if (isset($field->value)) {
 												$this->z->images->renderImage($field->value, isset($field->image_size) ? $field->image_size : 'thumb');
 											}
-										?>
-											<input type="hidden" name="<?=$field->name ?>" id="field_<?=$field->name ?>" value="<?=$field->value ?>" />
-											<input type="file" name="<?=$field->name ?>_image_file" <?=$disabled ?> class="form-control-file" accept=".gif,.jpg,.jpeg,.png,.webp" />
-										<?php
+											?>
+												<input type="hidden" name="<?=$field->name ?>" id="field_<?=$field->name ?>" value="<?=$field->value ?>" />
+												<div class="d-flex flex-column">
+													<input type="file" name="<?=$field->name ?>_image_file" <?=$disabled ?> class="form-control-file" accept=".gif,.jpg,.jpeg,.png,.webp" />
+													<?php
+														if ($this->z->images->max_upload_size !== null) {
+															?>
+																<small class="text-muted"><?=$this->z->core->t('Max. file size: %s', z::formatDiskSpace($this->z->images->max_upload_size)) ?></small>
+															<?php
+														}
+													?>
+												</div>
+											<?php
+
 										break;
 
 										case 'gallery' :

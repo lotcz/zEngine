@@ -28,4 +28,6 @@
 		'no_image' => 'no-image.jpg',
 
 		'image_not_found' => 'image-not-found.jpg',
+
+		'max_upload_size' => 15 * 1024 * 1024 /* 15MB*/
 	];

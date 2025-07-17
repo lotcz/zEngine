@@ -81,6 +81,17 @@ function validate_zip(zip) {
 	return (parseInt(nZip) > 9999 && parseInt(nZip) < 100000);
 }
 
+/** todo: check file size **/
+
+function checkFileSize(inputFile) {
+	var max =  3 * 512 * 512; // 786MB
+
+	if (inputFile.files && inputFile.files[0].size > max) {
+		alert("File too large."); // Do your thing to handle the error.
+		inputFile.value = null; // Clear the field.
+	}
+}
+
 function formValidation(form_id) {
 	this.frm = document.getElementById(form_id);
 	this.is_valid = true;

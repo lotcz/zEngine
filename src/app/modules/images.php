@@ -15,6 +15,7 @@ class imagesModule extends zModule {
 	public $no_image = 'no-image.jpg';
 	public $image_not_found = 'image-not-found.jpg';
 	public $invalid_image = 'invalid-image.jpg';
+	public $max_upload_size = null;
 
 	function onEnabled() {
 		$this->requireConfig();
@@ -26,6 +27,7 @@ class imagesModule extends zModule {
 		$this->no_image = $this->getConfigValue('no_image', $this->no_image);
 		$this->image_not_found = $this->getConfigValue('image_not_found', $this->image_not_found);
 		$this->invalid_image = $this->getConfigValue('invalid_image', $this->invalid_image);
+		$this->max_upload_size = $this->getConfigValue('max_upload_size', $this->max_upload_size);
 	}
 
 	public function getImagePath($image, $format = null) {
@@ -305,6 +307,16 @@ class imagesModule extends zModule {
 	}
 
 	private function uploadImageInternal($file_input) {
+
+		/* check file size */
+		if ($this->max_upload_size !== null) {
+			$size = $file_input['size'];
+			if (is_numeric($size) && $size > $this->max_upload_size) {
+				$this->z->messages->add("Uploaded image size $size exceeds maximum allowed size $this->max_upload_size");
+				return null;
+			}
+		}
+
 		$filename_parts = pathinfo($file_input['name']);
 		$file_name = z::slugify($filename_parts['filename'], $this->z->core->default_encoding);
 		$file_extension = $filename_parts['extension'];
