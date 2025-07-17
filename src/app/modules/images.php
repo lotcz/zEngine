@@ -113,6 +113,15 @@ class imagesModule extends zModule {
 			$format_height = $format_conf['height'];
 			$format_mode = isset($format_conf['mode']) ? $format_conf['mode'] : 'fit';
 
+			/* check file size */
+			if ($this->max_upload_size !== null) {
+				$size = filesize($original_path);
+				if (is_numeric($size) && $size > $this->max_upload_size) {
+					$this->z->errorlog->write("Original image $original_path has size $size which exceeds maximum allowed size $this->max_upload_size");
+					return null;
+				}
+			}
+
 			if ($this->z->isDebugMode()) {
 				$this->z->errorlog->write("Resizing image $original_path ($format_width x $format_height, $format_mode, $new_image_ext)");
 			}
