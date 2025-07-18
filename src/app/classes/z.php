@@ -206,14 +206,13 @@ class z {
 	// STRINGS
 
 	static function replace($str, $find, $replace) {
-		if (z::strlen($str) == 0 || z::strlen($find) == 0) {
-			return '';
-		}
-		return str_replace($str, $find, $replace);
+		if (z::strlen($str) == 0) return '';
+		if (z::strlen($find) == 0) return $str;
+		return str_replace($find, $replace, $str);
 	}
 
 	static function stripNewlines($str) {
-		return z::replace(z::replace($str, '\n', ''), '\r\n', '');
+		return z::replace(z::replace($str, '\r\n', ''), '\n', '');
 	}
 
 	static function shorten($str, $len = 100, $ellipsis = "...") {
