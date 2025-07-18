@@ -40,5 +40,28 @@
 
 		// This will override placement defined for includes above.
 		// Change this to 'bottom' if you need to use TinyMCE on public part of the website.
-		'default_placement' => 'admin.bottom'
+		'default_placement' => 'admin.bottom',
+
+		// function to be run on pasted raw text
+		// should be in form (editor, args) => {}
+		'tinymce_paste_preprocess' => '(editor, args) => {
+			console.log(args.content);
+			//args.content = args.content.replace(/ style="[^"]*"/gi, \'\');
+		}',
+
+		// function to be run on pasted DOM object (after paste_preprocess)
+		// should be in form (editor, args) => {}
+		// this removes all 'style' and 'face' attributes
+		'tinymce_paste_postprocess' => '(editor, args) => {
+			const removeStyles = (node) => {
+			  if (node.nodeType === 1) {
+				node.removeAttribute(\'style\');
+				node.removeAttribute(\'face\');
+				for (let i = 0; i < node.childNodes.length; i++) {
+				  removeStyles(node.childNodes[i]);
+				}
+			  }
+			};		
+    		removeStyles(args.node);
+		}'
 	];
