@@ -9,7 +9,7 @@ const z = {
 	},
 
 	isObject : function(o) {
-		return (o !== null && typeof o === 'object');
+		return (this.notEmpty(o) && typeof o === 'object');
 	},
 
 	isEmpty : function(o) {
@@ -40,13 +40,18 @@ const z = {
 
 	addClass : function(idOrObject, css) {
 		const el = this.getElement(idOrObject);
+		if (z.isEmpty(el)) {
+			console.error('Element not found, class cannot be added!', idOrObject);
+		}
 		if (Array.isArray((css)) && css.length > 0) {
 			css.forEach((cls) => {
-				if (typeof cls === 'string' && cls.length > 0) this.addClass(el, cls);
+				if (this.notEmpty(cls)) this.addClass(el, cls);
 			});
-		} else if (css) {
+		} else if (this.notEmpty(css)) {
 			css.split(' ').forEach((cls) => {
-				if (typeof cls === 'string' && cls.length > 0 && !this.hasClass(el, cls)) el.classList.add(cls);
+				if (this.notEmpty(cls) && !this.hasClass(el, cls)) {
+					el.classList.add(cls);
+				}
 			});
 		}
 	},
@@ -62,9 +67,9 @@ const z = {
 		const el = this.getElement(idOrObject);
 		if (el) {
 			const current = el.style.display;
-			if (current != 'none') return;
+			if (current === 'block') return;
 			const original = el.getAttribute('data-z-original-display');
-			el.style.display = (original) ? original : 'block';
+			el.style.display = this.notEmpty(original) ? original : 'block';
 		}
 	},
 
@@ -73,7 +78,9 @@ const z = {
 		if (el) {
 			const old = el.style.display;
 			if (old === 'none') return;
-			el.setAttribute('data-z-original-display', old);
+			if (this.notEmpty(old)) {
+				el.setAttribute('data-z-original-display', old);
+			}
 			el.style.display = 'none';
 		}
 	},

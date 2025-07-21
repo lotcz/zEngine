@@ -1,5 +1,5 @@
 function validate_length(value, param) {
-	return value && (value.length >= parseInt(param));
+	return z.notEmpty(value) && (value.length >= parseInt(param));
 }
 
 function validate_maxlen(value, param) {
@@ -97,12 +97,77 @@ function formValidation(form_id) {
 	this.is_valid = true;
 	this.fields = [];
 
+	this.isFieldValidationValid = function(fieldValidation) {
+		let is_valid = true;
+		const value = this.val(fieldValidation.name);
+		switch (fieldValidation.validation) {
+			case 'confirm':
+				const value2 = this.val(fieldValidation.param);
+				is_valid = validate_match(value, value2);
+				break;
+			default:
+				is_valid = window['validate_' + fieldValidation.validation](value, fieldValidation.param);
+		}
+		return is_valid;
+	}
+
+	this.isFieldValid = function(field) {
+		let is_valid = true;
+		for (let i = 0, max = field.validations.length; i < max; i++) {
+			is_valid = this.isFieldValidationValid(field.validations[i]) && this.is_valid;
+		}
+		return is_valid;
+	}
+
+	this.isValid = function() {
+		let is_valid = true;
+		for (let i = 0, max = this.fields.length; i < max; i++) {
+			is_valid = this.validateField(this.fields[i]) && this.is_valid;
+		}
+		return is_valid;
+	}
+
+	this.validateFieldValidation = function(fieldValidation) {
+		const field_name = fieldValidation.name;
+		const validation = fieldValidation.validation;
+		const is_valid = this.isFieldValidationValid(fieldValidation);
+
+		if (is_valid) {
+			z.hide(field_name + '_validation_' + validation);
+		} else {
+			z.show(field_name + '_validation_' + validation);
+		}
+
+		return is_valid;
+	}
+
+	this.validateField = function(field) {
+		let is_valid = true;
+		for (let i = 0, max = field.validations.length; i < max; i++) {
+			is_valid = this.validateFieldValidation(field.validations[i]) && is_valid;
+		}
+		const field_name = field.name;
+		if (is_valid) {
+			z.removeClass(field_name + '_form_group', 'has-error');
+			z.removeClass(field_name, 'is-invalid');
+		} else {
+			z.addClass(field_name + '_form_group', 'has-error');
+			z.addClass(field_name, 'is-invalid');
+		}
+		return is_valid;
+	}
+
+	this.validate = function() {
+		let is_valid = true;
+		for (let i = 0, max = this.fields.length; i < max; i++) {
+			is_valid = this.validateField(this.fields[i]) && is_valid;
+		}
+		this.is_valid = is_valid;
+		return this.is_valid;
+	}
+
 	this.submit = function(noret) {
-		this.is_valid = true;
-		for (var i = 0, max = this.fields.length; i < max; i++) {
-			this.is_valid = this.validateField(this.fields[i]) && this.is_valid;
-		}		
-		if (this.is_valid) {
+		if (this.validate()) {
 			if (noret == true) {
 				const input = z.getById('suppress_return');
 				if (input) {
@@ -115,50 +180,28 @@ function formValidation(form_id) {
 	}
 
 	this.add = function(field_name, validation, param) {
-		var field = new formField(field_name, validation, param);
-		this.fields.push(field);
-		return field;
+		let field = this.fields.find(f => f.name === field_name);
+		if (!field) {
+			field = new formField(field_name);
+			this.fields.push(field);
+		}
+		const fieldValidation = new formFieldValidation(field_name, validation, param);
+		field.validations.push(fieldValidation);
+		return fieldValidation;
 	}
 
 	this.val = function (field_id) {
 		return z.val(field_id);
 	}
 
-	this.showFieldValidation = function(field_name, validation, is_valid) {
-		if (is_valid) {
-			z.hide(field_name + '_validation_' + validation);
-			z.removeClass(field_name + '_form_group', 'has-error');
-			z.removeClass(field_name, 'is-invalid');
-		} else {
-			z.show(field_name + '_validation_' + validation);
-			z.addClass(field_name + '_form_group', 'has-error');
-			z.addClass(field_name, 'is-invalid');
-		}
-	}
-
-	this.validateField = function(field) {
-		var is_valid = this.isFieldValid(field);
-		this.showFieldValidation(field.name, field.validation, is_valid);
-		return is_valid;
-	}
-
-	this.isFieldValid = function(field) {
-		var is_valid = true;
-		var value = this.val(field.name);
-		switch (field.validation) {
-			case 'confirm':
-				var value2 = this.val(field.param);
-				is_valid = validate_match(value, value2);
-			break;
-			default:
-				is_valid = window['validate_' + field.validation](value, field.param);
-		}
-		return is_valid;
-	}
-
 }
 
-function formField(field_name, validation, param) {
+function formField(field_name) {
+	this.name = field_name;
+	this.validations = [];
+}
+
+function formFieldValidation(field_name, validation, param) {
 	this.name = field_name;
 	this.validation = validation || 'length';
 	this.param = param;
