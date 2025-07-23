@@ -18,7 +18,7 @@
   left: 0;
   bottom: 0;
   right: 0;
-  background-color: rgba(0, 0, 0, 0.8);
+  background-color: #000000;
   z-index: 10000;
 }
 .image-cropper-editor .preview canvas.preview-canvas {
@@ -46,9 +46,17 @@
   font-family: Arial, sans-serif;
   font-size: 12pt;
 }
+.image-cropper-editor .toolbar .row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
 .image-cropper-editor .toolbar .buttons {
   display: flex;
   flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
   gap: 10px;
 }
 .image-cropper-editor .toolbar .buttons button {
@@ -58,6 +66,7 @@
   padding: 4px 8px;
   border-width: 0;
   border-radius: 4px;
+  cursor: pointer;
 }
 .image-cropper-editor .toolbar .buttons button[disabled] {
   background-color: #444;
@@ -70,8 +79,8 @@
   left: 0;
   bottom: 0;
   right: 0;
-  background-color: rgba(0, 0, 0, 0);
   z-index: 11000;
+  cursor: move;
 }
 .image-cropper-editor .box canvas.box-canvas {
   display: block;
