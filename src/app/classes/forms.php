@@ -72,7 +72,8 @@ class zForm {
 					case 'integer':
 					case 'select':
 						if (isset($data[$field->name])) {
-							$result[$field->name] = z::parseInt($data[$field->name]);
+							$raw = $data[$field->name];
+							$result[$field->name] = is_numeric($raw) ? z::parseInt($data[$field->name]) : z::trim($raw);
 						} else {
 							$this->is_valid = false;
 						}

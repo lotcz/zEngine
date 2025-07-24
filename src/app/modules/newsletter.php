@@ -68,4 +68,17 @@ class newsletterModule extends zModule {
 		}
 		return $deleted;
 	}
+
+	public function getSubscriptionStates() {
+		$stateActive = new zModel();
+		$stateActive->set('id', 'active');
+		$stateActive->set('label', 'Aktivní');
+		$stateUnsubscribed = new zModel();
+		$stateUnsubscribed->set('id', 'unsubscribed');
+		$stateUnsubscribed->set('label', 'Odhlášená');
+		$stateInvalid= new zModel();
+		$stateInvalid->set('id', 'invalid');
+		$stateInvalid->set('label', 'Neplatná');
+		return [$stateActive, $stateUnsubscribed, $stateInvalid];
+	}
 }
