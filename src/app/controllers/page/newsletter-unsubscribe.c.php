@@ -17,7 +17,7 @@
 		if (!$sub->is_loaded) {
 			$this->z->messages->add(sprintf($this->t('No subscription found for \'%s\''), $email), 'error');
 		} elseif (z::verifyHash($email, $token)) {
-			$sub->set('newsletter_subscription_active', 0);
+			$sub->set('newsletter_subscription_state', 'unsubscribed');
 			$sub->save();
 			$this->z->messages->add(sprintf($this->t('Your e-mail address \'%s\' was successfully unsubscribed from newsletter.'), $email), 'success');
 		} else {
