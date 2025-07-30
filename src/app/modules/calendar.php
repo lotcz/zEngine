@@ -38,7 +38,7 @@ class calendarModule extends zModule {
 		$is_admin = $this->z->admin->isAuth();
 		$reservations = CalendarReservationModel::select(
 			$this->z->db,
-			$is_admin ? 'viewCalendarReservations' : 'calendar_reservation',
+			$is_admin ? 'view_calendar_reservations' : 'calendar_reservation',
 			'calendar_reservation_start > ? and calendar_reservation_start < ?',
 			'calendar_reservation_start',
 			null,
