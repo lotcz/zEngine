@@ -76,7 +76,7 @@ class calendarModule extends zModule {
 			$res = new CalendarReservationModel($this->z->db);
 		}
 		$res->set('calendar_reservation_user_id', $user_id);
-		$res->set('calendar_reservation_start', $start);
+		$res->set('calendar_reservation_start', z::mysqlDatetime($start));
 		$res->set('calendar_reservation_cosmetic_service_id', $service_id);
 		$res->set('calendar_reservation_duration', $duration);
 		$res->save();
