@@ -21,7 +21,7 @@
 					if ($this->z->admin->isAdmin()) {
 						$user = $this->z->auth->loadUserByLoginOrEmail($email);
 						if (!$user) {
-							$user = $this->z->auth->createUser($email, $email, $email, $email, UserModel::user_state_active);
+							$user = $this->z->auth->createUser($email, $email, $email, $email, UserModel::user_state_active, UserRoleModel::role_external);
 						}
 						$reservation = $this->z->calendar->saveReservation(
 							$res->id ?? null,
@@ -34,7 +34,7 @@
 					// not admin
 					} else {
 						if ($this->z->auth->isAnonymous()) {
-							$code = 400;
+							$code = 200;
 							$this->z->auth->registerUser($email, $email, $email, z::generateRandomToken(10));
 							$json->message = $this->t('An e-mail was sent to your address with account activation instructions.');
 						} else {
@@ -70,7 +70,7 @@
 						$code = 401;
 						$json->message = $this->t('Přihlašte se');
 					} else {
-						$code = 400;
+						$code = 200;
 						$user = $this->z->auth->registerUser($email, $email, $email, z::generateRandomToken(10));
 						$this->z->auth->createSession($user);
 						$json->message = $this->t('An e-mail was sent to your address with account activation instructions.');

@@ -30,11 +30,11 @@ class emailsModule extends zModule {
 	}
 
 	public function sendPlain($to, $subject, $body, $from = null) {
-		$this->sendEmail($to, $subject, $body, 'text/plain', $from);
+		$this->addEmailToQueue($to, $subject,'text/plain', $body, $from);
 	}
 
 	public function sendHTML($to, $subject, $body, $from = null) {
-		$this->sendEmail($to, $subject, $body, 'text/html', $from);
+		$this->addEmailToQueue($to, $subject, 'text/html', $body, $from);
 	}
 
 	public function renderAndSend($to, $subject, $template_name, $data, $from = null) {

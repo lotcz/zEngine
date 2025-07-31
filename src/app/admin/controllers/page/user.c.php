@@ -2,7 +2,7 @@
 
 	require_once __DIR__ . '/../../../models/user.m.php';
 
-	$this->z->admin->checkAnyRole([AdminRoleModel::role_superuser, AdminRoleModel::role_admin]);
+	$this->z->admin->checkAnyRole([UserRoleModel::role_superuser, UserRoleModel::role_admin]);
 	$id = z::parseInt($this->getPath(-1));
 
 	$fields = [
@@ -31,13 +31,12 @@
 			'type' => 'text'
 		],
 		[
-			'name' => 'user_admin_role_id',
+			'name' => 'user_user_role_id',
 			'label' => 'Role',
 			'type' => 'select',
-			'select_table' => 'admin_role',
-			'select_id_field' => 'admin_role_id',
-			'select_label_field' => 'admin_role_name',
-			'empty_option_name' => 'Externí'
+			'select_table' => 'user_role',
+			'select_id_field' => 'user_role_id',
+			'select_label_field' => 'user_role_name'
 		],
 		[
 			'name' => 'user_language_id',
@@ -71,4 +70,4 @@
 		];
 	}
 
-	$this->renderAdminForm('UserModel',$fields);
+	$this->renderAdminForm('UserModel', $fields);

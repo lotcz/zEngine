@@ -1,6 +1,6 @@
 <?php
 
-	$this->z->admin->checkAnyRole([AdminRoleModel::role_superuser, AdminRoleModel::role_admin]);
+	$this->z->admin->checkIsAdmin();
 
 	$this->setPageTitle('Administrators');
 	$this->renderAdminTable(
@@ -19,7 +19,7 @@
 				'label' => 'E-mail'
 			],
 			[
-				'name' => 'admin_role_name',
+				'name' => 'user_role_name',
 				'label' => 'Role'
 			],
 			[
@@ -28,7 +28,8 @@
 				'type' => 'datetime'
 			]
 		],
-		'view_administrators',
+		'view_users',
 		['user_id', 'user_name', 'user_login', 'user_email', 'user_last_access', 'admin_role_name'],
-		'user_id'
+		'user_id',
+		['user_name' ,'user_email']
 	);

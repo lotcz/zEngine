@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../classes/model.php';
+require_once __DIR__ . '/user_role.m.php';
 
 class UserModel extends zModel {
 
@@ -13,6 +14,8 @@ class UserModel extends zModel {
 	const user_state_waiting_for_password_reset = 3;
 	const user_state_cancelled = 4;
 	const user_state_deactivated = 5;
+
+	private $role;
 
 	public function loadByLoginOrEmail($loginoremail) {
 		$where = 'user_login = ? OR user_email = ?';
@@ -73,4 +76,31 @@ class UserModel extends zModel {
 		return $json;
 	}
 
+	public function getRole() {
+		if ($this->role === null) {
+			$this->role = new UserRoleModel($this->db, $this->ival('user_user_role_id'));
+		}
+		return $this->role;
+	}
+
+	public function hasRole($role) {
+		return $this->ival('user_user_role_id') == $role;
+	}
+
+	public function hasAnyRole($roles = null) {
+		if ($roles != null && count($roles) > 0) {
+			for ($i = 0, $max = count($roles); $i < $max; $i++) {
+				if ($this->hasRole($roles[$i])) {
+					return true;
+				}
+			}
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	public function isExternal() {
+		return $this->hasRole(UserRoleModel::role_external) || $this->getRole()->isExternal();
+	}
 }

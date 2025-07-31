@@ -35,7 +35,7 @@ class calendarModule extends zModule {
 	}
 
 	function loadReservations($from, $to) {
-		$is_admin = $this->z->admin->isAuth();
+		$is_admin = $this->z->admin->isAdmin();
 		$reservations = CalendarReservationModel::select(
 			$this->z->db,
 			$is_admin ? 'view_calendar_reservations' : 'calendar_reservation',
@@ -47,11 +47,11 @@ class calendarModule extends zModule {
 		);
 
 		if (!$is_admin) {
-			$user_id = $this->z->auth->isAuth() ? $this->z->auth->user->iget('user_id') : 0;
+			$user_id = $this->z->auth->isAuth() ? $this->z->auth->user->ival('user_id') : 0;
 			if ($user_id) {
 				foreach ($reservations as $reservation) {
-					if ($reservation->iget('calendar_reservation_user_id') === $user_id) {
-						$reservation->set('email', $this->z->auth->user->get('user_email'));
+					if ($reservation->ival('calendar_reservation_user_id') === $user_id) {
+						$reservation->set('email', $this->z->auth->user->val('user_email'));
 					}
 				}
 			}
@@ -76,7 +76,7 @@ class calendarModule extends zModule {
 			$res = new CalendarReservationModel($this->z->db);
 		}
 		$res->set('calendar_reservation_user_id', $user_id);
-		$res->set('calendar_reservation_start', $start);
+		$res->set('calendar_reservation_start', z::mysqlDatetime($start));
 		$res->set('calendar_reservation_cosmetic_service_id', $service_id);
 		$res->set('calendar_reservation_duration', $duration);
 		$res->save();

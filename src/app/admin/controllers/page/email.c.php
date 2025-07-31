@@ -4,6 +4,8 @@
 
 	$this->z->admin->checkAnyRole();
 
+	$this->z->enableModule('tinymce');
+
 	$this->renderAdminForm(
 		'EmailModel',
 		[

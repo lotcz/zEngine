@@ -67,7 +67,7 @@ const z = {
 		const el = this.getElement(idOrObject);
 		if (el) {
 			const current = el.style.display;
-			if (current === 'block') return;
+			if (current === 'block' || current === 'flex') return;
 			const original = el.getAttribute('data-z-original-display');
 			el.style.display = this.notEmpty(original) ? original : 'block';
 		}

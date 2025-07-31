@@ -13,7 +13,9 @@ class authModule extends zModule {
 	private $authentication_checked = false;
 
 	public $user = null;
+
 	public $session = null;
+
 	public $session_token = null;
 
 	public $cookie_name = 'session_token';
@@ -50,7 +52,7 @@ class authModule extends zModule {
 	*/
 	public function isAuth() {
 		$this->checkAuthentication();
-		return isset($this->user) && isset($this->session);
+		return isset($this->session) && isset($this->user);
 	}
 
 	/**
@@ -61,7 +63,7 @@ class authModule extends zModule {
 	}
 
 	public function createAnonymousSession() {
-		$user = $this->createUser($this->z->core->t('Anonymous'), null, null, null, UserModel::user_state_anonymous);
+		$user = $this->createUser($this->z->core->t('Anonymous'), null, null, null, UserModel::user_state_anonymous, UserRoleModel::role_external);
 		$this->createSession($user);
 	}
 
@@ -133,28 +135,51 @@ class authModule extends zModule {
 	* Call this only once in the beginning of request processing and then call to isAuth() method to check whether any user is authenticated.
 	*/
 	private function checkAuthentication() {
-		if (!$this->authentication_checked) {
-			$this->user = null;
+		if ($this->authentication_checked) return;
 
-			$cookie_value = $this->getSessionCookie();
-			if (isset($cookie_value)) {
-				$arr = explode('-', $cookie_value);
-				$session_id = intval($arr[0]);
-				$this->session_token = $arr[1];
-			}
+		$this->user = null;
 
-			if (isset($session_id)) {
-				$this->session = new UserSessionModel($this->z->db, $session_id);
-				if (isset($this->session) && $this->session->is_loaded && Self::verifyPassword($this->session_token, $this->session->val('user_session_token_hash'))) {
-					$expires = time() + $this->config['session_expire'];
-					$this->setSessionExpiration($expires);
-					$this->user = new UserModel($this->z->db, $this->session->val('user_session_user_id'));
-					$this->updateLastAccess();
-				}
-			}
-
-			$this->authentication_checked = true;
+		$cookie_value = $this->getSessionCookie();
+		if (isset($cookie_value)) {
+			$arr = explode('-', $cookie_value);
+			$session_id = intval($arr[0]);
+			$this->session_token = $arr[1];
 		}
+
+		if (isset($session_id)) {
+			$this->session = new UserSessionModel($this->z->db, $session_id);
+			if (isset($this->session) && $this->session->is_loaded && Self::verifyPassword($this->session_token, $this->session->val('user_session_token_hash'))) {
+				$expires = time() + $this->config['session_expire'];
+				$this->setSessionExpiration($expires);
+				$this->user = new UserModel($this->z->db, $this->session->val('user_session_user_id'));
+				$this->updateLastAccess();
+			}
+		}
+
+		$this->authentication_checked = true;
+	}
+
+	public function hasRole($role) {
+		if (!$this->isAuth()) return false;
+		return $this->user->hasRole($role);
+	}
+
+	public function hasAnyRole($roles = null) {
+		if (!$this->isAuth()) return false;
+		return $this->user->hasAnyRole($roles);
+	}
+
+	public function isSuperUser() {
+		return $this->hasRole(UserRoleModel::role_superuser);
+	}
+
+	public function isAdmin() {
+		return $this->hasAnyRole([UserRoleModel::role_superuser, UserRoleModel::role_admin]);
+	}
+
+	public function isExternal() {
+		if (!$this->isAuth()) return false;
+		return $this->user->isExternal();
 	}
 
 	public function loadUserByLoginOrEmail($email) {
@@ -164,7 +189,7 @@ class authModule extends zModule {
 	}
 
 	public function emailExists($email) {
-		if ($this->isAuth() && $this->z->auth->user->get('user_email') === $email) {
+		if ($this->isAuth() && $this->user->get('user_email') === $email) {
 			return true;
 		}
 		$usr = $this->loadUserByLoginOrEmail($email);
@@ -218,13 +243,14 @@ class authModule extends zModule {
 	* Create user account.
 	* @return UserModel
 	*/
-	public function createUser($full_name, $login, $email, $password, $state) {
+	public function createUser($full_name, $login, $email, $password, $state, $role) {
 		$user = new UserModel($this->z->db);
 		$user->data['user_name'] = $full_name;
 		$user->data['user_login'] = $login;
 		$user->data['user_email'] = $email;
 		$user->data['user_state'] = $state;
 		$user->data['user_password_hash'] = $this->hashPassword($password);
+		$user->data['user_user_role_id'] = $role;
 		if ($this->z->isModuleEnabled('i18n') && isset($this->z->i18n->selected_language)) {
 			$user->data['user_language_id'] = $this->z->i18n->selected_language->val('language_id');
 		} else {
@@ -239,7 +265,7 @@ class authModule extends zModule {
 	* @return UserModel
 	*/
 	public function createActiveUser($full_name, $login, $email, $password) {
-		$user = $this->createUser($full_name, $login, $email, $password, UserModel::user_state_active);
+		$user = $this->createUser($full_name, $login, $email, $password, UserModel::user_state_active, UserRoleModel::role_superuser);
 		return $user;
 	}
 
@@ -257,7 +283,7 @@ class authModule extends zModule {
 			$user->data->set('user_state', UserModel::user_state_waiting_for_activation);
 			$user->save();
 		} else {
-			$user = $this->createUser($full_name, $login, $email, $password, UserModel::user_state_waiting_for_activation);
+			$user = $this->createUser($full_name, $login, $email, $password, UserModel::user_state_waiting_for_activation, UserRoleModel::role_external);
 		}
 		$activation_token = $this->generateAccountActivationToken();
 		$user->data['user_reset_password_hash'] = $this->hashPassword($activation_token);

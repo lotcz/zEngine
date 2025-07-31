@@ -1,6 +1,8 @@
 <?php
 
-	$this->setPageTitle('Users');
+	$this->z->admin->checkIsAdmin();
+
+	$this->setPageTitle('External Users');
 	$this->renderAdminTable(
 		'user',
 		[
@@ -28,7 +30,8 @@
 				'type' => 'datetime'
 			]
 		],
-		'view_users',
+		'view_external_users',
 		['user_id', 'user_name', 'user_login', 'user_email', 'user_state', 'user_last_access'],
-		'user_id'
+		'user_id',
+		['user_name' ,'user_email']
 	);

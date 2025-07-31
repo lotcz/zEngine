@@ -139,6 +139,7 @@ const gallery = {
 
 	createViewer: function() {
 		const viewer = z.createElement(document.body, 'div');
+		viewer.setAttribute('z-original-display', 'flex');
 		viewer.style.display = 'flex';
 		viewer.setAttribute('id', 'gallery_viewer');
 		viewer.addEventListener('click', (e) => this.closeEvnt(e));

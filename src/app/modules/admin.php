@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../models/admin_role.m.php';
+require_once __DIR__ . '/../models/user_role.m.php';
 
 /**
 * Module that handles administration area.
@@ -33,8 +33,6 @@ class adminModule extends zModule {
 	public $menu = null;
 
 	private $authentication_checked = false;
-
-	public $admin = null;
 
 	public $show_custom_menu_to_external = false;
 
@@ -87,89 +85,6 @@ class adminModule extends zModule {
 		return ($total > 0) ? ($this->getFreeDiskSpace() / $total) : 0;
 	}
 
-	public function hasRole($role) {
-		if (!$this->isAuth()) return false;
-		return $this->admin->ival('user_admin_role_id') == $role;
-	}
-
-	public function hasAnyRole($roles = null) {
-		if (!$this->isAuth()) return false;
-		if ($roles != null && count($roles) > 0) {
-			for ($i = 0, $max = count($roles); $i < $max; $i++) {
-				if ($this->hasRole($roles[$i])) {
-					return true;
-				}
-			}
-			return false;
-		} else {
-			return ($this->admin->ival('user_admin_role_id') > 0);
-		}
-	}
-
-	public function checkAnyRole($roles = null) {
-		if (!$this->hasAnyRole($roles)) {
-			$this->z->core->redirect('admin', 403);
-			die();
-		}
-	}
-
-	public function checkIsSuperUser() {
-		if (!$this->isSuperUser()) {
-			$this->z->core->redirect('admin', 403);
-			die();
-		}
-	}
-
-	public function checkIsAdmin() {
-		if (!$this->isAdmin()) {
-			$this->z->core->redirect('admin', 403);
-			die();
-		}
-	}
-
-	/**
-	* Return true if an admin is authenticated.
-	*/
-	public function isAuth() {
-		$this->checkAuthentication();
-		return isset($this->admin);
-	}
-
-	public function isSuperUser() {
-		return $this->hasRole(AdminRoleModel::role_superuser);
-	}
-
-	public function isAdmin() {
-		return $this->hasAnyRole([AdminRoleModel::role_superuser, AdminRoleModel::role_admin]);
-	}
-
-	/**
-	* Verifies if there is an admin logged in.
-	* Call this only once in the beginning of request processing and then call to isAuth() method to check whether admin is authenticated.
-	*/
-	private function checkAuthentication() {
-		if (!$this->authentication_checked) {
-			$this->admin = null;
-			if ($this->z->auth->isAuth()) {
-				$this->admin = $this->z->auth->user;
-			}
-			$this->authentication_checked = true;
-		}
-	}
-
-	/**
-	* Log user in if login and password are correct and return true if successful.
-	* @return bool
-	*/
-	public function login($login_or_email, $password) : bool {
-		if ($this->z->auth->login($login_or_email, $password)) {
-			$this->authentication_checked = false;
-			return $this->isAuth();
-		} else {
-			return false;
-		}
-	}
-
 	public function getAdminAreaURL($page) {
 		return $this->base_url . '/' . $page;
 	}
@@ -180,15 +95,15 @@ class adminModule extends zModule {
 	private function initializeAdminMenu() {
 		$menu = new zMenu($this->getAdminAreaURL(''), $this->z->core->getData('site_title'));
 
-		if ($this->isAuth()) {
+		if ($this->z->auth->isAuth()) {
 
-			if ($this->show_custom_menu_to_external || $this->hasAnyRole()) {
+			if ($this->show_custom_menu_to_external || $this->isAdmin()) {
 				//custom menu from app's admin config
 				$menu->loadItemsFromArray($this->getConfigValue('custom_menu'));
 			}
 
 			// SUPERUSER - standard admin menu
-			if ($this->isSuperUser() || $this->isAdmin()) {
+			if ($this->z->auth->isAdmin()) {
 				$submenu = $menu->addRightSubmenu('Administration');
 
 				$submenu->addItem('admin/users', 'External Users');
@@ -231,7 +146,7 @@ class adminModule extends zModule {
 					$submenu->addItem('admin/customers', 'Customers');
 				}
 
-				if ($this->isSuperUser()) {
+				if ($this->z->auth->isSuperUser()) {
 					// ADVANCED
 					$submenu->addSeparator();
 					$submenu->addHeader('Advanced');
@@ -392,12 +307,42 @@ class adminModule extends zModule {
 	*/
 	public function createActiveAdminAccount($full_name, $login, $email, $password, $role = null) {
 		if (!$role) {
-			$role = AdminRoleModel::role_superuser;
+			$role = UserRoleModel::role_superuser;
 		}
 		$user = $this->z->auth->createActiveUser($full_name, $login, $email, $password);
 		$user->set('user_admin_role_id', $role);
 		$user->save();
 		return $user;
 	}
+
+	public function isAuth() {
+		return $this->z->auth->isAuth();
+	}
+
+	public function isAdmin() {
+		return $this->z->auth->isAuth();
+	}
+
+	public function checkAnyRole($roles = null) {
+		if (!$this->z->auth->hasAnyRole($roles)) {
+			$this->z->core->redirect('admin', 403);
+			die();
+		}
+	}
+
+	public function checkIsSuperUser() {
+		if (!$this->z->auth->isSuperUser()) {
+			$this->z->core->redirect('admin', 403);
+			die();
+		}
+	}
+
+	public function checkIsAdmin() {
+		if (!$this->z->auth->isAdmin()) {
+			$this->z->core->redirect('admin', 403);
+			die();
+		}
+	}
+
 
 }
