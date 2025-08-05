@@ -190,6 +190,7 @@ class ModeDay extends CalendarMode {
 					if (this.calendar.adminMode || owner) {
 						minuteSlot.addEventListener('click', () => this.calendar.showForm(reservation));
 						z.createElement(minuteSlot, 'div', 'usr-email ps-2', reservation.email);
+						z.createElement(minuteSlot, 'div', 'ps-2', reservation.service);
 					}
 					if (owner && !this.calendar.adminMode) {
 						z.addClass(minuteSlot, 'owned-reservation')
@@ -453,8 +454,8 @@ export default class Calendar {
 		const select = z.createElement(serviceCol, 'select', 'form-select');
 		select.setAttribute('id', 'service');
 		select.addEventListener('change', (e) => {
-			reservation.cometic_service_id = e.target.value;
-			const service = this.getService(reservation.cometic_service_id);
+			reservation.cosmetic_service_id = e.target.value;
+			const service = this.getService(reservation.cosmetic_service_id);
 			if (service) {
 				reservation.duration = service.duration_minutes;
 				this.frm.elements['duration'].value = reservation.duration;
@@ -469,7 +470,7 @@ export default class Calendar {
 			services.forEach((service) => {
 				const option = z.createElement(group, 'option', null, service.name);
 				option.setAttribute('value', service.id);
-				if (reservation.cometic_service_id == service.id) {
+				if (reservation.cosmetic_service_id == service.id) {
 					option.setAttribute('selected', 'selected');
 				}
 			});
@@ -542,7 +543,7 @@ export default class Calendar {
 			save,
 			'button',
 			'btn btn-primary',
-			'Objednat',
+			'Rezervovat termín',
 			() => this.saveForm()
 		);
 

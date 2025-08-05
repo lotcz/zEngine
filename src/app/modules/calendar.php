@@ -44,7 +44,7 @@ class calendarModule extends zModule {
 		return CalendarReservationModel::select(
 			$this->z->db,
 			$is_admin ? 'view_calendar_reservations' : 'calendar_reservation',
-			'calendar_reservation_start >= ? and calendar_reservation_start < ?',
+			'calendar_reservation_end > ? and calendar_reservation_start < ?',
 			'calendar_reservation_start',
 			null,
 			[z::mysqlDatetime($from), z::mysqlDatetime($to)],
@@ -84,20 +84,13 @@ class calendarModule extends zModule {
 	}
 
 	function conflictsExists(DateTime $start, DateTime $end, int $exclude = null): bool {
-		$startOfDay = clone $start;
-		$startOfDay->setTime(0, 0);
-		$endOfDay = clone $startOfDay;
-		$endOfDay->add(new DateInterval("P1D"));
-
-		$conflicting = $this->loadReservations($startOfDay, $endOfDay);
+		$conflicting = $this->loadReservations($start, $end);
 
 		foreach ($conflicting as $reservation) {
 			if ($exclude !== null && $reservation->ival('calendar_reservation_id') === $exclude) {
 				continue;
 			}
-			$this->dbg($start, $end, $reservation->getStart(), $reservation->getEnd());
-			$isOutside = ($start >= $reservation->getEnd()) || ($end <= $reservation->getStart());
-			if (!$isOutside) return true;
+			return true;
 		}
 
 		return false;

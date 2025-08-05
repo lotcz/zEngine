@@ -45,7 +45,7 @@
 		// function to be run on pasted raw text
 		// should be in form (editor, args) => {}
 		'tinymce_paste_preprocess' => '(editor, args) => {
-			console.log(args.content);
+			//console.log(args.content);
 			//args.content = args.content.replace(/ style="[^"]*"/gi, \'\');
 		}',
 

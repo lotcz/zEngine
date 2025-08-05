@@ -13,17 +13,28 @@ CREATE TABLE `calendar_reservation` (
 	 FOREIGN KEY (`calendar_reservation_user_id`)
 		REFERENCES `user` (`user_id`)
 		ON DELETE cascade,
-  	UNIQUE INDEX `calendar_reservation_start_unique` (`calendar_reservation_start` ASC),
   CONSTRAINT `calendar_reservation_cosmetic_service_fk`
 	 FOREIGN KEY (`calendar_reservation_cosmetic_service_id`)
 		REFERENCES `cosmetic_service` (`cosmetic_service_id`)
 		ON DELETE cascade
 ) ENGINE=InnoDB;
 
+ALTER TABLE calendar_reservation
+	ADD COLUMN `calendar_reservation_end` DATETIME GENERATED ALWAYS AS (
+		CASE
+			 WHEN calendar_reservation_whole_day = 1 THEN DATE_ADD(calendar_reservation_start, INTERVAL calendar_reservation_duration DAY)
+			 ELSE DATE_ADD(calendar_reservation_start, INTERVAL calendar_reservation_duration MINUTE)
+		END
+	) STORED;
+
+CREATE UNIQUE INDEX idx_calendar_reservation_end
+	ON calendar_reservation (calendar_reservation_start, calendar_reservation_end);
+
 DROP VIEW IF EXISTS `view_calendar_reservations`;
 
 CREATE VIEW view_calendar_reservations AS
-	SELECT cr.*, u.user_email as `email`
+	SELECT cr.*, u.user_email as `email`, cs.cosmetic_service_name as `service`
 	FROM `calendar_reservation` cr
-	LEFT OUTER JOIN `user` u ON (u.user_id = cr.calendar_reservation_user_id);
+	LEFT OUTER JOIN `user` u ON (u.user_id = cr.calendar_reservation_user_id)
+	LEFT OUTER JOIN `cosmetic_service` cs ON (cs.cosmetic_service_id = cr.calendar_reservation_cosmetic_service_id);
 

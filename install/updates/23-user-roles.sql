@@ -37,3 +37,11 @@ CREATE VIEW view_session_stats AS
 	JOIN `user` u ON (u.user_id = us.user_session_user_id)
 	JOIN user_role r ON (u.user_user_role_id = r.user_role_id)
 	GROUP BY r.user_role_id;
+
+DROP VIEW IF EXISTS `view_calendar_reservations`;
+
+CREATE VIEW view_calendar_reservations AS
+	SELECT cr.*, u.user_email as `email`, cs.cosmetic_service_name as `service`
+	FROM `calendar_reservation` cr
+	LEFT OUTER JOIN `user` u ON (u.user_id = cr.calendar_reservation_user_id)
+	LEFT OUTER JOIN `view_cosmetic_services` cs ON (cs.cosmetic_service_id = cr.calendar_reservation_cosmetic_service_id);

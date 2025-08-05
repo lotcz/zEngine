@@ -320,7 +320,7 @@ class adminModule extends zModule {
 	}
 
 	public function isAdmin() {
-		return $this->z->auth->isAuth();
+		return $this->z->auth->isAdmin();
 	}
 
 	public function checkAnyRole($roles = null) {

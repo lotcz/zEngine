@@ -14,6 +14,11 @@ class zModel {
 	public $table_name = null;
 	public $id_name = null;
 
+	/**
+	 * @var array These columns will be ignored on insert and update
+	 */
+	public $ignored_columns = [];
+
 	public $is_loaded = false;
 	public $data = [];
 
@@ -213,7 +218,7 @@ class zModel {
 		$types = [];
 
 		foreach ($this->data as $key => $value) {
-			if ($key != $class_name::getIdName()) {
+			if ($key != $class_name::getIdName() && !in_array($key, $this->ignored_columns)) {
 				$columns[] = $key;
 				$bindings[] = $value;
 				$types[] = z::getDbType($value);
