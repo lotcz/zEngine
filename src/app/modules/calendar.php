@@ -101,6 +101,11 @@ class calendarModule extends zModule {
 			throw new Exception($this->z->core->t("Access Forbidden!"));
 		}
 
+		$dayOfWeek = intval($start->format('w'));
+		if ($dayOfWeek < 1 || $dayOfWeek > 5) {
+			throw new Exception($this->z->core->t("Invalid day!"));
+		}
+
 		$end = clone $start;
 		$end = $end->add(new DateInterval("PT{$duration}M"));
 

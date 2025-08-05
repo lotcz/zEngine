@@ -18,6 +18,11 @@ class CalendarMode {
 		this.modeUpKey = up;
 	}
 
+	/**
+	 * 1 - monday to 7 - sunday
+	 * @param date
+	 * @returns {number|number}
+	 */
 	static getDayOfWeek(date) {
 		const d = date.getDay();
 		return d === 0 ? 7 : d;
@@ -150,13 +155,15 @@ class ModeDay extends CalendarMode {
 
 	getDateNext(currentDay) {
 		const nextDay = new Date(currentDay);
-		nextDay.setDate(currentDay.getDate() + 1);
+		nextDay.setDate(nextDay.getDate() + 1);
+		while (CalendarMode.getDayOfWeek(nextDay) > 5) nextDay.setDate(nextDay.getDate() + 1);
 		return this.roundDate(nextDay);
 	}
 
 	getDatePrev(currentDay) {
 		const prevDay = new Date(currentDay);
-		prevDay.setDate(currentDay.getDate() - 1);
+		prevDay.setDate(prevDay.getDate() - 1);
+		while (CalendarMode.getDayOfWeek(prevDay) > 5) prevDay.setDate(prevDay.getDate() - 1);
 		return this.roundDate(prevDay);
 	}
 
