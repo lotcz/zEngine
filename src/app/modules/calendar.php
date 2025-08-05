@@ -74,6 +74,15 @@ class calendarModule extends zModule {
 		return $res->is_loaded ? $res : null;
 	}
 
+	function deleteReservationById($id) {
+		$res = new CalendarReservationModel($this->z->db, $id);
+		if (!$res->is_loaded) return;
+		if ($res->ival('calendar_reservation_user_id') !== $this->z->auth->user->ival('user_id') && !$this->z->admin->isAdmin()) {
+			throw new Exception("Access Forbidden!");
+		}
+		$res->delete();
+	}
+
 	function conflictsExists(DateTime $start, DateTime $end, int $exclude = null): bool {
 		$startOfDay = clone $start;
 		$startOfDay->setTime(0, 0);
@@ -86,7 +95,7 @@ class calendarModule extends zModule {
 			if ($exclude !== null && $reservation->ival('calendar_reservation_id') === $exclude) {
 				continue;
 			}
-			//$this->dbg($start, $end, $reservation->getStart(), $reservation->getEnd());
+			$this->dbg($start, $end, $reservation->getStart(), $reservation->getEnd());
 			$isOutside = ($start >= $reservation->getEnd()) || ($end <= $reservation->getStart());
 			if (!$isOutside) return true;
 		}
@@ -96,15 +105,14 @@ class calendarModule extends zModule {
 
 	function saveReservation(?int $id, int $user_id, DateTime $start, int $service_id, int $duration) {
 		if ($user_id !== $this->z->auth->user->ival('user_id') && !$this->z->admin->isAdmin()) {
-			throw new Exception("Access Forbidden!");
+			throw new Exception($this->z->core->t("Access Forbidden!"));
 		}
 
 		$end = clone $start;
-		$this->dbg($start, "PT{$duration}M", new DateInterval("P{$duration}M"));
-		$end = $end->add(new DateInterval("P{$duration}M"));
+		$end = $end->add(new DateInterval("PT{$duration}M"));
 
 		if ($this->conflictsExists($start, $end, $id)) {
-			throw new Exception("Conflict Exists!");
+			throw new Exception($this->z->core->t("Conflict Exists!"));
 		}
 
 		$res = null;

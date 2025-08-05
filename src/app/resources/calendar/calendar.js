@@ -169,7 +169,7 @@ class ModeDay extends CalendarMode {
 	render() {
 		this.calendar.view.innerHTML = '';
 		const view = CalendarMode.createElement(this.calendar.view, 'div', 'view-day');
-		const date = this.calendar.currentDay;
+		const date = new Date(this.calendar.currentDay);
 		for (let time = this.calendar.minStartTime; time < this.calendar.maxEndTime; time = time + 1) {
 			const slot = CalendarMode.createElement(view, 'div', 'slot d-flex flex-row');
 			const hour = CalendarMode.createElement(slot, 'div', 'slot-time p-2 text-center', this.formatSlotTime(time));
@@ -332,7 +332,7 @@ export default class Calendar {
 
 	reload() {
 		this.reservations = null;
-		this.render();
+		this.showLoading();
 
 		const from = this.currentDay;
 		const to = this.mode.getDateNext(this.currentDay);
@@ -371,6 +371,7 @@ export default class Calendar {
 	}
 
 	showFormMessage(message = '&nbsp;', style = 'light') {
+		if (!this.message) return;
 		this.message.innerHTML = '';
 		z.createElement(this.message, 'div', `alert alert-${style}`, message);
 	}
@@ -398,12 +399,24 @@ export default class Calendar {
 		this.showLoading();
 		z.fetch('/json/default/calendar', this.reservation, 'POST')
 			.then((response) => {
-				console.log(response.status);
-				const json = response.json;
-				const message = json.message;
-				this.showFormMessage(message, response.status === 200 ? 'success' : 'warning');
-				const result = json.result;
-				this.reservation.id = result.id;
+				if (response.status === 200) {
+					this.hideForm();
+					this.reload();
+				} else {
+					const json = response.json;
+					const message = json.message;
+					this.showFormMessage(message, 'warning');
+					this.reservation.id = json.result.id;
+				}
+			});
+	}
+
+	deleteReservation(id) {
+		this.showLoading();
+		z.fetch(`/json/default/calendar?id=${id}`,null, 'DELETE')
+			.then((response) => {
+				this.hideForm();
+				this.reload();
 			});
 	}
 
@@ -424,7 +437,7 @@ export default class Calendar {
 		date.setAttribute('min', z.getDateTimeLocalVal(this.today));
 		date.setAttribute('value', z.getDateTimeLocalVal(reservation.start));
 		date.addEventListener('change', (e) => {
-			const old = this.currentDay;
+			const old = new Date(this.currentDay);
 			const n = new Date(e.target.value);
 			reservation.start = n;
 			if (CalendarMode.isSameDay(old, n)) {
@@ -496,17 +509,34 @@ export default class Calendar {
 
 		const buttonsWrapper = z.createElement(formInner, 'div', 'buttons container');
 		const buttons = z.createElement(buttonsWrapper, 'div', 'row justify-content-between');
+
 		const close = z.createElement(buttons, 'div', 'col text-center');
 		z.createElement(
 			close,
 			'button',
 			'btn btn-secondary',
-			'Zavřít',
+			'Zpět',
 			() => {
-				this.unsetReservation();
 				this.hideForm();
+				this.reload();
 			}
 		);
+
+		if (reservation.id) {
+			const remove = z.createElement(buttons, 'div', 'col text-center');
+			z.createElement(
+				remove,
+				'button',
+				'btn btn-danger',
+				'Zrušit rezervaci',
+				() => {
+					if (confirm("Opravdu si přejete zrušit rezervaci?")) {
+						this.deleteReservation(reservation.id);
+					}
+				}
+			);
+		}
+
 		const save = z.createElement(buttons, 'div', 'col text-center');
 		z.createElement(
 			save,
@@ -536,13 +566,6 @@ export default class Calendar {
 			return;
 		}
 
-		this.mode.render();
-	}
-
-	unsetReservation() {
-		if (!this.reservation) return;
-		if (this.reservation.id && this.reservation.id > 0) return;
-		this.reservations.splice(this.reservations.indexOf(this.reservation), 1);
 		this.mode.render();
 	}
 

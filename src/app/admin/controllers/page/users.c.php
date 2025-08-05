@@ -22,7 +22,7 @@
 				'name' => 'user_state',
 				'label' => 'Status',
 				'type' => 'custom',
-				'custom_function' => 'UserModel::getUserStatusLabel'
+				'custom_function' => fn ($state) => $this->t(UserModel::getUserStatusLabel($state))
 			],
 			[
 				'name' => 'user_last_access',

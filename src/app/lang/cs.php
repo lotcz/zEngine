@@ -62,6 +62,11 @@
 	$language_data['Your password was successfully changed.'] = 'Vaše heslo bylo úspěšně změněno.';
 	$language_data['Password must be at least %d characters long.'] = 'Heslo musí být alespoň %d znaků dlouhé.';
 	$language_data['--account-not-active--'] = 'Účet není aktivní! Nemůžeme Vás přihlásit. Pokud jste se nedávno registrovali nebo požádali o nové heslo, podívejte se prosím do Vaší e-mailové schránky, zda tam není zpráva s odkazem pro aktivaci. Jinak požádejte o nové heslo.';
+	$language_data['Deactivated'] = 'Neaktivní';
+	$language_data['Waiting for activation'] = 'Čeká na aktivaci';
+	$language_data['Waiting for password reset'] = 'Čeká na reset hesla';
+	$language_data['External'] = 'Externí';
+	$language_data['Admin'] = 'Administrátor';
 
 	/* ADMIN SECTION */
 	$language_data['Administration'] = 'Administrace';
@@ -137,6 +142,7 @@
 
 	/* MISC */
 	$language_data['Turn on Javascript to see the e-email address.'] = 'Pro zobrazení e-mailové adresy zapněte Javascript.';
+	$language_data['Access Forbidden!'] = 'Přístup odepřen!';
 
 	/* COOKIES */
 	$language_data['--cookies-disabled--'] = 'Tato stránka používá soubory cookies a bez nich nemusí fungovat správně. Povolte prosím soubory cookies ve Vašem prohlížeči.';

@@ -25,6 +25,7 @@
 						}
 						$reservation = $this->z->calendar->saveReservationJson($user->ival('user_id'), $res);
 						$json->result = $reservation->getJson();
+						$json->message = $this->t('Your reservation was saved.');
 					// not admin
 					} else {
 						if ($this->z->auth->isAnonymous()) {
@@ -72,6 +73,8 @@
 		}
 		http_response_code($code);
 		$this->setData('json', $json);
+	} else if (z::isMethod('DELETE')) {
+		$this->z->calendar->deleteReservationById(z::getInt('id'));
 	} else {
 		$from = z::parseDatetime(z::get('from'));
 		$to = z::parseDatetime(z::get('to'));

@@ -2,16 +2,19 @@
 
 	require_once __DIR__ . '/../../../models/user.m.php';
 
-	$this->z->admin->checkAnyRole([UserRoleModel::role_superuser, UserRoleModel::role_admin]);
+	$this->z->admin->checkIsAdmin();
 	$id = z::parseInt($this->getPath(-1));
 
 	$fields = [
 		[
 			'name' => 'user_state',
 			'label' => 'Status',
-			'type' => 'static_custom',
-			'value' => UserModel::user_state_active,
-			'custom_function' => 'UserModel::getUserStatusLabel'
+			'type' => 'select',
+			'value' => UserModel::user_state_anonymous,
+			'select_label_localized' => true,
+			'select_id_field' => 'value',
+			'select_label_field' => 'label',
+			'select_data' => UserModel::getStateOptions()
 		],
 		[
 			'name' => 'user_email',
@@ -34,6 +37,7 @@
 			'name' => 'user_user_role_id',
 			'label' => 'Role',
 			'type' => 'select',
+			'select_label_localized' => true,
 			'select_table' => 'user_role',
 			'select_id_field' => 'user_role_id',
 			'select_label_field' => 'user_role_name'

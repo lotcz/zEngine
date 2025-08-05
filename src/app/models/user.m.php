@@ -69,6 +69,31 @@ class UserModel extends zModel {
 		}
 	}
 
+	public static function getStateOptions() {
+		$options = [];
+		$disabled = new zModel();
+		$disabled->set('value', Self::user_state_deactivated);
+		$options[] = $disabled;
+		$anonymous = new zModel();
+		$anonymous->set('value', Self::user_state_anonymous);
+		$options[] = $anonymous;
+		$activation = new zModel();
+		$activation->set('value', Self::user_state_waiting_for_activation);
+		$options[] = $activation;
+		$reset = new zModel();
+		$reset->set('value', Self::user_state_waiting_for_password_reset);
+		$options[] = $reset;
+		$active = new zModel();
+		$active->set('value', Self::user_state_active);
+		$options[] = $active;
+
+		foreach ($options as $option) {
+			$option->set('label', Self::getUserStatusLabel($option->ival('value')));
+		}
+
+		return $options;
+	}
+
 	public function getJson() {
 		$json = parent::getJson();
 		unset($json->password_hash);
