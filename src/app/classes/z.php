@@ -49,7 +49,7 @@ class z {
 		}
 	}
 
-	static function parseDatetime(?string $timeStr) {
+	static function parseDatetime(?string $timeStr): ?DateTime {
 		if (z::isValidDatetime($timeStr)) {
 			return date_create($timeStr);
 		} else {
@@ -164,9 +164,9 @@ class z {
 	/**
 	* Convert php Datetime to mysql Datetime
 	*/
-	static function mysqlDatetime($time) {
+	static function mysqlDatetime($time): ?string {
 		if (empty($time)) return null;
-		if ($time instanceof DateTime) {
+		if ($time instanceof DateTime || $time instanceof DateTimeImmutable) {
 			$time = $time->getTimestamp();
 		}
 		if (is_string($time)) {
@@ -336,6 +336,7 @@ class z {
 	}
 
 	static function verifyHash($value, $hash) {
+		if ($value === null || $hash === null) return false;
 		return password_verify($value, $hash);
 	}
 

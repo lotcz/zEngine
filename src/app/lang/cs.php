@@ -25,6 +25,7 @@
 
 	/* AUTHENTICATION */
 	$language_data['Login or E-mail'] = 'Login nebo e-mail';
+	$language_data['Full name'] = 'Celé jméno';
 	$language_data['Password'] = 'Heslo';
 	$language_data['Anonymous'] = 'Anonym';
 	$language_data['Sign In'] = 'Přihlásit';

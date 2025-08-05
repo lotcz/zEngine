@@ -74,7 +74,7 @@ class authModule extends zModule {
 
 		$this->user = $user;
 		$this->session_token = $this->generateSessionToken();
-		$token_hash = Self::hashPassword($this->session_token);
+		$token_hash = $this->hashPassword($this->session_token);
 		$expires = time() + $this->config['session_expire'];
 		$session = new UserSessionModel($this->z->db);
 		$session->data['user_session_token_hash'] = $token_hash;
@@ -112,12 +112,17 @@ class authModule extends zModule {
 			return false;
 		}
 
+		if ($user->ival('user_state') !== UserModel::user_state_active) {
+			$this->z->messages->add($this->z->core->t('--account-not-active--'), 'error');
+			return false;
+		}
+
 		if ($user->val('user_failed_attempts') > $this->getConfigValue('max_attempts')) {
 			$this->z->messages->add($this->z->core->t('Max. number of login attempts exceeded. Please ask for new password.'), 'error');
 			return false;
 		}
 
-		if (Self::verifyPassword($password, $user->val('user_password_hash'))) {
+		if ($this->verifyPassword($password, $user->val('user_password_hash'))) {
 			// success - create new session
 			$this->createSession($user);
 			return true;
@@ -148,7 +153,7 @@ class authModule extends zModule {
 
 		if (isset($session_id)) {
 			$this->session = new UserSessionModel($this->z->db, $session_id);
-			if (isset($this->session) && $this->session->is_loaded && Self::verifyPassword($this->session_token, $this->session->val('user_session_token_hash'))) {
+			if (isset($this->session) && $this->session->is_loaded && $this->verifyPassword($this->session_token, $this->session->val('user_session_token_hash'))) {
 				$expires = time() + $this->config['session_expire'];
 				$this->setSessionExpiration($expires);
 				$this->user = new UserModel($this->z->db, $this->session->val('user_session_user_id'));
@@ -306,11 +311,11 @@ class authModule extends zModule {
 		return sprintf('%s: %s', $this->z->core->getConfigValue('site_title'), $text);
 	}
 
-	static function hashPassword($pass) {
+	public function hashPassword($pass) {
 		return z::createHash($pass);
 	}
 
-	static function verifyPassword($pass, $hash) {
+	public function verifyPassword($pass, $hash) {
 		return z::verifyHash($pass, $hash);
 	}
 

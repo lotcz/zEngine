@@ -34,18 +34,27 @@ class calendarModule extends zModule {
 		<?php
 	}
 
-	function loadReservations($from, $to) {
+	/**
+	 * @param $from
+	 * @param $to
+	 * @return CalendarReservationModel[]
+	 */
+	function loadReservations(DateTime $from, DateTime $to): array {
 		$is_admin = $this->z->admin->isAdmin();
-		$reservations = CalendarReservationModel::select(
+		return CalendarReservationModel::select(
 			$this->z->db,
 			$is_admin ? 'view_calendar_reservations' : 'calendar_reservation',
-			'calendar_reservation_start > ? and calendar_reservation_start < ?',
+			'calendar_reservation_start >= ? and calendar_reservation_start < ?',
 			'calendar_reservation_start',
 			null,
-			[$from, $to],
+			[z::mysqlDatetime($from), z::mysqlDatetime($to)],
 			[PDO::PARAM_STR, PDO::PARAM_STR]
 		);
+	}
 
+	function loadReservationsJson(DateTime $from, DateTime $to): array {
+		$reservations = $this->loadReservations($from, $to);
+		$is_admin = $this->z->admin->isAdmin();
 		if (!$is_admin) {
 			$user_id = $this->z->auth->isAuth() ? $this->z->auth->user->ival('user_id') : 0;
 			if ($user_id) {
@@ -56,18 +65,48 @@ class calendarModule extends zModule {
 				}
 			}
 		}
+
 		return zModel::toJson($reservations);
 	}
 
-	function loadReservationById($id) {
+	function loadReservationById($id): ?CalendarReservationModel {
 		$res = new CalendarReservationModel($this->z->db, $id);
 		return $res->is_loaded ? $res : null;
 	}
 
-	function saveReservation($id, $user_id, $start, $service_id, $duration) {
+	function conflictsExists(DateTime $start, DateTime $end, int $exclude = null): bool {
+		$startOfDay = clone $start;
+		$startOfDay->setTime(0, 0);
+		$endOfDay = clone $startOfDay;
+		$endOfDay->add(new DateInterval("P1D"));
+
+		$conflicting = $this->loadReservations($startOfDay, $endOfDay);
+
+		foreach ($conflicting as $reservation) {
+			if ($exclude !== null && $reservation->ival('calendar_reservation_id') === $exclude) {
+				continue;
+			}
+			//$this->dbg($start, $end, $reservation->getStart(), $reservation->getEnd());
+			$isOutside = ($start >= $reservation->getEnd()) || ($end <= $reservation->getStart());
+			if (!$isOutside) return true;
+		}
+
+		return false;
+	}
+
+	function saveReservation(?int $id, int $user_id, DateTime $start, int $service_id, int $duration) {
 		if ($user_id !== $this->z->auth->user->ival('user_id') && !$this->z->admin->isAdmin()) {
 			throw new Exception("Access Forbidden!");
 		}
+
+		$end = clone $start;
+		$this->dbg($start, "PT{$duration}M", new DateInterval("P{$duration}M"));
+		$end = $end->add(new DateInterval("P{$duration}M"));
+
+		if ($this->conflictsExists($start, $end, $id)) {
+			throw new Exception("Conflict Exists!");
+		}
+
 		$res = null;
 		if ($id) {
 			$res = $this->loadReservationById($id);
@@ -81,5 +120,16 @@ class calendarModule extends zModule {
 		$res->set('calendar_reservation_duration', $duration);
 		$res->save();
 		return $res;
+	}
+
+	function saveReservationJson(int $user_id, object $res): CalendarReservationModel {
+		$start = z::parseDatetime($res->start);
+		return $this->saveReservation(
+			$res->id ?? null,
+			$user_id,
+			$start,
+			$res->cosmetic_service_id ?? null,
+			$res->duration ?? null
+		);
 	}
 }

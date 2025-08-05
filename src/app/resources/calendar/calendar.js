@@ -186,9 +186,13 @@ class ModeDay extends CalendarMode {
 				if (reservations.length > 0) {
 					const reservation = reservations[0];
 					z.addClass(minuteSlot, 'occupied');
-					minuteSlot.addEventListener('click', () => this.calendar.showForm(reservation));
-					if (this.calendar.adminMode || (this.calendar.user && reservation.email === this.calendar.user.email)) {
+					const owner = this.calendar.user && reservation.email === this.calendar.user.email;
+					if (this.calendar.adminMode || owner) {
+						minuteSlot.addEventListener('click', () => this.calendar.showForm(reservation));
 						z.createElement(minuteSlot, 'div', 'usr-email ps-2', reservation.email);
+					}
+					if (owner && !this.calendar.adminMode) {
+						z.addClass(minuteSlot, 'owned-reservation')
 					}
 				} else {
 					z.addClass(minuteSlot, 'available');
@@ -217,9 +221,10 @@ class ModeDay extends CalendarMode {
 }
 
 export default class Calendar {
-	modes;
 	dom;
+	modes;
 	mode;
+	user;
 	currentDay;
 	adminMode;
 	reservations = null;
@@ -334,7 +339,6 @@ export default class Calendar {
 		z.fetch(`/json/default/calendar?from=${from.toISOString()}&to=${to.toISOString()}`)
 			.then((response) => {
 				this.reservations = response.json;
-				console.log(this.reservations);
 				this.reloaded();
 			});
 	}

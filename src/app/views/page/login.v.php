@@ -15,13 +15,11 @@
 	</div>
 	<div class="form-group mt-3">
 		<div class="form-field">
-			<input name="path" id="path" value="custom" type="hidden" >
-			<button type="submit" onclick="javascript:validateLoginForm();return false;" class="btn btn-success" ><?=$this->t('Sign In') ?></button>
-		</div>
-	</div>
-	<div class="form-group mt-3">
-		<div class="form-field">
-			<a class="form-button" href="<?=$this->url('forgotten-password', $this->raw_path)?><?=(isset($_POST['email']) && strlen($_POST['email']) > 0) ? '&email=' . $_POST['email'] : '' ?>"><?= $this->t('Forgotten Password') ?></a>
+			<div class="d-flex align-items-center gap-4">
+				<button type="submit" onclick="javascript:validateLoginForm();return false;" class="btn btn-success" ><?=$this->t('Sign In') ?></button>
+				<a class="form-button" href="<?=$this->url('forgotten-password', $this->raw_path)?><?=(isset($_POST['email']) && strlen($_POST['email']) > 0) ? '&email=' . $_POST['email'] : '' ?>"><?= $this->t('Forgotten Password') ?></a>
+				<a class="form-button" href="<?=$this->url('registration', $this->raw_path)?><?=(isset($_POST['email']) && strlen($_POST['email']) > 0) ? '&email=' . $_POST['email'] : '' ?>"><?= $this->t('Register') ?></a>
+			</div>
 		</div>
 	</div>
 </form>

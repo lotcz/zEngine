@@ -282,11 +282,7 @@ class zModel {
 
 	/* static methods for working with arrays of models */
 
-	/**
-	* Return Json array
-	* @return Object
-	*/
-	static function toJson($arr) {
+	static function toJson($arr): array {
 		$result = [];
 		foreach ($arr as $model) {
 			$result[] = $model->getJson();

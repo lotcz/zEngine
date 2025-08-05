@@ -163,6 +163,10 @@
 	color: #fff;
 }
 
+.calendar .view-day .slot-body.owned-reservation {
+	background-color: green;
+}
+
 .calendar .view-day .slot-body.available:hover {
 	box-shadow: 0px 0px 4px #5172de;
 }

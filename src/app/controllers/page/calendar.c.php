@@ -23,13 +23,7 @@
 						if (!$user) {
 							$user = $this->z->auth->createUser($email, $email, $email, $email, UserModel::user_state_active, UserRoleModel::role_external);
 						}
-						$reservation = $this->z->calendar->saveReservation(
-							$res->id ?? null,
-							$user->ival('user_id'),
-							$res->start ?? null,
-							$res->cosmetic_service_id ?? null,
-							$res->duration ?? null
-						);
+						$reservation = $this->z->calendar->saveReservationJson($user->ival('user_id'), $res);
 						$json->result = $reservation->getJson();
 					// not admin
 					} else {
@@ -40,13 +34,7 @@
 						} else {
 							if ($this->z->auth->user->isActive()) {
 								if ($this->z->auth->user->get('user_email') === $email) {
-									$reservation = $this->z->calendar->saveReservation(
-										$res->id ?? null,
-										$this->z->auth->user->ival('user_id'),
-										$res->start ?? null,
-										$res->cosmetic_service_id ?? null,
-										$res->duration ?? null
-									);
+									$reservation = $this->z->calendar->saveReservationJson($this->z->auth->user->ival('user_id'), $res);
 									$json->result = $reservation->getJson();
 								} else {
 									if ($this->z->auth->emailExists($email)) {
@@ -68,7 +56,7 @@
 				} else {
 					if ($this->z->auth->emailExists($email)) {
 						$code = 401;
-						$json->message = $this->t('Přihlašte se');
+						$json->message = $this->t('Přihlašte se prosím zde');
 					} else {
 						$code = 200;
 						$user = $this->z->auth->registerUser($email, $email, $email, z::generateRandomToken(10));
@@ -85,8 +73,8 @@
 		http_response_code($code);
 		$this->setData('json', $json);
 	} else {
-		$from = z::get('from');
-		$to = z::get('to');
-		$json = $this->z->calendar->loadReservations($from, $to);
+		$from = z::parseDatetime(z::get('from'));
+		$to = z::parseDatetime(z::get('to'));
+		$json = $this->z->calendar->loadReservationsJson($from, $to);
 		$this->setData('json', $json);
 	}
