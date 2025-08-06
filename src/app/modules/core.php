@@ -225,10 +225,10 @@ class coreModule extends zModule {
 	}
 
 	public function redirectBack($fallback_url = null) {
-		if (isset($fallback_url)) {
-			$this->redirect($fallback_url);
-		} elseif ($this->return_path) {
+		if ($this->return_path) {
 			$this->redirect($this->return_path);
+		} elseif (isset($fallback_url)) {
+			$this->redirect($fallback_url);
 		} else {
 			$this->redirect($this->raw_path);
 		}

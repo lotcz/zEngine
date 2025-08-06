@@ -196,7 +196,7 @@ class z {
 	}
 
 	static function getDbType($val) {
-		if (is_int($val)) {
+		if (is_int($val) || is_bool($val)) {
 			return PDO::PARAM_INT;
 		} else {
 			return PDO::PARAM_STR;

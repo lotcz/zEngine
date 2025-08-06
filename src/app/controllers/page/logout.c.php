@@ -4,4 +4,4 @@
 		$this->z->auth->logout();
 	}
 
-	$this->redirectBack('');
+	$this->redirectBack($this->z->auth->public_login_home);

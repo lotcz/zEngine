@@ -96,7 +96,7 @@ class calendarModule extends zModule {
 		return false;
 	}
 
-	function saveReservation(?int $id, int $user_id, DateTime $start, int $service_id, int $duration) {
+	function saveReservation(?int $id, int $user_id, DateTime $start, int $service_id, int $duration, bool $whole_day) {
 		if ($user_id !== $this->z->auth->user->ival('user_id') && !$this->z->admin->isAdmin()) {
 			throw new Exception($this->z->core->t("Access Forbidden!"));
 		}
@@ -106,8 +106,11 @@ class calendarModule extends zModule {
 			throw new Exception($this->z->core->t("Invalid day!"));
 		}
 
+		if ($whole_day) {
+			$start->setTime(0,0);
+		}
 		$end = clone $start;
-		$end = $end->add(new DateInterval("PT{$duration}M"));
+		$end = $end->add(new DateInterval($whole_day ? "P{$duration}D" : "PT{$duration}M"));
 
 		if ($this->conflictsExists($start, $end, $id)) {
 			throw new Exception($this->z->core->t("Conflict Exists!"));
@@ -124,6 +127,8 @@ class calendarModule extends zModule {
 		$res->set('calendar_reservation_start', z::mysqlDatetime($start));
 		$res->set('calendar_reservation_cosmetic_service_id', $service_id);
 		$res->set('calendar_reservation_duration', $duration);
+		$res->set('calendar_reservation_whole_day', $whole_day);
+
 		$res->save();
 		return $res;
 	}
@@ -134,8 +139,9 @@ class calendarModule extends zModule {
 			$res->id ?? null,
 			$user_id,
 			$start,
-			$res->cosmetic_service_id ?? null,
-			$res->duration ?? null
+			$res->cosmetic_service_id ?? 0,
+			$res->duration ?? 1,
+			$res->whole_day ?? 0
 		);
 	}
 }

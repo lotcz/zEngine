@@ -14,7 +14,8 @@ class CalendarReservationModel extends zModel {
 
 	public function getEnd(): DateTime {
 		$duration = $this->ival('calendar_reservation_duration');
-		return $this->getStart()->add(new DateInterval("PT{$duration}M"));
+		$interval = $this->bval('calendar_reservation_whole_day') ? "P{$duration}D" : "PT{$duration}M";
+		return $this->getStart()->add(new DateInterval($interval));
 	}
 
 }

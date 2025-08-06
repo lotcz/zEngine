@@ -111,25 +111,34 @@ class ModeMonth extends CalendarMode {
 			const date = new Date(this.calendar.currentDay);
 			date.setDate(day);
 			dayOfWeek = CalendarMode.getDayOfWeek(date);
-			const slot = CalendarMode.createElement(view, 'div', 'slot-day', day);
+			const slot= CalendarMode.createElement(view, 'div', 'slot-day', day);
 			const dateNext = new Date(date);
 			dateNext.setDate(dateNext.getDate() + 1);
 			const reservations = this.calendar.getReservations(date, dateNext);
-			if (reservations.length > 0) {
-				const r9s = z.createElement(slot, 'div', 'reservations');
-				reservations.forEach((r) => z.createElement(r9s, 'div', 'reservation'));
-			}
-			if (CalendarMode.isSameDay(date, now)) {
-				z.addClass(slot, 'today');
-			}
-			if (dayOfWeek > 5) {
+			const hasWhole = reservations.some((r) => r.whole_day);
+			const isWeekend = dayOfWeek > 5;
+			const isInPast = date < CalendarMode.roundDateDay(now);
+			const isToday = CalendarMode.isSameDay(date, now);
+
+			if (isWeekend) {
 				z.addClass(slot, 'weekend');
 			} else {
-				if (date.getTime() < now.getTime()) {
+				if (isInPast) {
 					z.addClass(slot, 'past');
 				} else {
-					z.addClass(slot, 'available');
-					slot.addEventListener('click', () => this.calendar.setModeAndDay(MODE_DAY, date));
+					if (isToday) {
+						z.addClass(slot, 'today');
+					}
+					if (reservations.length > 0 && !hasWhole) {
+						const r9s = z.createElement(slot, 'div', 'reservations');
+						reservations.forEach((r) => {
+							z.createElement(r9s, 'div', 'reservation');
+						});
+					}
+					z.addClass(slot, hasWhole ? 'occupied' : 'available');
+					if (this.calendar.adminMode || !hasWhole) {
+						slot.addEventListener('click', () => this.calendar.setModeAndDay(MODE_DAY, date));
+					}
 				}
 			}
 		}
@@ -177,6 +186,11 @@ class ModeDay extends CalendarMode {
 		this.calendar.view.innerHTML = '';
 		const view = CalendarMode.createElement(this.calendar.view, 'div', 'view-day');
 		const date = new Date(this.calendar.currentDay);
+		const endDate = new Date(this.calendar.currentDay);
+		endDate.setHours(this.calendar.maxEndTime);
+		const allDayReservations = this.calendar.getReservations(date, endDate);
+		const hasWhole = allDayReservations.some((r) => r.whole_day);
+
 		for (let time = this.calendar.minStartTime; time < this.calendar.maxEndTime; time = time + 1) {
 			const slot = CalendarMode.createElement(view, 'div', 'slot d-flex flex-row');
 			const hour = CalendarMode.createElement(slot, 'div', 'slot-time p-2 text-center', this.formatSlotTime(time));
@@ -197,7 +211,7 @@ class ModeDay extends CalendarMode {
 					if (this.calendar.adminMode || owner) {
 						minuteSlot.addEventListener('click', () => this.calendar.showForm(reservation));
 						z.createElement(minuteSlot, 'div', 'usr-email ps-2', reservation.email);
-						z.createElement(minuteSlot, 'div', 'ps-2', reservation.service);
+						z.createElement(minuteSlot, 'div', 'ps-2', reservation.whole_day ? "DOVOLENÁ" : reservation.service);
 					}
 					if (owner && !this.calendar.adminMode) {
 						z.addClass(minuteSlot, 'owned-reservation')
@@ -211,7 +225,8 @@ class ModeDay extends CalendarMode {
 							start: slotDate,
 							duration: service ? service.duration_minutes : 15,
 							cosmetic_service_id: service ? service.id : null,
-							email: this.calendar.user ? this.calendar.user.email : ''
+							email: this.calendar.user ? this.calendar.user.email : '',
+							whole_day: 0
 						};
 						this.calendar.reservations.push(reservation);
 						this.render();
@@ -230,11 +245,11 @@ class ModeDay extends CalendarMode {
 
 export default class Calendar {
 	dom;
-	modes;
-	mode;
-	user;
-	currentDay;
-	adminMode;
+	modes = [new ModeMonth(this), new ModeDay(this)];
+	mode = null;
+	user = null;
+	currentDay = new Date();
+	adminMode = false;
 	reservations = null;
 	reservation = null;
 
@@ -244,8 +259,6 @@ export default class Calendar {
 	slotHeightPx = 15;
 
 	constructor(dom, admin = false, mode = MODE_MONTH, day = new Date()) {
-		this.modes = [new ModeMonth(this), new ModeDay(this)];
-
 		this.dom = dom;
 		this.adminMode = admin;
 		this.currentDay = day;
@@ -320,7 +333,8 @@ export default class Calendar {
 		return this.reservations.filter((r) => {
 			const start = new Date(r.start);
 			const end = new Date(r.start);
-			end.setMinutes(end.getMinutes() + Number(r.duration));
+			r.whole_day ? end.setDate(end.getDate() + Number(r.duration))
+				: end.setMinutes(end.getMinutes() + Number(r.duration));
 			return end.getTime() > from.getTime() && start.getTime() < to.getTime();
 		});
 	}
@@ -378,6 +392,25 @@ export default class Calendar {
 			});
 	}
 
+	wholeDayChanged() {
+		if (!(this.reservation && this.frm)) return;
+		if (this.reservation.whole_day) {
+			z.hide(this.serviceControl);
+			z.hide(this.emailControl);
+			this.durationUnitControl.innerText = 'dní';
+			this.durationInputControl.setAttribute('min', 1);
+			this.durationInputControl.setAttribute('max', 30);
+			this.durationInputControl.setAttribute('step', 1);
+			return;
+		}
+		z.show(this.serviceControl);
+		z.show(this.emailControl);
+		this.durationUnitControl.innerText = 'minut';
+		this.durationInputControl.setAttribute('min', 60 * this.slotDuration);
+		this.durationInputControl.setAttribute('max', 60 * 16 * this.slotDuration);
+		this.durationInputControl.setAttribute('step', 60 * this.slotDuration);
+	}
+
 	showFormMessage(message = '&nbsp;', style = 'light') {
 		if (!this.message) return;
 		this.message.innerHTML = '';
@@ -411,10 +444,7 @@ export default class Calendar {
 					this.hideForm();
 					this.reload();
 				} else {
-					const json = response.json;
-					const message = json.message;
-					this.showFormMessage(message, 'warning');
-					this.reservation.id = json.result.id;
+					this.showFormMessage(response.json.message, 'warning');
 				}
 			});
 	}
@@ -432,10 +462,32 @@ export default class Calendar {
 		this.hideForm();
 		this.reservation = reservation;
 		this.formWrapper = z.createElement(this.form, 'div', 'form-wrapper');
+		this.formWrapper.addEventListener('click', (e) => {
+			this.hideForm();
+			this.reload();
+		});
 		const formInner = z.createElement(this.formWrapper, 'div', 'form');
+		formInner.addEventListener('click', (e) => {
+			z.stopPropagation(e);
+		});
 		z.createElement(formInner, 'h4', 'header text-center', 'Rezervace termínu');
 		const form = z.createElement(formInner, 'form', 'pt-3 px-5');
 		this.frm = form;
+
+		if (this.adminMode) {
+			const wholeDay = z.createElement(form, 'div', 'day row mb-2');
+			z.createElement(wholeDay, 'label', 'py-1 col-sm-4 col-form-label', 'Dovolená').setAttribute('for', 'wholeDay');
+			const wdCol = z.createElement(wholeDay, 'div', 'col-sm-8');
+			const wdCheck = z.createElement(wdCol, 'input');
+			wdCheck.setAttribute('id', 'wholeDay');
+			wdCheck.setAttribute('type', 'checkbox');
+			wdCheck.checked = reservation.whole_day;
+			wdCheck.addEventListener('change', (e) => {
+				reservation.whole_day = wdCheck.checked;
+				this.wholeDayChanged();
+			});
+		}
+
 		const day = z.createElement(form, 'div', 'day row mb-2');
 		z.createElement(day, 'label', 'py-1 col-sm-4 col-form-label', 'Datum').setAttribute('for', 'date');
 		const dateCol = z.createElement(day, 'div', 'col-sm-8');
@@ -455,8 +507,9 @@ export default class Calendar {
 			}
 		});
 
-		const service = z.createElement(form, 'div', 'service row mb-2');
-		z.createElement(service, 'label', 'py-1 col-sm-4 col-form-label', 'Hlavní objednávka').setAttribute('for', 'service');
+		const service = this.serviceControl = z.createElement(form, 'div', 'service row mb-2');
+		service.setAttribute('data-z-original-display', 'flex');
+		z.createElement(service, 'label', 'py-1 col-sm-4 col-form-label', 'Procedura').setAttribute('for', 'service');
 		const serviceCol = z.createElement(service, 'div', 'col-sm-8');
 		const select = z.createElement(serviceCol, 'select', 'form-select');
 		select.setAttribute('id', 'service');
@@ -484,10 +537,10 @@ export default class Calendar {
 		}
 
 		const duration = z.createElement(form, 'div', 'duration row mb-2');
-		z.createElement(duration, 'label', 'py-1 col-sm-4 col-form-label', 'Délka rezervace').setAttribute('for', 'duration');
+		z.createElement(duration, 'label', 'py-1 col-sm-4 col-form-label', 'Délka').setAttribute('for', 'duration');
 		const durationCol = z.createElement(duration, 'div', 'col-sm-8');
 		const durationGrp = z.createElement(durationCol, 'div', 'input-group');
-		const inp = z.createElement(durationGrp, 'input', 'form-control');
+		const inp = this.durationInputControl = z.createElement(durationGrp, 'input', 'form-control');
 		inp.setAttribute('id', 'duration');
 		inp.setAttribute('name', 'duration');
 		inp.setAttribute('type', 'number');
@@ -496,12 +549,13 @@ export default class Calendar {
 		inp.setAttribute('step', 60 * this.slotDuration);
 		inp.setAttribute('value', reservation.duration);
 		inp.addEventListener('change', (e) => {
-			reservation.duration = e.target.value;
+			reservation.duration = Number(e.target.value);
 			this.mode.render();
 		});
-		const durationTxt = z.createElement(durationGrp, 'span', 'input-group-text', 'minut');
+		this.durationUnitControl = z.createElement(durationGrp, 'span', 'input-group-text', 'minut');
 
-		const email = z.createElement(form, 'div', 'email row');
+		const email = this.emailControl = z.createElement(form, 'div', 'email row');
+		email.setAttribute('data-z-original-display', 'flex');
 		z.createElement(email, 'label', 'py-1 col-sm-4 col-form-label', 'Email').setAttribute('for', 'email');
 		const emailCol = z.createElement(email, 'div', 'col-sm-8');
 		const inpem = z.createElement(emailCol, 'input', 'form-control');
@@ -554,6 +608,7 @@ export default class Calendar {
 			() => this.saveForm()
 		);
 
+		this.wholeDayChanged();
 		this.showFormMessage();
 	}
 

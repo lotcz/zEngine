@@ -63,6 +63,7 @@
 	background-color: #fff;
 	border-radius: 10px;
 	padding: 20px;
+	min-width: 600px;
 }
 .calendar .form-wrapper .form h4 {
 	padding-top: 0;
@@ -95,6 +96,16 @@
 	background-color: #1e4d1e;
 	border-radius: 4px;
 	margin-right: 2px;
+}
+
+.calendar .view-month .slot-day .reservations .reservation.vacation {
+	width: auto;
+	height: auto;
+	background-color: brown;
+	color: white;
+	font-size: 12px;
+	padding-left: 2px;
+	padding-right: 2px;
 }
 
 .calendar .view-month .slot-day.label {
