@@ -49,11 +49,11 @@
 	$language_data['To activate your account, click this <a href="%s">link</a>.'] = 'Pro aktivaci Vašeho účtu klikněte prosím na tento <a href="%s">odkaz</a>.';
 	$language_data['Account Activation'] = 'Aktivace účtu';
 	$language_data['Your link seems to be invalid.'] = 'Váš odkaz je neplatný.';
-	$language_data['Your account was successfully activated. '] = 'Váš účet byl úspěšně aktivován.';
+	$language_data['Your account was successfully activated.'] = 'Váš účet byl úspěšně aktivován.';
 	$language_data['Login unsuccessful!'] = 'Přihlášení bylo neúspěšné!';
 	$language_data['E-mail address not found!'] = 'E-mailová adresa nenalezena!';
-	$language_data["To reset your password, visit following link:\r\n %s?user=%s&reset_token=%s.\r\nThis link is only valid for %d days."] =
-		"Pro změnu hesla klikněte na tento odkaz:\r\n %s?user=%s&reset_token=%s.\r\nOdkaz je platný do dobu %d dnů.";
+	$language_data["To reset your password, visit following link"] = "Pro změnu hesla klikněte na tento odkaz:";
+	$language_data["This link is only valid for %d days."] = "Odkaz je platný po dobu %d dnů.";
 	$language_data['An e-mail was sent to your address with reset password instructions.'] = 'Na Vaši emailovou adresu jsme odeslali email s instrukcemi pro obnovení hesla.';
 	$language_data['An e-mail was already sent to your address with reset password instructions.'] = 'Na Vaši emailovou adresu jsme již odeslali email s instrukcemi pro obnovení hesla.';
 	$language_data['Enter your new password.'] = 'Vložte Vaše nové heslo.';

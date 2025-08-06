@@ -8,7 +8,7 @@ require_once __DIR__ . '/../models/session.m.php';
 */
 class authModule extends zModule {
 
-	public array $depends_on = ['resources', 'db', 'i18n', 'cookies', 'messages', 'security'];
+	public array $depends_on = ['resources', 'db', 'i18n', 'cookies', 'messages', 'security', 'emails', 'forms'];
 
 	private $authentication_checked = false;
 
@@ -274,6 +274,54 @@ class authModule extends zModule {
 		return $user;
 	}
 
+	public function sendRegistrationEmail($user, $activation_token): EmailModel {
+		$subject = $this->z->emails->getEmailSubject($this->z->core->t('Registration'));
+		$email = $user->val('user_email');
+		$activation_link = sprintf('%s?email=%s&activation_token=%s', $this->z->core->url('activate'), $email, $activation_token);
+		$thank_you = $this->z->core->t('Thank you for your registration on our website.');
+		$name_label = $this->z->core->t('Full name');
+		$name = $user->val('user_name');
+		$email_label = $this->z->core->t('E-mail');
+		$link1 = $this->z->core->t('To activate your account, click this <a href="%s">link</a>.', $activation_link);
+		$link2 = $this->z->core->t('If you forget your password, you can reset it <a href="%s">here</a>.', $this->z->core->url('reset-password'));
+
+		$body = "<div>
+			<p>$thank_you</p>
+			<p>$name_label: $name</p>
+			<p>$email_label: $email</p>
+			<p>$link1</p>
+			<p>$link2</p>
+		";
+
+		return $this->z->emails->sendHtmlBody($email, $subject, $body);
+	}
+
+	public function sendForgottenPasswordEmail($user, $reset_token): EmailModel {
+		$link = sprintf('%s?email=%s&reset_token=%s', $this->z->core->url('reset-password'), $user->val('user_email'), $reset_token);
+		$link_label = $this->z->core->t("Reset Password");
+		$line1 = $this->z->core->t("To reset your password, visit this link:");
+		$line2 = $this->z->core->t("This link is only valid for %d days.", 7);
+		$subject = $this->z->emails->getEmailSubject($this->z->core->t('Forgotten Password'));
+		$email = $user->val('user_email');
+
+		$body = "<div>
+			<p>$line1 <a href=\"$link\">$link_label</a>.</p>
+			<p>$line2</p>
+		";
+
+		return $this->z->emails->sendHtmlBody($email, $subject, $body);
+	}
+
+	public function resetPassword(UserModel $user) {
+		$reset_token = $this->generateResetPasswordToken();
+		$expires = time() + $this->getConfigValue('reset_password_expires');
+		$user->set('user_reset_password_hash', $this->hashPassword($reset_token));
+		$user->set('user_reset_password_expires', z::mysqlTimestamp($expires));
+		$user->save();
+
+		$this->sendForgottenPasswordEmail($user, $reset_token);
+	}
+
 	/**
 	* Create a user account and send activation email. Used on user registration.
 	* @return UserModel
@@ -296,9 +344,7 @@ class authModule extends zModule {
 		$user->data['user_reset_password_expires'] = z::mysqlTimestamp($expires);
 		$user->save();
 
-		$subject = $this->getEmailSubject($this->z->core->t('Registration'));
-		$activation_link = sprintf('%s?email=%s&activation_token=%s', $this->z->core->url('activate'), $email, $activation_token);
-		$this->z->emails->renderAndSend($email, $subject, 'registration', ['user' => $user, 'activation_link' => $activation_link]);
+		$this->sendRegistrationEmail($user, $activation_token);
 		$this->z->messages->success($this->z->core->t('Thank you for your registration on our website.'));
 		$this->z->messages->warning($this->z->core->t('An e-mail was sent to your address with account activation instructions.'));
 
@@ -306,10 +352,6 @@ class authModule extends zModule {
 	}
 
 	/* EMAILS */
-
-	public function getEmailSubject($text) {
-		return sprintf('%s: %s', $this->z->core->getConfigValue('site_title'), $text);
-	}
 
 	public function hashPassword($pass) {
 		return z::createHash($pass);

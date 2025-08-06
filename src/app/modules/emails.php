@@ -8,7 +8,15 @@ require_once __DIR__ . '/../classes/send-email-async-job.php';
 */
 class emailsModule extends zModule {
 
-	public function sendEmail($to, $subject, $body, $content_type, $from = null, $reply_to = null) {
+	static function encodeEmailSubject($subject): string {
+		return '=?utf-8?B?' . base64_encode($subject) . '?=';
+	}
+
+	public function getEmailSubject($text) {
+		return sprintf('%s: %s', $this->z->core->getConfigValue('site_title'), $text);
+	}
+
+	public function sendEmailImmediately(string $to, string $subject, string $body, string $content_type, ?string $from = null, ?string $reply_to = null) {
 		if ($from == null) {
 			$from = $this->getConfigValue('from_address');
 		}
@@ -29,36 +37,46 @@ class emailsModule extends zModule {
 		);
 	}
 
-	public function sendPlain($to, $subject, $body, $from = null) {
-		$this->addEmailToQueue($to, $subject,'text/plain', $body, $from);
-	}
-
-	public function sendHTML($to, $subject, $body, $from = null) {
-		$this->addEmailToQueue($to, $subject, 'text/html', $body, $from);
-	}
-
-	public function renderAndSend($to, $subject, $template_name, $data, $from = null) {
-		$email_body = $this->renderEmailBody($template_name, $data);
-		$this->sendHTML($to, $subject, $email_body, $from);
-	}
-
-	public function renderEmailBody($template_name, $email_data, $master_template_name = 'master') {
-		$master_template_path = $this->z->core->app_dir . 'views/email/' . $master_template_name . '.v.php';
-		if (!file_exists($master_template_path)) {
-			$master_template_path = __DIR__ . '/../views/email/' . $master_template_name . '.v.php';
+	public function addEmailToQueue(string $to, string $subject, string $content_type, string $body, ?string $from = null): EmailModel {
+		if ($from == null) {
+			$from = $this->getConfigValue('from_address');
 		}
-		$template_path = $this->z->core->app_dir . 'views/email/' .  $template_name . '.v.php';
-		if (!file_exists($template_path)) {
-			$template_path = __DIR__ . '/../views/email/' .  $template_name . '.v.php';
-		}
-		$data = $email_data;
-		ob_start();
-		include $template_path;
-		$body = ob_get_clean();
-		include $master_template_path;
-		$master = ob_get_clean();
-		return $master;
+		$email = new EmailModel($this->z->db);
+		$email->set('email_to', $to);
+		$email->set('email_from', $from);
+		$email->set('email_subject', $subject);
+		$email->set('email_content_type', $content_type);
+		$email->set('email_body', $body);
+		$email->save();
+		return $email;
 	}
+
+	public function sendEmail(string $to, string $subject, string $body, string $content_type, ?string $from = null): EmailModel {
+		return $this->addEmailToQueue($to, $subject, $content_type, $body, $from);
+	}
+
+	public function sendPlain(string $to, string $subject, string $body, ?string $from = null): EmailModel {
+		return $this->addEmailToQueue($to, $subject,'text/plain', $body, $from);
+	}
+
+	public function sendHtml(string $to, string $subject, string $body, ?string $from = null): EmailModel {
+		return $this->addEmailToQueue($to, $subject, 'text/html', $body, $from);
+	}
+
+	public function sendHtmlBody(string $to, string $subject, string $body, ?string $from = null): EmailModel {
+		$email = "<!DOCTYPE html>
+		<html>
+			<head>
+				<meta charset=\"utf-8\">
+			</head>
+			<body>
+				$body
+			</body>
+		</html>";
+		return $this->sendHtml($to, $subject, $email, $from);
+	}
+
+	/* ASYNC JOB METHODS */
 
 	public function getUnsentEmailsCount() {
 		return $this->z->db->getRecordCount('email', 'email_sent = 0 and email_send_date <= CURRENT_TIMESTAMP()');
@@ -88,24 +106,6 @@ class emailsModule extends zModule {
 			[z::mysqlDatetime($threshold->getTimestamp())],
 			[PDO::PARAM_STR]
 		);
-	}
-
-	public function addEmailToQueue($to, $subject, $content_type, $body, $from = null) {
-		if ($from == null) {
-			$from = $this->getConfigValue('from_address');
-		}
-		$email = new EmailModel($this->z->db);
-		$email->set('email_to', $to);
-		$email->set('email_from', $from);
-		$email->set('email_subject', $subject);
-		$email->set('email_content_type', $content_type);
-		$email->set('email_body', $body);
-		$email->save();
-		return $email;
-	}
-
-	static function encodeEmailSubject($subject) {
-		return '=?utf-8?B?' . base64_encode($subject) . '?=';
 	}
 
 	public function cleanSentEmails($days = null) {

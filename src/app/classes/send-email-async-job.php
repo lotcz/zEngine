@@ -52,7 +52,7 @@ class SendEmailAsyncJob extends AsyncJob {
 
 	public function processItem(zModel $email): void {
 		$to = $email->val('email_to');
-		$this->emails->sendEmail(
+		$this->emails->sendEmailImmediately(
 			$to,
 			$email->val('email_subject'),
 			$email->val('email_body'),
