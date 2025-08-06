@@ -103,7 +103,7 @@ class adminModule extends zModule {
 			}
 
 			// SUPERUSER - standard admin menu
-			if ($this->z->auth->isAdmin()) {
+			if ($this->z->auth->isSuperUser()) {
 				$submenu = $menu->addRightSubmenu('Administration');
 
 				$submenu->addItem('admin/users', 'External Users');
@@ -316,7 +316,7 @@ class adminModule extends zModule {
 	}
 
 	public function isAuth() {
-		return $this->z->auth->isAuth();
+		return $this->z->auth->hasAnyRole();
 	}
 
 	public function isAdmin() {

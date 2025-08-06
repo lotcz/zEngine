@@ -438,7 +438,9 @@ export default class Calendar {
 
 	saveForm() {
 		this.showLoading();
-		z.fetch('/json/default/calendar', this.reservation, 'POST')
+		const reservation = {...this.reservation};
+		reservation.start = z.getDateTimeLocalVal(reservation.start);
+		z.fetch('/json/default/calendar', reservation, 'POST')
 			.then((response) => {
 				if (response.status === 200) {
 					this.hideForm();

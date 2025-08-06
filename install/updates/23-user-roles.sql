@@ -45,3 +45,10 @@ CREATE VIEW view_calendar_reservations AS
 	FROM `calendar_reservation` cr
 	LEFT OUTER JOIN `user` u ON (u.user_id = cr.calendar_reservation_user_id)
 	LEFT OUTER JOIN `view_cosmetic_services` cs ON (cs.cosmetic_service_id = cr.calendar_reservation_cosmetic_service_id);
+
+-- kosmetika.view_images source
+
+CREATE VIEW `view_images` AS
+select *
+from `image` `i`
+left join `gallery` `g` on (`i`.`image_gallery_id` = `g`.`gallery_id`);

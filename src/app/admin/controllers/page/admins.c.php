@@ -1,6 +1,6 @@
 <?php
 
-	$this->z->admin->checkIsSuperuser();
+	$this->z->admin->checkIsSuperUser();
 
 	$this->setPageTitle('Administrators');
 	$this->renderAdminTable(

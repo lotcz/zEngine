@@ -119,10 +119,8 @@ class UserModel extends zModel {
 					return true;
 				}
 			}
-			return false;
-		} else {
-			return true;
 		}
+		return !$this->isExternal();
 	}
 
 	public function isExternal() {
