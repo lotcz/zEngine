@@ -34,6 +34,11 @@
 			'type' => 'text'
 		],
 		[
+			'name' => 'user_phone',
+			'label' => 'Phone',
+			'type' => 'text'
+		],
+		[
 			'name' => 'user_user_role_id',
 			'label' => 'Role',
 			'type' => 'select',

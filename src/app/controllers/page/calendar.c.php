@@ -10,7 +10,7 @@
 		try {
 			$res = json_decode(z::getRequestBody());
 			$email = property_exists($res, 'email') ? z::trim($res->email) : '';
-			$this->requireModule('forms');
+
 			if (!zForm::validate_email($email)) {
 				$code = 400;
 				$json->message = $this->t('Invalid email address!');
@@ -22,7 +22,7 @@
 					if ($this->z->admin->isAdmin()) {
 						$user = $this->z->auth->loadUserByLoginOrEmail($email);
 						if (!$user) {
-							$user = $this->z->auth->createUser($email, $email, $email, $email, UserModel::user_state_active, UserRoleModel::role_external);
+							$user = $this->z->auth->createUser(null, null, $email, null, $email, UserModel::user_state_active, UserRoleModel::role_external);
 						}
 						$reservation = $this->z->calendar->saveReservationJson($user->ival('user_id'), $res);
 						$json->result = $reservation->getJson();
@@ -31,8 +31,8 @@
 					} else {
 						if ($this->z->auth->user->get('user_email') === $email) {
 							$reservation = $this->z->calendar->saveReservationJson($this->z->auth->user->ival('user_id'), $res);
-							$json->message = $this->t('Rezervace byla uložena.');
 							$json->result = $reservation->getJson();
+							$json->message = $this->t('Rezervace byla uložena.');
 						} else {
 							$code = 401;
 							$json->message = $this->t('Access Forbidden');

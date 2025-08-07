@@ -74,6 +74,7 @@
 	$language_data['Users'] = 'Uživatelé';
 	$language_data['External Users'] = 'Externí uživatelé';
 	$language_data['User'] = 'Uživatel';
+	$language_data['Phone'] = 'Telefon';
 	$language_data['Administrators'] = 'Správci';
 	$language_data['Last Visit'] = 'Poslední návštěva';
 	$language_data['Failed Attempts'] = 'Neúspěsné pokusy';

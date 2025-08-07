@@ -6,7 +6,7 @@ class CalendarReservationModel extends zModel {
 
 	public $table_name = 'calendar_reservation';
 
-	public $ignored_columns = ['calendar_reservation_end'];
+	public $ignored_columns = ['calendar_reservation_end', 'email', 'phone', 'name', 'service'];
 
 	public function getStart(): DateTime {
 		return new DateTime($this->val('calendar_reservation_start'));

@@ -1,0 +1,12 @@
+ALTER TABLE calendar_reservation ADD COLUMN calendar_reservation_note text;
+ALTER TABLE calendar_reservation ADD COLUMN calendar_reservation_creation_notification_sent bool DEFAULT false;
+ALTER TABLE calendar_reservation ADD COLUMN calendar_reservation_incoming_notification_sent bool DEFAULT false;
+
+CREATE INDEX idx_calendar_reservation_creation_notification_sent
+	ON calendar_reservation (calendar_reservation_creation_notification_sent);
+
+CREATE INDEX idx_calendar_reservation_incoming_notification_sent
+	ON calendar_reservation (calendar_reservation_incoming_notification_sent);
+
+ALTER TABLE user ADD COLUMN `user_phone` VARCHAR(100);
+

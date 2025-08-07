@@ -4,10 +4,14 @@ require_once __DIR__ . '/../models/calendar_reservation.m.php';
 
 class calendarModule extends zModule {
 
-	public array $depends_on = ['resources'];
+	public array $depends_on = ['resources', 'forms', 'i18n', 'emails'];
+
+	public $notify_email;
+	public $from_address;
 
 	public function onEnabled() {
-
+		$this->notify_email = $this->getConfigValue('notify_email');
+		$this->from_address = $this->getConfigValue('from_address');
 	}
 
 	function onBeforeRender() {
@@ -96,7 +100,7 @@ class calendarModule extends zModule {
 		return false;
 	}
 
-	function saveReservation(?int $id, int $user_id, DateTime $start, int $service_id, int $duration, bool $whole_day) {
+	function saveReservation(?int $id, int $user_id, DateTime $start, int $service_id, int $duration, bool $whole_day, ?string $note) {
 		if ($user_id !== $this->z->auth->user->ival('user_id') && !$this->z->admin->isAdmin()) {
 			throw new Exception($this->z->core->t("Access Forbidden!"));
 		}
@@ -128,6 +132,7 @@ class calendarModule extends zModule {
 		$res->set('calendar_reservation_cosmetic_service_id', $service_id);
 		$res->set('calendar_reservation_duration', $duration);
 		$res->set('calendar_reservation_whole_day', $whole_day);
+		$res->set('calendar_reservation_note', $note);
 
 		$res->save();
 		return $res;
@@ -141,12 +146,18 @@ class calendarModule extends zModule {
 			$start,
 			$res->cosmetic_service_id ?? 0,
 			$res->duration ?? 1,
-			$res->whole_day ?? 0
+			$res->whole_day ?? 0,
+			$res->note ?? null
 		);
 	}
 
-	function onReservationCreated() {
-		//send email to customer
-		//send email to admin
+	function getReservationSummary(CalendarReservationModel $reservation, $admin = false): string {
+		$units = $reservation->bval('calendar_reservation_whole_day') ? 'dní' : 'minut';
+		return "<div>
+			<div>Datum: {$this->z->core->formatDate($reservation->dtval('calendar_reservation_start'))}</div>
+			<div>Procedura: {$reservation->val('service')}</div>
+			<div>Trvání: {$reservation->ival('calendar_reservation_duration')} $units</div>
+			<div>Poznámka: {$reservation->val('calendar_reservation_note')}</div>
+		</div>";
 	}
 }

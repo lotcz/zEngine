@@ -209,6 +209,7 @@ class ModeDay extends CalendarMode {
 						minuteSlot.addEventListener('click', () => this.calendar.showForm(reservation));
 						z.createElement(minuteSlot, 'div', 'usr-email ps-2', reservation.email);
 						z.createElement(minuteSlot, 'div', 'ps-2', reservation.whole_day ? "DOVOLENÁ" : reservation.service);
+						z.createElement(minuteSlot, 'div', 'ps-2', reservation.note);
 					}
 					if (owner && !this.calendar.adminMode) {
 						z.addClass(minuteSlot, 'owned-reservation')
@@ -400,7 +401,8 @@ export default class Calendar {
 		if (!(this.reservation && this.frm)) return;
 		if (this.reservation.whole_day) {
 			z.hide(this.serviceControl);
-			z.hide(this.emailControl);
+			z.hide(this.nameControl);
+			z.hide(this.noteControl);
 			this.durationUnitControl.innerText = 'dní';
 			this.durationInputControl.setAttribute('min', 1);
 			this.durationInputControl.setAttribute('max', 30);
@@ -408,14 +410,15 @@ export default class Calendar {
 			return;
 		}
 		z.show(this.serviceControl);
-		z.show(this.emailControl);
+		z.show(this.nameControl);
+		z.show(this.noteControl);
 		this.durationUnitControl.innerText = 'minut';
 		this.durationInputControl.setAttribute('min', 60 * this.slotDuration);
 		this.durationInputControl.setAttribute('max', 60 * 16 * this.slotDuration);
 		this.durationInputControl.setAttribute('step', 60 * this.slotDuration);
 	}
 
-	showFormMessage(message = '&nbsp;', style = 'light') {
+	showFormMessage(message = '', style = 'light') {
 		if (!this.message) return;
 		this.message.innerHTML = '';
 		z.createElement(this.message, 'div', `alert alert-${style}`, message);
@@ -533,7 +536,7 @@ export default class Calendar {
 		this.frm = form;
 
 		if (this.adminMode) {
-			const wholeDay = z.createElement(form, 'div', 'day row mb-2');
+			const wholeDay = z.createElement(form, 'div', 'day row mb-1');
 			z.createElement(wholeDay, 'label', 'py-1 col-sm-4 col-form-label', 'Dovolená').setAttribute('for', 'wholeDay');
 			const wdCol = z.createElement(wholeDay, 'div', 'col-sm-8');
 			const wdCheck = z.createElement(wdCol, 'input');
@@ -547,7 +550,7 @@ export default class Calendar {
 			});
 		}
 
-		const day = z.createElement(form, 'div', 'day row mb-2');
+		const day = z.createElement(form, 'div', 'day row mb-1');
 		z.createElement(day, 'label', 'py-1 col-sm-4 col-form-label', 'Datum').setAttribute('for', 'date');
 		const dateCol = z.createElement(day, 'div', 'col-sm-8');
 		const date = z.createElement(dateCol, 'input', 'form-control');
@@ -567,7 +570,7 @@ export default class Calendar {
 			this.formChanged();
 		});
 
-		const service = this.serviceControl = z.createElement(form, 'div', 'service row mb-2');
+		const service = this.serviceControl = z.createElement(form, 'div', 'service row mb-1');
 		service.setAttribute('data-z-original-display', 'flex');
 		z.createElement(service, 'label', 'py-1 col-sm-4 col-form-label', 'Procedura').setAttribute('for', 'service');
 		const serviceCol = z.createElement(service, 'div', 'col-sm-8');
@@ -597,7 +600,7 @@ export default class Calendar {
 			});
 		}
 
-		const duration = z.createElement(form, 'div', 'duration row mb-2');
+		const duration = z.createElement(form, 'div', 'duration row mb-1');
 		z.createElement(duration, 'label', 'py-1 col-sm-4 col-form-label', 'Trvání').setAttribute('for', 'duration');
 		const durationCol = z.createElement(duration, 'div', 'col-sm-8');
 		const durationGrp = z.createElement(durationCol, 'div', 'input-group');
@@ -616,16 +619,22 @@ export default class Calendar {
 		});
 		this.durationUnitControl = z.createElement(durationGrp, 'span', 'input-group-text', 'minut');
 
-		const email = this.emailControl = z.createElement(form, 'div', 'email row');
-		email.setAttribute('data-z-original-display', 'flex');
-		z.createElement(email, 'label', 'py-1 col-sm-4 col-form-label', 'Email').setAttribute('for', 'email');
-		const emailCol = z.createElement(email, 'div', 'col-sm-8');
-		const inpem = z.createElement(emailCol, 'input', 'form-control');
-		inpem.setAttribute('id', 'email');
-		inpem.setAttribute('type', 'email');
-		inpem.setAttribute('value', reservation.email);
-		inpem.addEventListener('change', (e) => {
-			reservation.email = e.target.value;
+		if (this.adminMode) {
+			const name = this.nameControl = z.createElement(form, 'div', 'name row mb-1');
+			name.setAttribute('data-z-original-display', 'flex');
+			z.createElement(name, 'label', 'py-1 col-sm-4 col-form-label', 'Zákazník');
+			const nameCol = z.createElement(name, 'div', 'col-sm-8 py-1');
+			z.createElement(nameCol, 'div', 'align-items-center small', `${reservation.name || ''} ${reservation.email || ''} ${reservation.phone || ''}`);
+		}
+
+		const note = this.noteControl = z.createElement(form, 'div', 'note row mb-1');
+		note.setAttribute('data-z-original-display', 'flex');
+		z.createElement(note, 'label', 'py-1 col-sm-4 col-form-label', 'Poznámka').setAttribute('for', 'name');
+		const noteCol = z.createElement(note, 'div', 'col-sm-8');
+		const inpnot = z.createElement(noteCol, 'textarea', 'form-control', reservation.note);
+		inpnot.setAttribute('id', 'note');
+		inpnot.addEventListener('change', (e) => {
+			reservation.note = e.target.value;
 			this.formChanged();
 		});
 

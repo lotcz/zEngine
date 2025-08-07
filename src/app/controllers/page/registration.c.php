@@ -1,18 +1,19 @@
 <?php
+
 	$this->setPageTitle('Registration');
-	$this->requireModule('forms');
 
 	if ($this->z->auth->isAuth() && !$this->z->auth->isAnonymous()) {
 		$this->redirect('profile');
 	} elseif (z::isPost()) {
-
 		$full_name = z::xssafe(z::get('full_name'));
-		$email = trim(strtolower(z::get('email')));
+		$email = z::trim(z::get('email'));
+		$phone = z::trim(z::get('phone'));
 		$password = z::get('password');
 		$password_confirm = z::get('password_confirm');
 
 		// validate email and password
 		if ($this->z->forms->fieldValidation('email', $email) && $this->z->auth->isValidPassword($password)) {
+			$email = strtolower($email);
 			if ($password == $password_confirm) {
 				// check if email exists
 				$existing_user = new UserModel($this->z->db);
@@ -20,7 +21,7 @@
 				if ($existing_user->is_loaded) {
 					$this->z->messages->error($this->t('This email is already used!'));
 				} else {
-					$this->z->auth->registerUser($full_name, null, $email, $password);
+					$this->z->auth->registerUser($full_name, null, $email, $phone, $password);
 				}
 			} else {
 				$this->z->messages->error($this->t('Passwords don\'t match.'));

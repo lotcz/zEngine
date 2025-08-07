@@ -6,6 +6,7 @@ CREATE TABLE `user` (
   `user_email` VARCHAR(50),
   `user_login` VARCHAR(50),
   `user_name` VARCHAR(100),
+  `user_phone` VARCHAR(100),
   `user_password_hash` VARCHAR(255) NULL,
   `user_failed_attempts` INT NOT NULL DEFAULT 0,
   `user_last_access` TIMESTAMP,

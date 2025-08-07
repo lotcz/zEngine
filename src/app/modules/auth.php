@@ -63,7 +63,7 @@ class authModule extends zModule {
 	}
 
 	public function createAnonymousSession() {
-		$user = $this->createUser($this->z->core->t('Anonymous'), null, null, null, UserModel::user_state_anonymous, UserRoleModel::role_external);
+		$user = $this->createUser($this->z->core->t('Anonymous'), null, null, null, null,UserModel::user_state_anonymous, UserRoleModel::role_external);
 		$this->createSession($user);
 	}
 
@@ -248,11 +248,12 @@ class authModule extends zModule {
 	* Create user account.
 	* @return UserModel
 	*/
-	public function createUser($full_name, $login, $email, $password, $state, $role) {
+	public function createUser($full_name, $login, $email, $phone, $password, $state, $role) {
 		$user = new UserModel($this->z->db);
 		$user->data['user_name'] = $full_name;
 		$user->data['user_login'] = $login;
 		$user->data['user_email'] = $email;
+		$user->data['user_phone'] = $phone;
 		$user->data['user_state'] = $state;
 		$user->data['user_password_hash'] = $this->hashPassword($password);
 		$user->data['user_user_role_id'] = $role;
@@ -270,7 +271,7 @@ class authModule extends zModule {
 	* @return UserModel
 	*/
 	public function createActiveUser($full_name, $login, $email, $password) {
-		$user = $this->createUser($full_name, $login, $email, $password, UserModel::user_state_active, UserRoleModel::role_superuser);
+		$user = $this->createUser($full_name, $login, $email, null, $password, UserModel::user_state_active, UserRoleModel::role_superuser);
 		return $user;
 	}
 
@@ -326,17 +327,19 @@ class authModule extends zModule {
 	* Create a user account and send activation email. Used on user registration.
 	* @return UserModel
 	*/
-	public function registerUser($full_name, $login, $email, $password) {
+	public function registerUser($full_name, $login, $email, $phone, $password) {
 		if ($this->emailExists($email)) {
 			throw new Exception("Email $email already exists!");
 		}
 		if ($this->isAuth() && $this->user->isAnonymous()) {
 			$user = $this->user;
+			$user->data->set('user_name', $full_name);
+			$user->data->set('user_phone', $phone);
 			$user->data->set('user_email', $email);
 			$user->data->set('user_state', UserModel::user_state_waiting_for_activation);
 			$user->save();
 		} else {
-			$user = $this->createUser($full_name, $login, $email, $password, UserModel::user_state_waiting_for_activation, UserRoleModel::role_external);
+			$user = $this->createUser($full_name, $login, $email, $phone, $password, UserModel::user_state_waiting_for_activation, UserRoleModel::role_external);
 		}
 		$activation_token = $this->generateAccountActivationToken();
 		$user->data['user_reset_password_hash'] = $this->hashPassword($activation_token);
