@@ -15,8 +15,9 @@
 				$code = 400;
 				$json->message = $this->t('Invalid email address!');
 			} else {
+				$is_valid_user = $this->z->auth->isAuth() && $this->z->auth->user->isActive();
 				// AUTH
-				if ($this->z->auth->isAuth()) {
+				if ($is_valid_user) {
 					// admin
 					if ($this->z->admin->isAdmin()) {
 						$user = $this->z->auth->loadUserByLoginOrEmail($email);
@@ -25,48 +26,24 @@
 						}
 						$reservation = $this->z->calendar->saveReservationJson($user->ival('user_id'), $res);
 						$json->result = $reservation->getJson();
-						$json->message = $this->t('Your reservation was saved.');
+						$json->message = $this->t('Rezervace byla uložena.');
 					// not admin
 					} else {
-						if ($this->z->auth->isAnonymous()) {
-							$code = 200;
-							$this->z->auth->registerUser($email, $email, $email, z::generateRandomToken(10));
-							$json->message = $this->t('An e-mail was sent to your address with account activation instructions.');
+						if ($this->z->auth->user->get('user_email') === $email) {
+							$reservation = $this->z->calendar->saveReservationJson($this->z->auth->user->ival('user_id'), $res);
+							$json->message = $this->t('Rezervace byla uložena.');
+							$json->result = $reservation->getJson();
 						} else {
-							if ($this->z->auth->user->isActive()) {
-								if ($this->z->auth->user->get('user_email') === $email) {
-									$reservation = $this->z->calendar->saveReservationJson($this->z->auth->user->ival('user_id'), $res);
-									$json->result = $reservation->getJson();
-								} else {
-									if ($this->z->auth->emailExists($email)) {
-										$code = 401;
-										$json->message = $this->t('Přihlašte se');
-									} else {
-										$code = 403;
-										$json->result = $this->z->auth->user->get('user_email');
-										$json->message = $this->t('Již máte registraci pod jiným emailem.');
-									}
-								}
-							} else {
-								$code = 400;
-								$json->message = $this->t('An e-mail was sent to your address with account activation instructions.');
-							}
+							$code = 401;
+							$json->message = $this->t('Access Forbidden');
 						}
 					}
 				// NOT AUTH
 				} else {
-					if ($this->z->auth->emailExists($email)) {
-						$code = 401;
-						$json->message = $this->t('Přihlašte se prosím zde');
-					} else {
-						$code = 200;
-						$user = $this->z->auth->registerUser($email, $email, $email, z::generateRandomToken(10));
-						$this->z->auth->createSession($user);
-						$json->message = $this->t('An e-mail was sent to your address with account activation instructions.');
-					}
+					$code = 401;
+					$json->message = $this->t('Access Forbidden');
 				}
 			}
-
 		} catch (Exception $e) {
 			$code = 500;
 			$json->message = $e->getMessage();

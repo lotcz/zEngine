@@ -14,8 +14,7 @@
 		if (!($user->is_loaded && $token_valid)) {
 			$this->message('Your link seems to be invalid.', 'error');
 		} else {
-			$token_expired = $user->val('user_reset_password_expires') < z::mysqlTimestamp(time());
-			if ($token_expired) {
+			if ($user->resetTokenExpired()) {
 				$message = $this->t('Your activation link has expired. Ask for <a href="%s">new password</a>.', $this->url('reset-password'));
 				$this->z->messages->error($message);
 			} else {

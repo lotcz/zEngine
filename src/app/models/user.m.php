@@ -28,16 +28,20 @@ class UserModel extends zModel {
 		return $this->val('user_login', $this->val('user_email'));
 	}
 
-	public function isAnonymous() {
-		return ($this->ival('user_state') == Self::user_state_anonymous);
+	public function isAnonymous(): bool {
+		return ($this->ival('user_state') === Self::user_state_anonymous);
 	}
 
-	public function isWaitingForActivation() {
-		return ($this->ival('user_state') == Self::user_state_waiting_for_activation);
+	public function isWaitingForActivation(): bool {
+		return ($this->ival('user_state') === Self::user_state_waiting_for_activation);
+	}
+
+	public function resetTokenExpired(): bool {
+		return $this->val('user_reset_password_expires') < z::mysqlTimestamp(time());
 	}
 
 	public function isActive() {
-		return ($this->ival('user_state') == Self::user_state_active);
+		return ($this->ival('user_state') === Self::user_state_active);
 	}
 
 	public function getStatusLabel() {

@@ -144,4 +144,9 @@ class calendarModule extends zModule {
 			$res->whole_day ?? 0
 		);
 	}
+
+	function onReservationCreated() {
+		//send email to customer
+		//send email to admin
+	}
 }

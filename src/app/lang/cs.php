@@ -35,18 +35,18 @@
 	$language_data['Reset Password'] = 'Resetovat heslo';
 	$language_data['Confirm Password'] = 'Potvrdit heslo';
 	$language_data['Passwords don\'t match.'] = 'Hesla se neshodují.';
-	$language_data['Please enter your login name or e-mail.'] = 'Prosím vložte Vaše přihlašovací jméno nebo e-mail.';
-	$language_data['Please enter your password.'] = 'Prosím vložte Vaše heslo.';
+	$language_data['Please enter your login name or e-mail.'] = 'Prosím vložte vaše přihlašovací jméno nebo e-mail.';
+	$language_data['Please enter your password.'] = 'Prosím vložte vaše heslo.';
 	$language_data['Register'] = 'Registrovat';
 	$language_data['Registration'] = 'Registrace';
-	$language_data['An e-mail was sent to your address with account activation instructions.'] = 'Na Vaši emailovou adresu jsme odeslali email s instrukcemi pro aktivaci účtu.';
+	$language_data['An e-mail was sent to your address with account activation instructions.'] = 'Na vaši emailovou adresu jsme odeslali email s instrukcemi pro aktivaci účtu.';
 	$language_data['User Profile'] = 'Uživatelský profil';
 	$language_data['Thank you for your registration on our website.'] = 'Děkujeme Vám, že jste se registrovali na našem webu.';
 	$language_data['This email is already used!'] = 'Tento email je již obsazen!';
 	$language_data['E-mail address is not in correct form! Please enter valid e-mail address.'] = 'Emailová adresa není ve správném formátu! Zadejte prosím platnou emailovou adresu.';
 	$language_data['Invalid email address!'] = 'Neplatná emailová adresa!';
-	$language_data['If you forget your password, you can reset it <a href="%s">here</a>.'] = 'Pokud zapomenete Vaše heslo, můžete jej resetovat <a href="%s">zde</a>.';
-	$language_data['To activate your account, click this <a href="%s">link</a>.'] = 'Pro aktivaci Vašeho účtu klikněte prosím na tento <a href="%s">odkaz</a>.';
+	$language_data['If you forget your password, you can reset it <a href="%s">here</a>.'] = 'Pokud zapomenete vaše heslo, můžete jej resetovat <a href="%s">zde</a>.';
+	$language_data['To activate your account, click this <a href="%s">link</a>.'] = 'Pro aktivaci vašeho účtu klikněte prosím na tento <a href="%s">odkaz</a>.';
 	$language_data['Account Activation'] = 'Aktivace účtu';
 	$language_data['Your link seems to be invalid.'] = 'Váš odkaz je neplatný.';
 	$language_data['Your account was successfully activated.'] = 'Váš účet byl úspěšně aktivován.';
@@ -54,14 +54,14 @@
 	$language_data['E-mail address not found!'] = 'E-mailová adresa nenalezena!';
 	$language_data["To reset your password, visit following link"] = "Pro změnu hesla klikněte na tento odkaz:";
 	$language_data["This link is only valid for %d days."] = "Odkaz je platný po dobu %d dnů.";
-	$language_data['An e-mail was sent to your address with reset password instructions.'] = 'Na Vaši emailovou adresu jsme odeslali email s instrukcemi pro obnovení hesla.';
-	$language_data['An e-mail was already sent to your address with reset password instructions.'] = 'Na Vaši emailovou adresu jsme již odeslali email s instrukcemi pro obnovení hesla.';
-	$language_data['Enter your new password.'] = 'Vložte Vaše nové heslo.';
+	$language_data['An e-mail was sent to your address with reset password instructions.'] = 'Na vaši emailovou adresu jsme odeslali email s instrukcemi pro obnovení hesla.';
+	$language_data['An e-mail was already sent to your address with reset password instructions.'] = 'Na vaši emailovou adresu jsme již odeslali email s instrukcemi pro obnovení hesla.';
+	$language_data['Enter new password.'] = 'Vložte nové heslo.';
 	$language_data['New Password'] = 'Nové heslo';
 	$language_data['Confirm New Password'] = 'Potvrdit nové heslo';
 	$language_data['Your password was successfully changed.'] = 'Vaše heslo bylo úspěšně změněno.';
 	$language_data['Password must be at least %d characters long.'] = 'Heslo musí být alespoň %d znaků dlouhé.';
-	$language_data['--account-not-active--'] = 'Účet není aktivní! Nemůžeme Vás přihlásit. Pokud jste se nedávno registrovali nebo požádali o nové heslo, podívejte se prosím do Vaší e-mailové schránky, zda tam není zpráva s odkazem pro aktivaci. Jinak požádejte o nové heslo.';
+	$language_data['--account-not-active--'] = 'Účet není aktivní! Nemůžeme vás přihlásit. Pokud jste se nedávno registrovali nebo požádali o nové heslo, podívejte se prosím do vaší e-mailové schránky, zda tam není zpráva s odkazem pro aktivaci. Jinak požádejte o nové heslo.';
 	$language_data['Deactivated'] = 'Neaktivní';
 	$language_data['Waiting for activation'] = 'Čeká na aktivaci';
 	$language_data['Waiting for password reset'] = 'Čeká na reset hesla';
@@ -125,8 +125,8 @@
 	$language_data['ZIP'] = 'PSČ';
 	$language_data['Back to cart'] = 'Zpět do košíku';
 	$language_data['Continue'] = 'Pokračovat';
-	$language_data['Please enter your whole name.'] = 'Vložte prosím Vaše celé jméno.';
-	$language_data['Please enter your email address.'] = 'Vložte prosím Vaši emailovou adresu.';
+	$language_data['Please enter your whole name.'] = 'Vložte prosím vaše celé jméno.';
+	$language_data['Please enter your email address.'] = 'Vložte prosím vaši emailovou adresu.';
 	$language_data['Required.'] = 'Vyžadováno.';
 	$language_data['Please enter valid ZIP code.'] = 'Prosím vložte platné PSČ.';
 	$language_data['Some fields in the form don\'t validate! Form cannot be saved.'] = 'Některá pole formuláře neprošla ověřením! Formulář nelze uložit.';
@@ -145,8 +145,8 @@
 	$language_data['Access Forbidden!'] = 'Přístup odepřen!';
 
 	/* COOKIES */
-	$language_data['--cookies-disabled--'] = 'Tato stránka používá soubory cookies a bez nich nemusí fungovat správně. Povolte prosím soubory cookies ve Vašem prohlížeči.';
-	$language_data['--cookies-warning--'] = 'Tato stránka používá soubory cookies třetích stran. Pokud máte obavy o své soukromí, můžete zakázat soubory cookies v nastavení Vašeho prohlížeče.';
+	$language_data['--cookies-disabled--'] = 'Tato stránka používá soubory cookies a bez nich nemusí fungovat správně. Povolte prosím soubory cookies ve vašem prohlížeči.';
+	$language_data['--cookies-warning--'] = 'Tato stránka používá soubory cookies třetích stran. Pokud máte obavy o své soukromí, můžete zakázat soubory cookies v nastavení vašeho prohlížeče.';
 
 	/* GALLERY */
 	$language_data['Gallery'] = 'Galerie';

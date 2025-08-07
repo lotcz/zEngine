@@ -95,7 +95,7 @@ class adminModule extends zModule {
 	private function initializeAdminMenu() {
 		$menu = new zMenu($this->getAdminAreaURL(''), $this->z->core->getData('site_title'));
 
-		if ($this->z->auth->isAuth()) {
+		if ($this->isAuth()) {
 
 			if ($this->show_custom_menu_to_external || $this->isAdmin()) {
 				//custom menu from app's admin config

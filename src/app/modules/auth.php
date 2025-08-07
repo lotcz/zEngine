@@ -112,7 +112,7 @@ class authModule extends zModule {
 			return false;
 		}
 
-		if ($user->ival('user_state') !== UserModel::user_state_active) {
+		if (!$user->isActive()) {
 			$this->z->messages->add($this->z->core->t('--account-not-active--'), 'error');
 			return false;
 		}
