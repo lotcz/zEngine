@@ -6,8 +6,8 @@
 	$json['exists'] = false;
 	
 	if (isset($email) && strlen($email) > 0) {
-		$customer = new CustomerModel($this->z->db);
-		$customer->loadByEmail($email);
+		$customer = new UserModel($this->z->db);
+		$customer->loadByLoginOrEmail($email);
 		$json['exists'] = $customer->is_loaded;	
 	}
 	

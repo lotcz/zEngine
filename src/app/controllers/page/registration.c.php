@@ -32,7 +32,7 @@
 
 	}
 
-	$this->includeJS('resources/registration.js', false, 'bottom');
+	$this->includeJS('resources/registration.js', 'bottom');
 	$this->insertJS(
 		[
 			'z_email_check_ajax_url' => $this->url('json/default/emailexists')
