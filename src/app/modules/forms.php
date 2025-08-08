@@ -526,7 +526,7 @@ class formsModule extends zModule {
 
 										case 'image' :
 											?>
-												<img src="<?=$this->z->images->img($field->value, isset($field->image_size) ? $field->image_size : 'thumb')?>"/>
+												<img class="img-fluid" src="<?=$this->z->images->img($field->value, isset($field->image_size) ? $field->image_size : 'thumb')?>"/>
 												<input type="hidden" name="<?=$field->name ?>" id="field_<?=$field->name ?>" value="<?=$field->value ?>" />
 												<div class="d-flex flex-column">
 													<input type="file" name="<?=$field->name ?>_image_file" <?=$disabled ?> class="form-control-file" accept=".gif,.jpg,.jpeg,.png,.webp" />
