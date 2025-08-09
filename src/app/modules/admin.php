@@ -323,6 +323,10 @@ class adminModule extends zModule {
 		return $this->z->auth->isAdmin();
 	}
 
+	public function isSuperUser() {
+		return $this->z->auth->isSuperUser();
+	}
+
 	public function checkAnyRole($roles = null) {
 		if (!$this->z->auth->hasAnyRole($roles)) {
 			$this->z->core->redirect('admin', 403);
