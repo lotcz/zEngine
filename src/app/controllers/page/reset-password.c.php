@@ -1,5 +1,7 @@
 <?php
-	$this->requireModule('forms');
+
+	// Change password after reset token was provided (forgotten password)
+
 	$this->setPageTitle('Reset Password');
 
 	$show_form = false;
@@ -28,10 +30,8 @@
 					$this->message('Passwords don\'t match.', 'error');
 				}
 			} else {
-				$show_form = true;
-				$this->z->core->includeJS('resources/forms.js');
 				$customer_email = $customer->val('user_email');
-				$this->message('Enter your new password.');
+				$this->message($this->t('Enter your new password.'));
 			}
 		} else {
 			$this->message('Your link seems to be invalid.', 'error');
@@ -40,6 +40,5 @@
 		$this->message('This page should only be accessed from link sent to your e-mail.', 'error');
 	}
 
-	$this->setData('show_form', $show_form);
 	$this->setData('reset_token', $reset_token);
 	$this->setData('email', $customer_email);

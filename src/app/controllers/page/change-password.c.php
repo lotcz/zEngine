@@ -1,5 +1,7 @@
 <?php
-	$this->requireModule('forms');
+
+	// Change password of current authenticated user.
+
 	$this->setPageTitle('Change Password');
 
 	if (!($this->z->auth->isAuth() && !$this->z->auth->isAnonymous())) {
@@ -28,9 +30,7 @@
 		$password_confirm = z::get('password_confirm');
 
 		if ($this->z->auth->isValidPassword($password)) {
-
 			if ($password == $password_confirm) {
-
 				$user = $this->z->auth->user;
 				$user->data['user_password_hash'] = $this->z->auth->hashPassword($password);
 				$user->save();

@@ -27,7 +27,6 @@
 				}
 			} else {
 				$show_form = true;
-				$this->z->core->includeJS('resources/forms.js');
 				$user_email = $user->val('user_email');
 				$this->message('Enter your new password.');
 			}

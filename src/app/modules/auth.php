@@ -112,7 +112,7 @@ class authModule extends zModule {
 			return false;
 		}
 
-		if (!$user->isActive()) {
+		if (!($user->isActive() || $user->isWaitingForPaswordReset())) {
 			$this->z->messages->add($this->z->core->t('--account-not-active--'), 'error');
 			return false;
 		}
@@ -123,6 +123,15 @@ class authModule extends zModule {
 		}
 
 		if ($this->verifyPassword($password, $user->val('user_password_hash'))) {
+			if ($user->isWaitingForPaswordReset()) {
+				$user->set('user_state', UserModel::user_state_active);
+				$user->set('user_reset_password_hash', null);
+				$user->set('user_reset_password_expires', null);
+				$user->save();
+				$this->z->messages->warn(
+					$this->z->core->t('Seems like you have remembered your password. Reset link was invalidated.'),
+				);
+			}
 			// success - create new session
 			$this->createSession($user);
 			return true;
@@ -298,16 +307,21 @@ class authModule extends zModule {
 	}
 
 	public function sendForgottenPasswordEmail($user, $reset_token): EmailModel {
-		$link = sprintf('%s?email=%s&reset_token=%s', $this->z->core->url('reset-password'), $user->val('user_email'), $reset_token);
-		$link_label = $this->z->core->t("Reset Password");
-		$line1 = $this->z->core->t("To reset your password, visit this link:");
-		$line2 = $this->z->core->t("This link is only valid for %d days.", 7);
-		$subject = $this->z->emails->getEmailSubject($this->z->core->t('Forgotten Password'));
 		$email = $user->val('user_email');
+		$line0 = $this->z->core->t("Somebody has asked to reset password for email:");
+		$line1 = $this->z->core->t("If it wasn't you, please ignore this message.");
+		$line2 = $this->z->core->t("To reset your password, visit this link:");
+		$link = sprintf('%s?email=%s&reset_token=%s', $this->z->core->url('reset-password'), $email, $reset_token);
+		$link_label = $this->z->core->t("reset password");
+		$line3 = $this->z->core->t("This link is only valid for %d days.", 7);
+		$subject = $this->z->emails->getEmailSubject($this->z->core->t('Forgotten Password'));
+
 
 		$body = "<div>
-			<p>$line1 <a href=\"$link\">$link_label</a>.</p>
-			<p>$line2</p>
+			<p>$line0 $email</p>
+			<p>$line1</p>
+			<p>$line2 <a href=\"$link\">$link_label</a></p>
+			<p>$line3</p>
 		";
 
 		return $this->z->emails->sendHtmlBody($email, $subject, $body);
@@ -318,6 +332,7 @@ class authModule extends zModule {
 		$expires = time() + $this->getConfigValue('reset_password_expires');
 		$user->set('user_reset_password_hash', $this->hashPassword($reset_token));
 		$user->set('user_reset_password_expires', z::mysqlTimestamp($expires));
+		$user->set('user_state', UserModel::user_state_waiting_for_password_reset);
 		$user->save();
 
 		$this->sendForgottenPasswordEmail($user, $reset_token);

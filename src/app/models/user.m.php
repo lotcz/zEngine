@@ -32,6 +32,10 @@ class UserModel extends zModel {
 		return ($this->ival('user_state') === Self::user_state_anonymous);
 	}
 
+	public function isWaitingForPaswordReset() {
+		return ($this->ival('user_state') === Self::user_state_waiting_for_password_reset);
+	}
+
 	public function isWaitingForActivation(): bool {
 		return ($this->ival('user_state') === Self::user_state_waiting_for_activation);
 	}
@@ -42,6 +46,10 @@ class UserModel extends zModel {
 
 	public function isActive() {
 		return ($this->ival('user_state') === Self::user_state_active);
+	}
+
+	public function isDeactivated() {
+		return ($this->ival('user_state') === Self::user_state_deactivated);
 	}
 
 	public function getStatusLabel() {
@@ -75,6 +83,9 @@ class UserModel extends zModel {
 
 	public static function getStateOptions() {
 		$options = [];
+		$cancelled = new zModel();
+		$cancelled->set('value', Self::user_state_cancelled);
+		$options[] = $cancelled;
 		$disabled = new zModel();
 		$disabled->set('value', Self::user_state_deactivated);
 		$options[] = $disabled;

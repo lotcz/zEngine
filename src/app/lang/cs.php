@@ -29,14 +29,18 @@
 	$language_data['Password'] = 'Heslo';
 	$language_data['Anonymous'] = 'Anonym';
 	$language_data['Sign In'] = 'Přihlásit';
-	$language_data['Log Out'] = 'Odhlásit se';
+	$language_data['Log Out'] = 'Odhlásit se';$language_data['Deactivated'] = 'Neaktivní';
+	$language_data['External'] = 'Externí';
+	$language_data['Admin'] = 'Administrátor';
 	$language_data['Change Password'] = 'Změnit heslo';
 	$language_data['Forgotten Password'] = 'Zapomenuté heslo';
 	$language_data['Reset Password'] = 'Resetovat heslo';
+	$language_data['reset password'] = 'resetovat heslo';
 	$language_data['Confirm Password'] = 'Potvrdit heslo';
 	$language_data['Passwords don\'t match.'] = 'Hesla se neshodují.';
 	$language_data['Please enter your login name or e-mail.'] = 'Prosím vložte vaše přihlašovací jméno nebo e-mail.';
 	$language_data['Please enter your password.'] = 'Prosím vložte vaše heslo.';
+	$language_data['Enter your new password.'] = 'Vložte vaše nové heslo.';
 	$language_data['Register'] = 'Registrovat';
 	$language_data['Registration'] = 'Registrace';
 	$language_data['An e-mail was sent to your address with account activation instructions.'] = 'Na vaši emailovou adresu jsme odeslali email s instrukcemi pro aktivaci účtu.';
@@ -52,7 +56,7 @@
 	$language_data['Your account was successfully activated.'] = 'Váš účet byl úspěšně aktivován.';
 	$language_data['Login unsuccessful!'] = 'Přihlášení bylo neúspěšné!';
 	$language_data['E-mail address not found!'] = 'E-mailová adresa nenalezena!';
-	$language_data["To reset your password, visit following link"] = "Pro změnu hesla klikněte na tento odkaz:";
+	$language_data["To reset your password, visit this link:"] = "Pro změnu hesla klikněte na tento odkaz:";
 	$language_data["This link is only valid for %d days."] = "Odkaz je platný po dobu %d dnů.";
 	$language_data['An e-mail was sent to your address with reset password instructions.'] = 'Na vaši emailovou adresu jsme odeslali email s instrukcemi pro obnovení hesla.';
 	$language_data['An e-mail was already sent to your address with reset password instructions.'] = 'Na vaši emailovou adresu jsme již odeslali email s instrukcemi pro obnovení hesla.';
@@ -61,12 +65,12 @@
 	$language_data['Confirm New Password'] = 'Potvrdit nové heslo';
 	$language_data['Your password was successfully changed.'] = 'Vaše heslo bylo úspěšně změněno.';
 	$language_data['Password must be at least %d characters long.'] = 'Heslo musí být alespoň %d znaků dlouhé.';
+	$language_data['Somebody has asked to reset password for email:'] = 'Někdo požádal o změnu hesla pro email:';
+	$language_data['If it wasn\'t you, please ignore this message.'] = 'Pokud jste to nebyli vy, prosím ignorujte tuto zprávu.';
 	$language_data['--account-not-active--'] = 'Účet není aktivní! Nemůžeme vás přihlásit. Pokud jste se nedávno registrovali nebo požádali o nové heslo, podívejte se prosím do vaší e-mailové schránky, zda tam není zpráva s odkazem pro aktivaci. Jinak požádejte o nové heslo.';
-	$language_data['Deactivated'] = 'Neaktivní';
 	$language_data['Waiting for activation'] = 'Čeká na aktivaci';
 	$language_data['Waiting for password reset'] = 'Čeká na reset hesla';
-	$language_data['External'] = 'Externí';
-	$language_data['Admin'] = 'Administrátor';
+
 
 	/* ADMIN SECTION */
 	$language_data['Administration'] = 'Administrace';
