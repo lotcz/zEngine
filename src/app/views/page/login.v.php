@@ -1,12 +1,12 @@
 <form method="POST" id="form_login">
-	<div class="form-group row">
+	<div id="email_form_group" class="form-group row">
 		<label for="user_name" class="control-label col-sm-2"><?=$this->t('E-mail')?>:</label>
 		<div class="col-sm-4 orm-field">
 			<input name="email" id="email" maxlength="50" value="<?=z::get('email', '') ?>" class="form-control" type="text" required >
 		</div>
 		<div class="form-validation " id="email_validation_email"><?=$this->t('E-mail address is not in correct form! Please enter valid e-mail address.')?></div>
 	</div>
-	<div class="form-group row">
+	<div id="password_form_group" class="form-group row">
 		<label for="password" class="control-label col-sm-2"><?=$this->t('Password')?>:</label>
 		<div class="col-sm-4 form-field">
 			<input name="password" id="password" maxlength="50" value="" class="form-control" type="password" required >
@@ -15,7 +15,7 @@
 	</div>
 	<div class="form-group mt-3 row">
 		<div class="form-field offset-sm-2">
-			<button type="submit" onclick="javascript:validateLoginForm();return false;" class="btn btn-success" ><?=$this->t('Sign In') ?></button>
+			<button type="submit" onclick="javascript:validateLoginForm(event);return false;" class="btn btn-success" ><?=$this->t('Sign In') ?></button>
 		</div>
 	</div>
 	<div class="form-group row">
@@ -29,7 +29,8 @@
 </form>
 
 <script>
-function validateLoginForm() {
+function validateLoginForm(e) {
+	e.preventDefault();
 	var frm = new formValidation('form_login');
 	frm.add('email', 'email');
 	frm.add('password', 'length', '1');

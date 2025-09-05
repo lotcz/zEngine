@@ -168,7 +168,7 @@ function formValidation(form_id) {
 
 	this.submit = function(noret) {
 		if (this.validate()) {
-			if (noret == true) {
+			if (noret === true) {
 				const input = z.getById('suppress_return');
 				if (input) {
 					input.value = 'true';
