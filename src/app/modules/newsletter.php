@@ -44,7 +44,7 @@ class newsletterModule extends zModule {
 	}
 
 	public function getActiveSubscriptions() {
-		return NewsletterSubscriptionModel::select($this->z->db, 'newsletter_subscription', 'newsletter_subscription_active = 1');
+		return NewsletterSubscriptionModel::select($this->z->db, 'newsletter_subscription', 'newsletter_subscription_state = \'active\'');
 	}
 
 	public function cleanSubscriptionEmails() {

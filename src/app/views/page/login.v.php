@@ -1,17 +1,25 @@
 <form method="POST" id="form_login">
-	<div id="email_form_group" class="form-group row">
-		<label for="user_name" class="control-label col-sm-2"><?=$this->t('E-mail')?>:</label>
-		<div class="col-sm-4 orm-field">
-			<input name="email" id="email" maxlength="50" value="<?=z::get('email', '') ?>" class="form-control" type="text" required >
+	<div id="email_form_group" class="form-group">
+		<div class="row">
+			<label for="user_name" class="control-label col-sm-2"><?=$this->t('E-mail')?>:</label>
+			<div class="col-sm-4 orm-field">
+				<input name="email" id="email" maxlength="50" value="<?=z::get('email', '') ?>" class="form-control" type="text" required >
+			</div>
 		</div>
-		<div class="form-validation " id="email_validation_email"><?=$this->t('E-mail address is not in correct form! Please enter valid e-mail address.')?></div>
+		<div class="row">
+			<div class="form-validation offset-sm-2" id="email_validation_email"><?=$this->t('E-mail address is not in correct form! Please enter valid e-mail address.')?></div>
+		</div>
 	</div>
-	<div id="password_form_group" class="form-group row">
-		<label for="password" class="control-label col-sm-2"><?=$this->t('Password')?>:</label>
-		<div class="col-sm-4 form-field">
-			<input name="password" id="password" maxlength="50" value="" class="form-control" type="password" required >
+	<div id="password_form_group" class="form-group">
+		<div class="row">
+			<label for="password" class="control-label col-sm-2"><?=$this->t('Password')?>:</label>
+			<div class="col-sm-4 form-field">
+				<input name="password" id="password" maxlength="50" value="" class="form-control" type="password" required >
+			</div>
 		</div>
-		<div class="form-validation" id="password_validation_length"><?=$this->t('Please enter your password.')?></div>
+		<div class="row">
+			<div class="form-validation offset-sm-2" id="password_validation_length"><?=$this->t('Please enter your password.')?></div>
+		</div>
 	</div>
 	<div class="form-group mt-3 row">
 		<div class="form-field offset-sm-2">

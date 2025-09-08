@@ -127,15 +127,22 @@ class UserModel extends zModel {
 		return $this->ival('user_user_role_id') == $role;
 	}
 
+	/**
+	 * Return true if user has any of provided roles.
+	 * If no roles are provided return true for any internal user.
+	 */
 	public function hasAnyRole($roles = null) {
-		if ($roles != null && count($roles) > 0) {
-			for ($i = 0, $max = count($roles); $i < $max; $i++) {
-				if ($this->hasRole($roles[$i])) {
-					return true;
-				}
+		if ($roles === null || count($roles) === 0) {
+			return !$this->isExternal();
+		}
+
+		for ($i = 0, $max = count($roles); $i < $max; $i++) {
+			if ($this->hasRole($roles[$i])) {
+				return true;
 			}
 		}
-		return !$this->isExternal();
+
+		return false;
 	}
 
 	public function isExternal() {

@@ -1,7 +1,7 @@
 <?php
 	$this->setPageTitle('Sign In');
 
-	$redirect = fn () => $this->redirectBack($this->z->auth->isAdmin() ? 'admin' : $this->z->auth->public_login_home);
+	$redirect = fn () => $this->redirectBack($this->z->auth->hasAnyRole() ? 'admin' : $this->z->auth->public_login_home);
 
 	if ($this->z->auth->isAuth()) {
 		$redirect();

@@ -16,7 +16,13 @@
 							$user->set('user_password_hash', $this->z->auth->hashPassword($password));
 							$user->save();
 							$user_name = $user->val('user_login', $user->val('user_email'));
-							$this->message("User password was successfully changed for user '$user_name'.", 'success');
+							$this->message(
+								$this->t(
+									"User password was successfully changed for user '%s'.",
+									$user_name
+								),
+								'success'
+							);
 						} else $this->z->messages->error($this->t("User ID '$user_id' not found!"));
 					} else $this->z->messages->error($this->t('You must be superuser to change other people\'s passwords!'));
 				} else {

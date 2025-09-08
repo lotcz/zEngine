@@ -1,6 +1,6 @@
 <?php
 
-	$this->z->admin->checkIsSuperUser();
+	$this->z->admin->checkAnyRole();
 
 	$this->setPageTitle('Aliases');
 	$this->renderAdminTable(

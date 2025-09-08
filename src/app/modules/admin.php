@@ -67,6 +67,8 @@ class adminModule extends zModule {
 				$this->z->core->path = [$this->login_url];
 			} else if ($this->is_login_page && $this->isAuth()) {
 				$this->z->core->path = [$this->base_url];
+			} else {
+				$this->checkAnyRole();
 			}
 		}
 		$this->initializeAdminMenu();
@@ -97,12 +99,12 @@ class adminModule extends zModule {
 
 		if ($this->isAuth()) {
 
-			if ($this->show_custom_menu_to_external || $this->isAdmin()) {
+			if ($this->show_custom_menu_to_external || $this->hasAnyRole()) {
 				//custom menu from app's admin config
 				$menu->loadItemsFromArray($this->getConfigValue('custom_menu'));
 			}
 
-			// SUPERUSER - standard admin menu
+			// SUPERUSER - standard super admin menu
 			if ($this->z->auth->isSuperUser()) {
 				$submenu = $menu->addRightSubmenu('Administration');
 
@@ -316,26 +318,36 @@ class adminModule extends zModule {
 	}
 
 	public function isAuth() {
-		return $this->z->auth->hasAnyRole();
+		return $this->z->auth->isAuth();
 	}
 
+	public function isExternal() {
+		return $this->z->auth->isExternal();
+	}
+
+	/**
+	 * can access admin section, editors etc.
+	 */
+	public function hasAnyRole($roles = null) {
+		return $this->z->auth->hasAnyRole($roles);
+	}
+
+	/**
+	 * can access admin functions, usually website owner
+	 */
 	public function isAdmin() {
 		return $this->z->auth->isAdmin();
 	}
 
+	/**
+	 * can do everything, usually just me
+	 */
 	public function isSuperUser() {
 		return $this->z->auth->isSuperUser();
 	}
 
 	public function checkAnyRole($roles = null) {
-		if (!$this->z->auth->hasAnyRole($roles)) {
-			$this->z->core->redirect('admin', 403);
-			die();
-		}
-	}
-
-	public function checkIsSuperUser() {
-		if (!$this->z->auth->isSuperUser()) {
+		if (!$this->hasAnyRole($roles)) {
 			$this->z->core->redirect('admin', 403);
 			die();
 		}
@@ -348,5 +360,11 @@ class adminModule extends zModule {
 		}
 	}
 
+	public function checkIsSuperUser() {
+		if (!$this->isSuperUser()) {
+			$this->z->core->redirect('admin', 403);
+			die();
+		}
+	}
 
 }

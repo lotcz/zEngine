@@ -64,6 +64,7 @@
 	$language_data['New Password'] = 'Nové heslo';
 	$language_data['Confirm New Password'] = 'Potvrdit nové heslo';
 	$language_data['Your password was successfully changed.'] = 'Vaše heslo bylo úspěšně změněno.';
+	$language_data['User password was successfully changed for user \'%s\'.'] = 'Heslo bylo úspěšně změněno uživateli \'%s\'.';
 	$language_data['Password must be at least %d characters long.'] = 'Heslo musí být alespoň %d znaků dlouhé.';
 	$language_data['Somebody has asked to reset password for email:'] = 'Někdo požádal o změnu hesla pro email:';
 	$language_data['If it wasn\'t you, please ignore this message.'] = 'Pokud jste to nebyli vy, prosím ignorujte tuto zprávu.';

@@ -1,0 +1,8 @@
+
+isSuperUser()	- can do everything, usually just me
+isAdmin()		- can access admin functions, usually website owner
+hasAnyRole()	- can access admin section, editors etc.
+isAuth(),
+isExternal()	- is logged in, customers etc.
+not isAuth()	- not logged in
+
