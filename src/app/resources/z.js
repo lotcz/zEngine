@@ -114,7 +114,8 @@ const z = {
 			);
 	},
 
-	destroyElement : function(el) {
+	destroyElement : function(idOrObject) {
+		const el = this.getElement(idOrObject);
 		if (!el) return;
 		el.remove();
 	},
