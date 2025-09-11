@@ -17,11 +17,11 @@ class qrModule extends zModule {
 		int $amount_czk,
 		string $recipient_name,
 		bool $is_instant,
-		?int $variable_symbol
+		string|int|null $variable_symbol
 	): string {
 		$instant = $is_instant ? "1" : "0";
 		$amount = (string)$amount_czk;
-		$vs = (string)$variable_symbol;
+		$vs = $variable_symbol ? str_pad((string)$variable_symbol, 10, "0", STR_PAD_LEFT) : "";
 		$raw = $this->api_key . $target_account_iban . $amount . $message. $recipient_name . $instant . $vs;
 		$hash = md5($raw);
 		$message = urlencode($message);

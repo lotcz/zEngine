@@ -10,7 +10,7 @@ require_once __DIR__ . '/app/classes/module.php';
 #[\AllowDynamicProperties]
 class zEngine {
 
-	public $version = 24.7;
+	public $version = 25.0;
 
 	public $app_dir = '';
 
