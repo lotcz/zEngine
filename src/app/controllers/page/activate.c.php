@@ -24,6 +24,7 @@
 				$user->save();
 				$this->z->auth->createSession($user);
 				$this->message('Your account was successfully activated.', 'success');
+
 			}
 		}
 	}

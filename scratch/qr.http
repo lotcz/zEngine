@@ -1,0 +1,24 @@
+###
+GET http://localhost:8091/status
+
+###
+GET http://localhost:8091/qr?token=secretAPIKey&text=qr%20code%20text
+
+###
+POST http://localhost:8091/qr
+Authorization: Bearer secretAPIKey
+
+test
+
+###
+GET http://localhost:8091/bank-transfer?token=secretAPIKey&target_account=123456&message=Hello&amount=101&recipient_name=karel&is_instant=0&variable_symbol=789456
+
+### Secure token
+GET http://localhost:8091/bank-transfer-secured?secure_token=69fb4a2397c0661069dcda2b0e69ead7&target_account=123456&message=Hello&amount=101&recipient_name=karel&is_instant=0&variable_symbol=789456
+
+### PROD - status
+GET https://qr.zavadil.eu/status
+
+### PROD - test
+GET https://qr.zavadil.eu/qr?token=6b4a2397c06069dcda2b0e69ead7&text=qr%20code%20text
+

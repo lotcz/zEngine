@@ -400,6 +400,21 @@ class z {
 		return array_diff(scandir($path), array('.', '..'));
 	}
 
+	static function getUrl(...$parts) {
+		$parts = array_map(function($part) {
+			return trim($part, " \t\n\r\0\x0B/"); // trim whitespace + slashes
+		}, $parts);
+
+		// Handle case where first part is a scheme like "http://" or "https://"
+		if (preg_match('#^https?://#i', $parts[0])) {
+			$first = rtrim($parts[0], '/');
+			array_shift($parts);
+			return $first . '/' . implode('/', $parts);
+		}
+
+		return implode('/', $parts);
+	}
+
 	static function getExternalUrl($url) {
 		if (z::strlen($url) > 0) {
 			$url = strtolower($url);

@@ -13,5 +13,7 @@
 		'session_expire' => 60*60*24*7, //7 days
 	
 		//time interval in seconds after which reset password will expire 
-		'reset_password_expires' => 60*60*24*7 //7 days
+		'reset_password_expires' => 60*60*24*7, //7 days
+
+		'public_login_home' => ''
 	];

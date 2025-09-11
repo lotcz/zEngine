@@ -123,6 +123,7 @@
 	$language_data['Max value is %s.'] = 'Maximální hodnota je %s.';
 	$language_data['%d - %d of %d'] = '<b>%d</b> až <b>%d</b> z celkových <b>%d</b>.';
 	$language_data['Value must be at least %s characters long.'] = 'Hodnota musí být alespoň %s znaků dlouhá.';
+	$language_data['Value must be higher than %s.'] = 'Hodnota musí být minimálně %s.';
 	$language_data['Addreses'] = 'Adresy';
 	$language_data['Invoicing Address'] = 'Fakturační adresa';
 	$language_data['Shipping Address'] = 'Doručovací adresa';

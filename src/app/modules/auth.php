@@ -50,9 +50,23 @@ class authModule extends zModule {
 	/**
 	* Return true if a user is authenticated.
 	*/
-	public function isAuth() {
+	public function isAuth(): bool {
 		$this->checkAuthentication();
 		return isset($this->session) && isset($this->user);
+	}
+
+	public function obtainAuthenticatedUser(): UserModel {
+		if (!$this->isAuth()) {
+			$this->createAnonymousSession();
+		}
+		return $this->user;
+	}
+
+	public function getUser(): UserModel {
+		if (!$this->isAuth()) {
+			throw new Exception("User not authenticated!");
+		}
+		return $this->user;
 	}
 
 	/**
@@ -210,13 +224,6 @@ class authModule extends zModule {
 		return $usr !== null;
 	}
 
-	public function obtainAuthenticatedUser() {
-		if (!$this->isAuth()) {
-			$this->createAnonymousSession();
-		}
-		return $this->user;
-	}
-
 	/**
 	* Set current session's expiration date
 	*/
@@ -257,7 +264,7 @@ class authModule extends zModule {
 	* Create user account.
 	* @return UserModel
 	*/
-	public function createUser($full_name, $login, $email, $phone, $password, $state, $role) {
+	public function createUser($full_name, $login, $email, $phone, $password, $state, $role): UserModel {
 		$user = new UserModel($this->z->db);
 		$user->data['user_name'] = $full_name;
 		$user->data['user_login'] = $login;
@@ -279,7 +286,7 @@ class authModule extends zModule {
 	* Create and activates user account. Used for db initialization.
 	* @return UserModel
 	*/
-	public function createActiveUser($full_name, $login, $email, $password) {
+	public function createActiveUser($full_name, $login, $email, $password): UserModel {
 		$user = $this->createUser($full_name, $login, $email, null, $password, UserModel::user_state_active, UserRoleModel::role_superuser);
 		return $user;
 	}
@@ -342,7 +349,7 @@ class authModule extends zModule {
 	* Create a user account and send activation email. Used on user registration.
 	* @return UserModel
 	*/
-	public function registerUser($full_name, $login, $email, $phone, $password) {
+	public function registerUser($full_name, $login, $email, $phone, $password): UserModel {
 		if ($this->emailExists($email)) {
 			throw new Exception("Email $email already exists!");
 		}

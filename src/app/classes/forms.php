@@ -61,7 +61,7 @@ class zForm {
 		$result = [];
 		$this->is_valid = true;
 		foreach ($this->fields as $field) {
-			if (isset($field->name) && (!(isset($field->disabled) && $field->disabled)) && (!z::startsWith($field->type, 'static')) && ($field->type !== 'buttons')) {
+			if (isset($field->name) && (!(isset($field->disabled) && $field->disabled)) && (!z::startsWith($field->type, 'static'))) {
 				switch ($field->type) {
 					case 'bool':
 					case 'checkbox':
@@ -140,6 +140,11 @@ class zForm {
 						if (!empty($data[$field->name])) {
 							$field->selected_items = $data[$field->name];
 						}
+						break;
+
+					case 'foreign_key_link':
+					case 'buttons':
+
 						break;
 
 					default:
