@@ -14,6 +14,9 @@ class LanguageModel extends zModel {
 
 	public function formatDate($date) {
 		if (isset($date)) {
+			if ($date instanceof DateTime || $date instanceof DateTimeImmutable) {
+				return $this->formatDate($date->getTimestamp());
+			}
 			return date($this->val('language_date_format'), $date);
 		} else {
 			return '';
@@ -22,6 +25,9 @@ class LanguageModel extends zModel {
 
 	public function formatDatetime($date) {
 		if (isset($date)) {
+			if ($date instanceof DateTime || $date instanceof DateTimeImmutable) {
+				return $this->formatDatetime($date->getTimestamp());
+			}
 			return date($this->val('language_datetime_format'), $date);
 		} else {
 			return '';
