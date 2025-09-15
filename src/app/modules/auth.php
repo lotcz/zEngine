@@ -376,6 +376,17 @@ class authModule extends zModule {
 		return $user;
 	}
 
+	public function deactivateAccount() {
+		if (!$this->isAuth()) return;
+		$user = $this->getUser();
+		$user->set('user_state', UserModel::user_state_cancelled);
+		$user->set('user_name', null);
+		$user->set('user_login', null);
+		$user->set('user_email', "Deactivated:{$user->get('user_id')} {$user->get('user_email')}");
+		$user->save();
+		$this->logout();
+	}
+
 	/* EMAILS */
 
 	public function hashPassword($pass) {

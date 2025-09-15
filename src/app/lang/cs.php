@@ -28,6 +28,7 @@
 	$language_data['Full name'] = 'Celé jméno';
 	$language_data['Password'] = 'Heslo';
 	$language_data['Anonymous'] = 'Anonym';
+	$language_data['Cancelled'] = 'Zrušen';
 	$language_data['Sign In'] = 'Přihlásit';
 	$language_data['Log Out'] = 'Odhlásit se';$language_data['Deactivated'] = 'Neaktivní';
 	$language_data['External'] = 'Externí';
@@ -38,10 +39,12 @@
 	$language_data['reset password'] = 'resetovat heslo';
 	$language_data['Confirm Password'] = 'Potvrdit heslo';
 	$language_data['Passwords don\'t match.'] = 'Hesla se neshodují.';
+	$language_data['Emails don\'t match.'] = 'Emaily se neshodují.';
 	$language_data['Please enter your login name or e-mail.'] = 'Prosím vložte vaše přihlašovací jméno nebo e-mail.';
 	$language_data['Please enter your password.'] = 'Prosím vložte vaše heslo.';
 	$language_data['Enter your new password.'] = 'Vložte vaše nové heslo.';
 	$language_data['Register'] = 'Registrovat';
+	$language_data['Deactivate'] = 'Deaktivovat';
 	$language_data['Registration'] = 'Registrace';
 	$language_data['An e-mail was sent to your address with account activation instructions.'] = 'Na vaši emailovou adresu jsme odeslali email s instrukcemi pro aktivaci účtu.';
 	$language_data['User Profile'] = 'Uživatelský profil';
@@ -51,7 +54,8 @@
 	$language_data['Invalid email address!'] = 'Neplatná emailová adresa!';
 	$language_data['If you forget your password, you can reset it <a href="%s">here</a>.'] = 'Pokud zapomenete vaše heslo, můžete jej resetovat <a href="%s">zde</a>.';
 	$language_data['To activate your account, click this <a href="%s">link</a>.'] = 'Pro aktivaci vašeho účtu klikněte prosím na tento <a href="%s">odkaz</a>.';
-	$language_data['Account Activation'] = 'Aktivace účtu';
+	$language_data['Account activation'] = 'Aktivace účtu';
+	$language_data['Account deactivation'] = 'Deaktivace účtu';
 	$language_data['Your link seems to be invalid.'] = 'Váš odkaz je neplatný.';
 	$language_data['Your account was successfully activated.'] = 'Váš účet byl úspěšně aktivován.';
 	$language_data['Login unsuccessful!'] = 'Přihlášení bylo neúspěšné!';
@@ -71,7 +75,7 @@
 	$language_data['--account-not-active--'] = 'Účet není aktivní! Nemůžeme vás přihlásit. Pokud jste se nedávno registrovali nebo požádali o nové heslo, podívejte se prosím do vaší e-mailové schránky, zda tam není zpráva s odkazem pro aktivaci. Jinak požádejte o nové heslo.';
 	$language_data['Waiting for activation'] = 'Čeká na aktivaci';
 	$language_data['Waiting for password reset'] = 'Čeká na reset hesla';
-
+	$language_data['Your account was successfully deactivated. Good bye.'] = 'Váš účet byl úspěšně deaktivován. Sbohem.';
 
 	/* ADMIN SECTION */
 	$language_data['Administration'] = 'Administrace';
