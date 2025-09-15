@@ -329,18 +329,22 @@ class zModel {
 	* @return Array New sorted array
 	*/
 	static function sort($arr, $field) {
-		$result = [];
-		$min = null;
 		for ($i = 0, $max = count($arr); $i < $max; $i++) {
+			$minI = $i;
+			$min = $arr[$i];
 			for ($i2 = $i, $max2 = count($arr); $i2 < $max2; $i2++) {
 				if ($min === null || $min->val($field) > $arr[$i2]->val($field)) {
 					$min = $arr[$i2];
+					$minI = $i2;
 				}
 			}
-			$result[] = $min;
-			$min = null;
+			if ($i !== $minI) {
+				$el = $arr[$i];
+				$arr[$i] = $min;
+				$arr[$minI] = $el;
+			}
 		}
-		return $result;
+		return $arr;
 	}
 
 	/**
