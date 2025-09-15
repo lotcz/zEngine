@@ -71,15 +71,28 @@ class openinghoursModule extends zModule {
 		return OPEN_HOURS_WEEKDAYS_SHORT[$this->transformIndex($i)];
 	}
 
+	function validateTime($time) {
+		// Match 00:00 to 23:59
+		return preg_match('/^(?:[01]\d|2[0-3]):[0-5]\d$/', $time) === 1;
+	}
+
+	function getAndValidateTime($inputName) {
+		$value = z::trim(z::get($inputName));
+		if ($value === null) return null;
+		if (!$this->validateTime($value)) return null;
+		return $value;
+	}
+
 	function getTime($data, $key) {
 		return isset($data[$key]) && $data[$key] != '' ? $data[$key] : null;
 	}
 
 	function renderFormField($field) {
-
-		?>
-			<label class="control-label form-label"><?=$this->z->core->t($field->label) ?>:</label>
-		<?php
+		if (z::trim($field->label) !== null) {
+			?>
+				<label class="control-label form-label"><?=$this->z->core->t($field->label) ?>:</label>
+			<?php
+		}
 
 		for ($d = 1; $d <= 7; $d++) {
 			$day_name = $this->getDayName($d);

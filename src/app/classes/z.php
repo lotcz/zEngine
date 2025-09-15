@@ -50,11 +50,11 @@ class z {
 	}
 
 	static function parseDatetime(?string $timeStr): ?DateTime {
-		if (z::isValidDatetime($timeStr)) {
-			return date_create($timeStr);
-		} else {
+		if (empty(z::trim($timeStr))) {
 			return null;
 		}
+		$date = date_create($timeStr);
+		return $date ? $date : null;
 	}
 
 	static function parseJson(string $json) {
@@ -146,6 +146,13 @@ class z {
 		} else {
 			return date_create($timeStr) != false;
 		}
+	}
+
+	static function isValidUrl($url) {
+		if (filter_var($url, FILTER_VALIDATE_URL)) {
+			return true;
+		}
+		return false;
 	}
 
 	// MySQL

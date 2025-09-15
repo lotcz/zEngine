@@ -16,18 +16,17 @@ class tinymceModule extends zModule {
 		$this->tinymce_paste_preprocess = $this->getConfigValue('tinymce_paste_preprocess');
 		$this->tinymce_paste_postprocess = $this->getConfigValue('tinymce_paste_postprocess');
 
-		// process default tinymce includes
-		$includes = $this->getConfigValue('includes', []);
-		foreach ($includes as $include) {
-			$this->z->core->addToIncludes($include[0], $include[1],  $include[2]);
-		}
 	}
 
 	public function onBeforeRender() {
-		$this->activateTinyMce();
+
 	}
 
 	public function activateTinyMce($placement = 'admin.bottom') {
+		$includes = $this->getConfigValue('includes', []);
+		foreach ($includes as $include) {
+			$this->z->core->addToIncludes($include[0], $include[1], $placement);
+		}
 		$this->z->core->insertJS(['z_tinymceconfig' => $this->tinymce_config], $placement);
 		if ($this->tinymce_paste_preprocess !== null) {
 			$this->z->core->insertJS(sprintf('z_tinymceconfig.paste_preprocess = %s;', $this->tinymce_paste_preprocess), $placement);

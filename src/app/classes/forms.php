@@ -124,7 +124,7 @@ class zForm {
 
 					case 'opening_hours':
 						if (!$this->z->isModuleEnabled('openinghours')) {
-							throw new Exception('OpeningHours module is not enabled, cannot upload file!');
+							throw new Exception('OpeningHours module is not enabled!');
 						}
 						for ($d = 1; $d <= 7; $d++) {
 							$day_name = $this->z->openinghours->getDayName($d);
