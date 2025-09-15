@@ -219,7 +219,7 @@ class z {
 	}
 
 	static function stripNewlines($str) {
-		return z::replace(z::replace($str, '\r\n', ''), '\n', '');
+		return z::replace(z::replace(z::replace($str, "\r\n", ''), "\n", ''), "\r", '');
 	}
 
 	static function shorten($str, $len = 100, $ellipsis = "...") {
