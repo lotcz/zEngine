@@ -260,6 +260,11 @@ class z {
 		return mb_strtolower($str);
 	}
 
+	static function upper($str) {
+		if ($str === null) return null;
+		return mb_strtoupper($str);
+	}
+
 	static function explode($separator, $str) {
 		if (empty($separator) || empty($str)) return [$str];
 		return explode($separator, $str);
