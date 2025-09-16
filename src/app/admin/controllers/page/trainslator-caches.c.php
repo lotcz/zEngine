@@ -3,7 +3,7 @@
 	$this->z->admin->checkAnyRole();
 
 	$shorten = function ($str) {
-		return z::shorten(z::stripHtmlTags($str, ''));
+		return z::shorten(z::stripHtmlTags($str));
 	};
 
 	$this->setPageTitle('AI Cache');

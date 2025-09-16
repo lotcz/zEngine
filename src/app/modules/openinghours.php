@@ -99,17 +99,17 @@ class openinghoursModule extends zModule {
 			$from = $field->prefix . $day_name . '_from';
 			$to = $field->prefix . $day_name . '_to';
 			?>
-				<div class="d-flex form-group">
-					<div class="form-field">
-						<label class="control-label col-form-label pr-1"><strong><?=$this->getDayNameShort($d) ?></strong></label>
+				<div class="d-flex align-items-center gap-2 my-1">
+					<div style="width:2em">
+						<label><strong><?=$this->getDayNameShort($d) ?></strong></label>
 					</div>
-					<div class="form-field">
+					<div style="width:5.5em">
 						<input type="text" name="<?=$from ?>" placeholder="HH:MM" value="<?=$this->formatTime($field->value[$from])?>" class="form-control"/>
 					</div>
-					<div class="form-field">
-						<label class="control-label col-form-label px-1"><span class="sep">–</span></label>
-					</div>
 					<div>
+						<span>–</span>
+					</div>
+					<div style="width:5.5em">
 						<input type="text" name="<?=$to ?>" placeholder="HH:MM" value="<?=$this->formatTime($field->value[$to])?>" class="form-control" />
 					</div>
 				</div>

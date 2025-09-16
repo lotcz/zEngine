@@ -155,6 +155,13 @@ class z {
 		return false;
 	}
 
+	static function isValidEmail($email) {
+		if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+			return true;
+		}
+		return false;
+	}
+
 	// MySQL
 
 	/**
@@ -248,6 +255,11 @@ class z {
 		return z::trim($s, '/');
 	}
 
+	static function lower($str) {
+		if ($str === null) return null;
+		return mb_strtolower($str);
+	}
+
 	static function explode($separator, $str) {
 		if (empty($separator) || empty($str)) return [$str];
 		return explode($separator, $str);
@@ -299,9 +311,12 @@ class z {
 	/**
 	* Remove dangerous characters from string. Crucial for XSS protection.
 	*/
-	static function xssafe($data) {
+	static function xssafe($data, $extra_allowed_tags = '') {
 		if (is_string($data)) {
-			return z::stripHtmlTags($data);
+			return z::stripHtmlTags(
+				$data,
+				'<br><i><b><p><div><strong><h1><h2><h3><h4><h5><h6><ul><ol><li><pre><img>' . $extra_allowed_tags
+			);
 		} else {
 			return $data;
 		}
@@ -321,7 +336,12 @@ class z {
 		return $length === 0 || (substr($haystack, -$length) === $needle);
 	}
 
-	static function contains($str, $sub) {
+	static function contains($str, $sub, $ci = false) {
+		if ($ci) {
+			$str = z::lower($str);
+			$sub = z::lower($sub);
+		}
+		if ($str === null || $sub === null) return false;
 		return (mb_strpos($str, $sub) !== false);
 	}
 
@@ -356,7 +376,7 @@ class z {
 		return mb_encode_numericentity($string, $convmap);
 	}
 
-	static function stripHtmlTags($text, $allowed_tags = '<br><i><b><p><strong>') {
+	static function stripHtmlTags($text, $allowed_tags = '') {
 		if (empty($text)) return $text;
 		return strip_tags($text, $allowed_tags);
 	}
