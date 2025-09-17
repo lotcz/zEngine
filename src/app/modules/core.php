@@ -611,8 +611,8 @@ class coreModule extends zModule {
 		}
 	}
 
-	public function renderMessages() {
-		$this->z->messages->render();
+	public function renderMessages($messages = null) {
+		$this->z->messages->render($messages);
 	}
 
 	public function renderLink($href, $title, $css = '', $ret = null) {

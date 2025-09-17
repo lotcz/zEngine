@@ -398,6 +398,7 @@ class authModule extends zModule {
 	}
 
 	public function isValidPassword($password) {
+		if (empty($password)) return false;
 		return (strlen($password) >= $this->getConfigValue('min_password_length', 5));
 	}
 

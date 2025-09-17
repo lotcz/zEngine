@@ -116,15 +116,12 @@ class formsModule extends zModule {
 		$token_created = $token->dtval('form_protection_token_created');
 		$valid_from = $token_created + $this->protection_token_min_delay;
 		$valid_to = $token_created + $this->protection_token_expires;
+		$now = time();
 
-		$token_time_ok = ($valid_from < time()) && ($valid_to > time());
-
+		$token_time_ok = ($valid_from < $now) && ($valid_to > $now);
 		$session_ok = ($user_session_id == null) || ($token->ival('form_protection_token_user_session_id') == $user_session_id);
-
 		$token_attrs_ok = ($token->val('form_protection_token_ip') == $ip) && ($token->val('form_protection_token_form_name') == $form_name);
-
 		$token_hash_ok = z::verifyHash($token_value, $token->val('form_protection_token_hash'));
-
 		$token_verified = $token_time_ok && $session_ok && $token_attrs_ok && $token_hash_ok;
 
 		if ($token_verified) {

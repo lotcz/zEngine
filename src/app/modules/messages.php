@@ -46,12 +46,16 @@ class messagesModule extends zModule{
 		$this->add($text, 'info');
 	}
 	
-	public function render() {
-		if (count($this->messages) > 0) {
+	public function render($messages = null) {
+		if ($messages === null) {
+			$messages = $this->messages;
+			$this->clear();
+		}
+		if (count($messages) > 0) {
 			?>
 				<div class="spaced messages">
 					<?php
-						foreach ($this->messages as $m) {
+						foreach ($messages as $m) {
 							?>
 								<div class="alert alert-<?=($m->type == 'error') ? 'danger' : $m->type ?>">
 									<?=$m->text ?>
@@ -61,7 +65,6 @@ class messagesModule extends zModule{
 					?>
 				</div>
 			<?php
-			$this->clear();
 		}
 	}
 

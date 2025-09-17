@@ -5,11 +5,27 @@
 	if ($this->z->auth->isAuth() && !$this->z->auth->isAnonymous()) {
 		$this->redirect('profile');
 	} elseif (z::isPost()) {
+
 		$full_name = z::xssafe(z::get('full_name'));
 		$email = z::trim(z::get('email'));
 		$phone = z::trim(z::get('phone'));
 		$password = z::get('password');
 		$password_confirm = z::get('password_confirm');
+
+		$honeypot = z::get('name');
+		if (!empty($honeypot)) {
+			$this->z->security->saveFailedAttempt();
+			sleep(5);
+			die(); // it is a robot
+		}
+
+		$token = z::get('form_token');
+		if (!$this->z->forms->verifyProtectionTokenHash('register_form', $token)) {
+			$this->z->security->saveFailedAttempt();
+			$password = null; // this will prevent registration
+			sleep(5);
+			$this->message("Platnost formuláře vypršela", 'danger');
+		}
 
 		// validate email and password
 		if ($this->z->forms->fieldValidation('email', $email) && $this->z->auth->isValidPassword($password)) {
@@ -38,3 +54,5 @@
 			'z_email_check_ajax_url' => $this->url('json/default/emailexists')
 		]
 	);
+
+	$this->setData('form_token', $this->z->forms->createProtectionTokenHash('register_form'));
