@@ -65,14 +65,14 @@ class emailsModule extends zModule {
 
 	public function sendHtmlBody(string $to, string $subject, string $body, ?string $from = null): EmailModel {
 		$email = "<!DOCTYPE html>
-		<html>
-			<head>
-				<meta charset=\"utf-8\">
-			</head>
-			<body>
-				$body
-			</body>
-		</html>";
+<html>
+<head>
+	<meta charset=\"utf-8\">
+</head>
+<body>
+$body
+</body>
+</html>";
 		return $this->sendHtml($to, $subject, $email, $from);
 	}
 

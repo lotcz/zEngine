@@ -490,7 +490,7 @@ class formsModule extends zModule {
 
 										case 'textarea' :
 										?>
-											<textarea id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> class="form-control"><?=$field->value ?></textarea>
+											<textarea id="<?=$field->name ?>" name="<?=$field->name ?>" <?=$disabled ?> rows="10" class="form-control"><?=$field->value ?></textarea>
 										<?php
 										break;
 

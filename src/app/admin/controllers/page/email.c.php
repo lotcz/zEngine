@@ -4,8 +4,6 @@
 
 	$this->z->admin->checkAnyRole();
 
-	$this->z->enableModule('tinymce');
-
 	$this->renderAdminForm(
 		'EmailModel',
 		[
@@ -33,7 +31,7 @@
 			[
 				'name' => 'email_body',
 				'label' => 'Body',
-				'type' => 'wysiwyg'
+				'type' => 'textarea'
 			],
 			[
 				'name' => 'email_send_date',
