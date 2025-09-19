@@ -71,7 +71,7 @@ class dbModule extends zModule {
 	* @param Array $types Array of PDO type specifications for binding values.
 	* @return PDOStatement
 	*/
-	public function executeQuery(string $sql, array|null $bindings = null, array|null $types = null) {
+	public function executeQuery(string $sql, array|null $bindings = null, array|null $types = null, $reconnecting = false) {
 		if ($this->z->isDebugMode()) {
 			$values = sprintf('[%s]', empty($bindings) ? '' : implode(", ", $bindings));
 			$this->z->errorlog->write(
@@ -84,18 +84,22 @@ class dbModule extends zModule {
 		}
 
 		$connection = $this->getConnection();
-		$stmt = $connection->prepare($sql);
-		if (!$stmt) {
-			throw new Exception(sprintf('Unknown error in query: %s.', $sql));
-		}
-		if (isset($bindings) && sizeof($bindings) > 0) {
-			for($i = 0, $max = sizeof($bindings); $i < $max; $i++) {
-				$stmt->bindValue($i+1, $bindings[$i], $types[$i]);
-			}
-		}
 
 		try {
+			$stmt = $connection->prepare($sql);
+
+			if (!$stmt) {
+				throw new Exception(sprintf('Unknown error in query: %s.', $sql));
+			}
+
+			if (isset($bindings) && sizeof($bindings) > 0) {
+				for($i = 0, $max = sizeof($bindings); $i < $max; $i++) {
+					$stmt->bindValue($i+1, $bindings[$i], $types[$i]);
+				}
+			}
+
 			$result = $stmt->execute();
+
 			if ($result) {
 				return $stmt;
 			} else {
@@ -105,6 +109,14 @@ class dbModule extends zModule {
 				throw new Exception(sprintf('Error %s - %s', $code, $desc));
 			}
 		} catch (Exception $e) {
+			$code = $stmt->errorInfo()[1];
+			// reconnect
+			if (($code == 2006) && !$reconnecting) {
+				$this->z->errorlog->write("MySQL server has gone away - reconnecting: $sql");
+				$this->connection = null;
+				return $this->executeQuery($sql, $bindings, $types, true);
+			}
+
 			$exceptionMessage = $e->getMessage();
 			$shortMessage =  sprintf(
 				"Error in query: %s\r\n%s",
