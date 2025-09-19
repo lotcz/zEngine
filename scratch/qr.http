@@ -11,7 +11,7 @@ Authorization: Bearer secretAPIKey
 test
 
 ###
-GET http://localhost:8091/bank-transfer?token=secretAPIKey&target_account=123456&message=Hello&amount=101&recipient_name=karel&is_instant=0&variable_symbol=789456
+GET http://localhost:8091/bank-transfer?token=secretAPIKey&target_account=123456&message=Hello2&amount=101&recipient_name=karel&is_instant=0&variable_symbol=789456&border=2&file_ext=png
 
 ### Secure token
 GET http://localhost:8091/bank-transfer-secured?secure_token=69fb4a2397c0661069dcda2b0e69ead7&target_account=123456&message=Hello&amount=101&recipient_name=karel&is_instant=0&variable_symbol=789456
