@@ -20,7 +20,7 @@ class zForm {
 	public $render_wrapper = false;
 	public $images_module = null;
 	public $protection_enabled = false;
-
+	public $suppress_return = false;
 	public $onBeforeUpdate = null;
 	public $onAfterUpdate = null;
 	public $onBeforeDelete = null;
@@ -32,7 +32,7 @@ class zForm {
 		$this->method = $method;
 		$this->css = $css;
 		$this->ret = z::get('r');
-		$this->suppress_return = (z::get('suppress_return', 'false') === 'true');
+		$this->suppress_return = (z::get('suppress_return', 'false') == 'true');
 		$this->detail_page = str_replace('_', '-', $id);
 	}
 
