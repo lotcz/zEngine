@@ -7,11 +7,11 @@ require_once "async-job.php";
  */
 abstract class AsyncStandardJob extends AsyncJob {
 
-	public const ITEM_STATE_READY = 1;
+	public const ITEM_STATE_READY = true;
 
 	public const ITEM_STATE_PROCESSING = null;
 
-	public const ITEM_STATE_WAITING = 0;
+	public const ITEM_STATE_WAITING = false;
 
 	public abstract function getDb(): dbModule;
 
