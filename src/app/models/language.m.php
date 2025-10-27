@@ -17,6 +17,9 @@ class LanguageModel extends zModel {
 			if ($date instanceof DateTime || $date instanceof DateTimeImmutable) {
 				return $this->formatDate($date->getTimestamp());
 			}
+			if (is_string($date)) {
+				return $this->formatDate(z::phpDatetime($date));
+			}
 			return date($this->val('language_date_format'), $date);
 		} else {
 			return '';
@@ -27,6 +30,9 @@ class LanguageModel extends zModel {
 		if (isset($date)) {
 			if ($date instanceof DateTime || $date instanceof DateTimeImmutable) {
 				return $this->formatDatetime($date->getTimestamp());
+			}
+			if (is_string($date)) {
+				return $this->formatDatetime(z::phpDatetime($date));
 			}
 			return date($this->val('language_datetime_format'), $date);
 		} else {
