@@ -33,14 +33,16 @@ class resourcesModule extends zModule {
 	public function onBeforeInit() {
 		if ($this->z->core->getPath(0) == $this->base_url) {
 			$resource_file = $this->z->core->getPath(1);
-			if ($this->z->core->pathExists(2)) {
-				$resource_file .= '/' . $this->z->core->getPath(2);
+			$i = 2;
+			while ($this->z->core->pathExists($i)) {
+				$resource_file .= '/' . $this->z->core->getPath($i);
+				$i++;
 			}
 			$resource_path = $this->z->app_dir . 'resources/' . $resource_file;
 			if (!file_exists($resource_path)) {
 				$resource_path = __DIR__ . $this->base_dir . $resource_file;
 			}
-			if (file_exists($resource_path)) {
+			if (file_exists($resource_path) && !is_dir($resource_path)) {
 				$Etag = filemtime($resource_path);
 				if (isset($_SERVER['HTTP_IF_NONE_MATCH']) && ($Etag == $_SERVER['HTTP_IF_NONE_MATCH'])) {
 					http_response_code(304);
@@ -50,7 +52,7 @@ class resourcesModule extends zModule {
 				} else {
 					$path_parts = pathinfo($resource_file);
 					header('Content-Description: File Transfer');
-					header('Content-Type: ' . Self::getContentType($path_parts['extension']));
+					header('Content-Type: ' . self::getContentType($path_parts['extension']));
 					header('Content-Disposition: attachment; filename="' . $resource_file . '"');
 					header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + $this->getConfigValue('default_cache_age', 120)));
 					header('Cache-Control: max-age=' . $this->getConfigValue('default_cache_age', 120));

@@ -10,7 +10,7 @@ require_once __DIR__ . '/app/classes/module.php';
 #[\AllowDynamicProperties]
 class zEngine {
 
-	public $version = 26.1;
+	public $version = 26.2;
 
 	public $app_dir = '';
 
@@ -219,7 +219,7 @@ class zEngine {
 			http_response_code(500);
 			die($error_message);
 		} else {
-			$this->core->showNotFoundView();
+			$this->core->showErrorView($error_message);
 		}
 	}
 

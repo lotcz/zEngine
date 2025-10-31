@@ -284,21 +284,25 @@ class adminModule extends zModule {
 			]
 		);
 		$form->add($fields);
-		$this->z->forms->processForm($form, $model_class_name);
+
+		try {
+			$this->z->forms->processForm($form, $model_class_name);
+			$form->addField(
+				[
+					'name' => 'form_buttons',
+					'type' => 'buttons',
+					'buttons' => $this->getAdminFormButtons($form, $model_class_name)
+				]
+			);
+		} catch (Throwable $exception) {
+			$this->z->messages->error($exception->getMessage());
+		}
 
 		if ($this->z->forms->pathAction() == 'edit') {
 			$this->z->core->setPageTitle($this->z->core->t($form->entity_title) . ': ' . $this->z->core->t('Edit'));
 		} else {
 			$this->z->core->setPageTitle($this->z->core->t($form->entity_title) . ': ' . $this->z->core->t('Add'));
 		}
-
-		$form->addField(
-			[
-				'name' => 'form_buttons',
-				'type' => 'buttons',
-				'buttons' => $this->getAdminFormButtons($form, $model_class_name)
-			]
-		);
 
 		$this->z->core->setData('form', $form);
 		$this->z->core->setPageView('admin');

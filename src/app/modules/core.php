@@ -462,10 +462,14 @@ class coreModule extends zModule {
 	}
 
 	public function showErrorView($message = null) {
-		$this->setPageView($this->error_view);
 		$this->setPageTitle('Error');
-		if (isset($message)) {
-			$this->message($message, 'error');
+		$this->setPageView($this->error_view);
+		$error_template = $this->findViewTemplatePath('page', $this->error_view);
+		if (!empty($error_template)) {
+			$this->controllers['page'] = $this->error_view;
+			$this->runController('page');
+		} else {
+			echo 'Error!';
 		}
 	}
 
