@@ -352,21 +352,21 @@ class adminModule extends zModule {
 
 	public function checkAnyRole($roles = null) {
 		if (!$this->hasAnyRole($roles)) {
-			$this->z->core->redirect('admin', 403);
+			$this->z->core->redirect('', 403);
 			die();
 		}
 	}
 
 	public function checkIsAdmin() {
 		if (!$this->z->auth->isAdmin()) {
-			$this->z->core->redirect('admin', 403);
+			$this->z->core->redirect('', 403);
 			die();
 		}
 	}
 
 	public function checkIsSuperUser() {
 		if (!$this->isSuperUser()) {
-			$this->z->core->redirect('admin', 403);
+			$this->z->core->redirect('', 403);
 			die();
 		}
 	}
