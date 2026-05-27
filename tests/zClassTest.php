@@ -172,4 +172,28 @@ final class zClassTest extends TestCase
 
 	}
 
+	public function testShorten(): void {
+		$this->assertEquals(
+			'12...',
+			z::shorten('123456789', 5)
+		);
+
+		$this->assertEquals(
+			'1234567...',
+			z::shorten('12345678910', 10)
+		);
+
+		$this->assertEquals(
+			'123456789',
+			z::shorten('123456789', 10)
+		);
+
+		$this->assertEquals(
+			'Adrenalin park, horský hotel a relaxace Snažili jsme se pro Vás vytvořit místo, kde naleznete záb...',
+			z::shorten(
+				'Adrenalin park, horský hotel a relaxace Snažili jsme se pro Vás vytvořit místo, kde naleznete zábavu, odpočinek,  nové neotřelé zážitky , útěk od vašich každodenních strastí, ale stejně tak místo pohody, které obohatí Váš spokojený život.Můžete k nám přijet jen „na skok“, dobře se najíst v  restauraci a pak se zhluboka nadechnout čerstvého  krušnohorského vzduchu.',
+				100
+			)
+		);
+	}
 }
