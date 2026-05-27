@@ -328,7 +328,7 @@ class z {
 	}
 
 	static function strlen($str): int {
-		if (!isset($str)) return 0;
+		if (empty($str)) return 0;
 		return mb_strlen($str);
 	}
 
