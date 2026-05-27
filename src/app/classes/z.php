@@ -328,8 +328,8 @@ class z {
 	}
 
 	static function strlen($str): int {
-		if (empty($str)) return 0;
-		return mb_strlen($str);
+		if (!isset($str)) return 0;
+		return mb_strlen(strval( $str));
 	}
 
 	static function startsWith($haystack, $needle)	{
