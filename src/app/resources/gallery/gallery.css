@@ -26,6 +26,7 @@
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
+	cursor: default;
 }
 
 #gallery_viewer.hidden {
@@ -46,10 +47,7 @@
 	animation: fadeIn 1s;
 }
 
-#gallery_viewer .close-btn,
-#gallery_viewer .zoom-in-btn,
-#gallery_viewer .zoom-out-btn,
-#gallery_viewer .arrows div {
+#gallery_viewer .gallery-btn {
 	font-size: 2rem;
 	text-align: center;
 	width: 3rem;
@@ -61,24 +59,21 @@
 	border: solid 2px #fff;
 	background-position: center;
 	background-repeat: no-repeat;
-}
-
-#gallery_viewer .close-btn:hover,
-#gallery_viewer .arrows div:hover {
-	background-color: #222;
-}
-
-#gallery_viewer .close-btn:active,
-#gallery_viewer .arrows div:active {
-	background-color: #444;
-}
-
-#gallery_viewer .close-btn:hover {
+	cursor: pointer;
 	margin-top: 3px;
+	margin-bottom: 3px;
 }
 
-#gallery_viewer .close-btn:active {
-	margin-top: 6px;
+#gallery_viewer .gallery-btn:hover {
+	background-color: #222;
+	margin-top: 0;
+	margin-bottom: 6px;
+}
+
+#gallery_viewer .gallery-btn:active {
+	background-color: #444;
+	margin-top: 3px;
+	margin-bottom: 0;
 }
 
 #gallery_viewer .zoom-info {
@@ -98,7 +93,6 @@
 	justify-content: center;
 	align-items: center;
 	color: white;
-	cursor: default;
 	-webkit-user-select: none; /* Safari */
 	-ms-user-select: none; /* IE 10 and IE 11 */
 	user-select: none; /* Standard syntax */
@@ -107,25 +101,6 @@
 #gallery_viewer .zoom-amount {
 	padding-left: 5px;
 	padding-right: 5px;
-}
-
-#gallery_viewer .zoom-info div:hover {
-	background-color: #444;
-}
-
-#gallery_viewer .arrows div {
-	margin-top: 0;
-	margin-bottom: 6px;
-}
-
-#gallery_viewer .arrows div:hover {
-	margin-top: 3px;
-	margin-bottom: 3px;
-}
-
-#gallery_viewer .arrows div:active {
-	margin-top: 6px;
-	margin-bottom: 0;
 }
 
 #gallery_viewer .close-btn {
@@ -154,9 +129,23 @@
 	background-image: url('../img/arrow-forward.svg');
 }
 
+#gallery_viewer .zoom-out-btn,
+#gallery_viewer .zoom-in-btn {
+	background-size: 60%;
+}
+
+#gallery_viewer .zoom-out-btn {
+	background-image: url('../img/minus-lens.svg');
+}
+
+#gallery_viewer .zoom-in-btn {
+	background-image: url('../img/plus-lens.svg');
+}
+
 #gallery_viewer img {
 	max-width: 90%;
 	max-height:90%;
+	cursor: pointer;
 }
 
 @keyframes fadeIn {

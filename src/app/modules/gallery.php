@@ -79,9 +79,16 @@ class galleryModule extends zModule {
 		$this->z->core->renderPartialView('gallery-form', ['gallery_id' => $gallery_id]);
 	}
 
-	function renderGallery(int $gallery_id) {
+	function renderGallery(int $gallery_id, string $thumbnail_format = 'thumb', string $full_format = 'view') {
 		$images = $this->loadGalleryImages($gallery_id);
-		$this->z->core->renderPartialView('gallery-thumbnails', ['images' => $images]);
+		$this->z->core->renderPartialView(
+			'gallery-thumbnails',
+			[
+				'images' => $images,
+				'thumbnail_format' => $thumbnail_format,
+				'full_format' => $full_format
+			]
+		);
 	}
 
 }

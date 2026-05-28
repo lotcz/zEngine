@@ -147,20 +147,20 @@ const gallery = {
 		viewer.addEventListener('mouseout', (e) => this.mouseOutEvnt(e));
 
 		const zoomInfo = z.createElement(viewer, 'div', 'zoom-info');
-		const zoomOutBtn = z.createElement(zoomInfo, 'div', 'zoom-out-btn', '-', (e) => this.zoomOutEvnt(e));
+		const zoomOutBtn = z.createElement(zoomInfo, 'div', 'gallery-btn zoom-out-btn', null, (e) => this.zoomOutEvnt(e));
 		zoomOutBtn.addEventListener('touchstart', (e) => this.zoomOutEvnt(e));
 		const zoomAmount = z.createElement(zoomInfo, 'div', 'zoom-amount', '100%', (e) => this.zoomResetEvnt(e));
 		zoomAmount.addEventListener('touchstart', (e) => this.zoomResetEvnt(e));
-		const zoomInBtn = z.createElement(zoomInfo, 'div', 'zoom-in-btn', '+', (e) => this.zoomInEvnt(e));
+		const zoomInBtn = z.createElement(zoomInfo, 'div', 'gallery-btn zoom-in-btn', null, (e) => this.zoomInEvnt(e));
 		zoomInBtn.addEventListener('touchstart', (e) => this.zoomInEvnt(e));
 
-		const closeBtn = z.createElement(viewer, 'div', 'close-btn', null, (e) => this.closeEvnt(e));
+		const closeBtn = z.createElement(viewer, 'div', 'gallery-btn close-btn', null, (e) => this.closeEvnt(e));
 		closeBtn.addEventListener('touchstart', (e) => this.closeEvnt(e));
 
 		const arrows = z.createElement(viewer, 'div', 'arrows');
-		const prevBtn = z.createElement(arrows, 'div', 'prev-btn', null, (e) => this.prevEvnt(e));
+		const prevBtn = z.createElement(arrows, 'div', 'gallery-btn prev-btn', null, (e) => this.prevEvnt(e));
 		prevBtn.addEventListener('touchstart', (e) => this.prevEvnt(e));
-		const nextBtn = z.createElement(arrows, 'div', 'next-btn', null, (e) => this.nextEvnt(e));
+		const nextBtn = z.createElement(arrows, 'div', 'gallery-btn next-btn', null, (e) => this.nextEvnt(e));
 		nextBtn.addEventListener('touchstart', (e) => this.nextEvnt(e));
 
 		const loading = z.createElement(viewer, 'div', 'loading', 'Loading...');
