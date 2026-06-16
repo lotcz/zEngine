@@ -326,6 +326,23 @@ class formsModule extends zModule {
 		<?php
 	}
 
+	public function renderAutocomplete($name, $endpoint, $value) {
+		$config = $this->z->autocomplete->getEndpointConfig($endpoint);
+		$select_id_field = $config['select_id_field'];
+		$select_label_field = $config['select_label_field'];
+		?>
+		<div
+			class="autocomplete"
+			data-endpoint="<?=$endpoint?>"
+			data-select_id_field="<?=$select_id_field?>"
+			data-select_label_field="<?=$select_label_field?>"
+		>
+			<input name="<?=$name ?>" type="hidden" value="<?=$value ?>">
+			<input class="form-control" type="text">
+		</div>
+		<?php
+	}
+
 	public function renderForeignKeyLink($name, $link_table, $link_template, $link_id_field, $link_label_field, $value) {
 		$result = $this->z->db->executeSelectQuery($link_table, $columns = [$link_label_field], sprintf('%s = ?', $link_id_field), null, 1, [$value], [PDO::PARAM_INT]);
 		if ($row = $result->fetch(PDO::FETCH_ASSOC)) {
@@ -572,6 +589,14 @@ class formsModule extends zModule {
 												$field->select_label_field
 											);
 										break;
+
+										case 'autocomplete' :
+											$this->renderAutocomplete(
+												$field->name,
+												$field->endpoint,
+												$field->value
+											);
+											break;
 
 										case 'foreign_key_link' :
 											$this->renderForeignKeyLink(

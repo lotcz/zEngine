@@ -12,7 +12,7 @@ class securityModule extends zModule {
 	public array $depends_on = ['db'];
 
 	// if an IP exceedes this number of failed attempts, it will be banned
-	public $max_failed_attempts = 100;
+	public $max_failed_attempts = 110;
 
 	function onEnabled() {
 		$this->max_failed_attempts = $this->getConfigValue('max_failed_attempts', $this->max_failed_attempts);

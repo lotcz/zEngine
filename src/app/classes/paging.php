@@ -28,6 +28,8 @@ class zPaging {
 	public $active_sorting = null;
 	public $sorting_desc = false;
 
+	public $link_extra_params = null;
+
 	function __construct($custom_offset = null, $custom_limit = null, $custom_max_pages_links = null) {
 		if (isset($custom_offset)) {
 			$this->offset = z::parseInt($custom_offset);
@@ -86,6 +88,11 @@ class zPaging {
 		if ($desc) {
 			$url .= sprintf('&%s=%s', $this->sorting_desc_url_name, 'desc');
 		}
+
+		if (!empty($this->link_extra_params)) {
+			$url .= '&' . $this->link_extra_params;
+		}
+
 		return $url;
 	}
 
