@@ -453,7 +453,7 @@ class formsModule extends zModule {
 				<?php
 			} elseif ($field->type == 'buttons') {
 				?>
-					<div class="d-flex flex-row align-items-center">
+					<div id="<?=$field->name?>" class="d-flex flex-row align-items-center">
 						<?php
 							foreach ($field->buttons as $button) {
 								if ($button['type'] == 'link') {

@@ -7,7 +7,7 @@ require_once __DIR__ . '/../models/user_role.m.php';
 */
 class adminModule extends zModule {
 
-	public array $depends_on = ['auth', 'menu', 'jobs'];
+	public array $depends_on = ['auth', 'menu', 'jobs', 'autocomplete'];
 	public array $also_install = ['forms', 'tables'];
 
 	public $filesystem_root = '/';

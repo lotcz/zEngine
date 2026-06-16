@@ -36,3 +36,9 @@ form .form-field button {
 	text-decoration: none;
 
 }
+
+form #form_buttons {
+	background-color: #fff;
+	position: sticky;
+	bottom: 0;
+}
