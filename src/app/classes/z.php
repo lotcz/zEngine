@@ -364,6 +364,7 @@ class z {
 	}
 
 	static function createHash($value) {
+		if (empty($value)) return null;
 		return password_hash($value, PASSWORD_DEFAULT);
 	}
 
