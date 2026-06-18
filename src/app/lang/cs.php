@@ -124,6 +124,7 @@
 	$language_data['Active'] = 'Aktivní';
 	$language_data['Import'] = 'Importovat';
 	$language_data['Please enter valid decimal number.'] = 'Prosím vložte platné desetinné číslo.';
+	$language_data['Please enter valid date.'] = 'Prosím vložte platné datum.';
 	$language_data['Max value is %s.'] = 'Maximální hodnota je %s.';
 	$language_data['%d - %d of %d'] = '<b>%d</b> až <b>%d</b> z celkových <b>%d</b>.';
 	$language_data['Value must be at least %s characters long.'] = 'Hodnota musí být alespoň %s znaků dlouhá.';
