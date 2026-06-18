@@ -121,6 +121,18 @@ class Autocomplete {
 		this.input.value = label;
 		this.hiddenInput.value = id;
 		this.closeDropdown();
+
+		// update link
+		const link = this.element.querySelector('a');
+		if (link) {
+			const disabled = id === null;
+			link.href = disabled ? '' : link.dataset.detail_link.replace('%d', id);
+			if (disabled) {
+				z.addClass(link, 'disabled');
+			} else {
+				z.removeClass(link, 'disabled');
+			}
+		}
 	}
 
 	addOption(id, label) {

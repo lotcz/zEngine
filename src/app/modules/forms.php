@@ -326,7 +326,7 @@ class formsModule extends zModule {
 		<?php
 	}
 
-	public function renderAutocomplete($name, $endpoint, $value) {
+	public function renderAutocomplete($name, $endpoint, $value, $detail) {
 		$config = $this->z->autocomplete->getEndpointConfig($endpoint);
 		$select_id_field = $config['select_id_field'];
 		$select_label_field = $config['select_label_field'];
@@ -339,6 +339,21 @@ class formsModule extends zModule {
 		>
 			<input name="<?=$name ?>" type="hidden" value="<?=$value ?>">
 			<input class="form-control" type="text">
+			<?php
+				if (!empty($detail)) {
+					$disabled = empty($value);
+					$url = $disabled ? '' : sprintf($detail, $value);
+					?>
+						<a
+							class="btn btn-primary btn-sm <?=$disabled ? 'disabled' : ''?>"
+							data-detail_link="<?=$detail?>"
+							href="<?=$url?>"
+						>
+							Detail...
+						</a>
+					<?php
+				}
+			?>
 		</div>
 		<?php
 	}
@@ -594,7 +609,8 @@ class formsModule extends zModule {
 											$this->renderAutocomplete(
 												$field->name,
 												$field->endpoint,
-												$field->value
+												$field->value,
+												$field->detail_link ?? null
 											);
 											break;
 
