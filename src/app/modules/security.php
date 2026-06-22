@@ -11,11 +11,16 @@ class securityModule extends zModule {
 
 	public array $depends_on = ['db'];
 
-	// if an IP exceedes this number of failed attempts, it will be banned
-	public $max_failed_attempts = 110;
+	// if an IP exceeds this number of failed attempts, it will be banned
+	public $max_failed_attempts = 100;
+
+	// number of failed attempts will be reset after this period, leave empty for no reset
+	// https://www.php.net/manual/en/dateinterval.createfromdatestring.php
+	public $reset_failed_attempts_after;
 
 	function onEnabled() {
 		$this->max_failed_attempts = $this->getConfigValue('max_failed_attempts', $this->max_failed_attempts);
+		$this->reset_failed_attempts_after = $this->getConfigValue('reset_failed_attempts_after');
 	}
 
 	public function onBeforeInit() {
@@ -70,5 +75,16 @@ class securityModule extends zModule {
 		$banned_ip = new BannedIpModel($this->z->db);
 		$banned_ip->loadByIp($ip);
 		return $banned_ip->is_loaded;
+	}
+
+	public function resetFailedAttempts() {
+		if (empty($this->reset_failed_attempts_after)) return;
+		$threshold = (new DateTime())->sub(new DateInterval($this->reset_failed_attempts_after));
+		$this->z->db->executeDeleteQuery(
+			IpFailedAttemptModel::getTableName(),
+			'ip_failed_attempt_first <= ?',
+			[z::mysqlDatetime($threshold)],
+			[PDO::PARAM_STR]
+		);
 	}
 }

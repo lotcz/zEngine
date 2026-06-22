@@ -1,18 +1,16 @@
-<form class="form">
-	<div class="jobs">
-		<?php
-			foreach ($jobs as $job) {
-				$url = $this->z->jobs->getJobUrl($job);
-				?>
-					<div class="my-1">
-						<button type="button" onclick="javascript:runJob('<?=$job?>', '<?=$url?>');" class="btn btn-primary mr-1"><?=$job ?></button>
-						<span><?=$url?></span>
-					</div>
-				<?php
-			}
-		?>
-	</div>
-</form>
+<div class="jobs">
+	<?php
+		foreach ($jobs as $job) {
+			$url = $this->z->jobs->getJobUrl($job);
+			?>
+				<div class="my-1">
+					<button type="button" onclick="javascript:runJob('<?=$job?>', '<?=$url?>');" class="btn btn-primary mr-1"><?=$job ?></button>
+					<span><?=$url?></span>
+				</div>
+			<?php
+		}
+	?>
+</div>
 
 <div id="console" class="mt-2">
 	<div id="console_inner">
