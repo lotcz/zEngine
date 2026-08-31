@@ -220,13 +220,17 @@ class z {
 	// STRINGS
 
 	static function replace($str, $find, $replace) {
-		if (z::strlen($str) == 0) return '';
-		if (z::strlen($find) == 0) return $str;
+		if (empty($str)) return '';
+		if (empty($find)) return $str;
 		return str_replace($find, $replace, $str);
 	}
 
+	static function replaceNewlines($str, $replacement = '') {
+		return z::replace(z::replace(z::replace($str, "\r\n", $replacement), "\r", $replacement), "\n", $replacement);
+	}
+
 	static function stripNewlines($str) {
-		return z::replace(z::replace(z::replace($str, "\r\n", ''), "\n", ''), "\r", '');
+		return z::replaceNewlines($str, '');
 	}
 
 	static function shorten($str, $len = 100, $ellipsis = "...") {
@@ -283,6 +287,26 @@ class z {
 		return $results;
 	}
 
+	static function newLinesToParagraphs($text) {
+		if (empty($text)) return "";
+		$paragraphs = z::splitString($text, ["\r\n", "\r", "\n"]);
+		return "<p>" . implode("</p><p>", $paragraphs) . "</p>";
+	}
+
+	static function newLinesToBr($str) {
+		return z::replaceNewlines($str, '<br>');
+	}
+
+	/*
+	 * Change new lines into <br> and double new lines into paragraphs
+	 */
+	static function formatSimpleText($text) {
+		if (empty($text)) return "";
+		$paragraphs = z::splitString($text, ["\r\n\r\n", "\r\r", "\n\n"]);
+		$text = "<p>" . implode("</p><p>", $paragraphs) . "</p>";
+		return z::newLinesToBr($text);
+	}
+
 	static function escapeSingleQuotes($str) {
 		return str_replace('\'', '\\\'', $str);
 	}
@@ -328,7 +352,7 @@ class z {
 	}
 
 	static function strlen($str): int {
-		if (!isset($str)) return 0;
+		if (empty($str)) return 0;
 		return mb_strlen(strval( $str));
 	}
 
